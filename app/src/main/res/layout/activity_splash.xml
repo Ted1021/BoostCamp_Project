@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.tedkim.smartschedule.Splash.SplashActivity">
+    tools:context="com.tedkim.smartschedule.splash.SplashActivity">
 
     <ImageView
         android:id="@+id/imageView_logo"

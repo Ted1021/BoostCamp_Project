@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.tedkim.smartschedule.Home.HomeActivity">
+    tools:context="com.tedkim.smartschedule.home.HomeActivity">
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/floatingActionButton"
@@ -23,8 +23,10 @@
         android:id="@+id/viewPager"
         class="android.support.v4.view.ViewPager"
         id="@+id/view"
+        layout_centerHorizontal="true"
+        layout_centerVertical="true"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/tabLayout" />
 
     <android.support.design.widget.TabLayout

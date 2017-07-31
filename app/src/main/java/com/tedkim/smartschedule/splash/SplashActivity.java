@@ -1,4 +1,4 @@
-package com.tedkim.smartschedule.Splash;
+package com.tedkim.smartschedule.splash;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.tedkim.smartschedule.Home.HomeActivity;
+import com.tedkim.smartschedule.home.HomeActivity;
 import com.tedkim.smartschedule.R;
 
 /**

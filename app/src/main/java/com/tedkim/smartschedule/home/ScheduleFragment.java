@@ -1,4 +1,4 @@
-package com.tedkim.smartschedule.Home;
+package com.tedkim.smartschedule.home;
 
 
 import android.os.Bundle;

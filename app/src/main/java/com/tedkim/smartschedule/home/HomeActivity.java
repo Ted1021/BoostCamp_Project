@@ -1,4 +1,4 @@
-package com.tedkim.smartschedule.Home;
+package com.tedkim.smartschedule.home;
 
 import android.content.Intent;
 import android.graphics.PorterDuff;
@@ -14,7 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.tedkim.smartschedule.R;
-import com.tedkim.smartschedule.Regist.RegistActivity;
+import com.tedkim.smartschedule.regist.RegistActivity;
 
 /**
  * @author 김태원

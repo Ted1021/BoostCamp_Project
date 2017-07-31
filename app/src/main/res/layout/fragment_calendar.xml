@@ -2,14 +2,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.tedkim.smartschedule.Home.CalendarFragment">
+    tools:context="com.tedkim.smartschedule.home.CalendarFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
+    <CalendarView
+        android:id="@+id/calendarView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Calendar Fragment"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display3" />
+        android:elevation="0dp" />
 </FrameLayout>
