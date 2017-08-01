@@ -18,6 +18,8 @@ import com.tedkim.smartschedule.calendar.CalendarFragment;
 import com.tedkim.smartschedule.regist.RegistActivity;
 import com.tedkim.smartschedule.schedule.ScheduleFragment;
 
+import top.wefor.circularanim.CircularAnim;
+
 /**
  * @author 김태원
  * @file HomeActivity.java
@@ -85,10 +87,14 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                // TODO - 현재날짜 또는 선택 된 날짜 정보를 함께 전송 해야 함. 아마도 Fragment 마다 달아줘야 할듯
-                Intent intent = new Intent(HomeActivity.this, RegistActivity.class);
-                startActivity(intent);
-
+                CircularAnim.fullActivity(HomeActivity.this, v)
+                        .colorOrImageRes(R.color.colorAppTheme)
+                        .go(new CircularAnim.OnAnimationEndListener() {
+                            @Override
+                            public void onAnimationEnd() {
+                                startActivity(new Intent(HomeActivity.this, RegistActivity.class));
+                            }
+                        });
             }
         });
     }
