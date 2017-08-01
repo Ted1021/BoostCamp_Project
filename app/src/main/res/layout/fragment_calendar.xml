@@ -1,14 +1,24 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.tedkim.smartschedule.home.CalendarFragment">
-
-    <!-- TODO: Update blank fragment layout -->
+    android:background="@color/colorCremeWhite"
+    tools:context="com.tedkim.smartschedule.calendar.CalendarFragment">
 
     <CalendarView
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:elevation="0dp" />
-</FrameLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView_scheduleList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/calendarView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/scheduleList_margin" />
+
+
+</RelativeLayout>

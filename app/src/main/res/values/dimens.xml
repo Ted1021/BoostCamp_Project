@@ -2,5 +2,15 @@
 <resources>
 
     <dimen name="tabLayout_elevation">3dp</dimen>
+    <dimen name="scheduleList_margin">8dp</dimen>
+    <dimen name="floatingButton_margin">30dp</dimen>
+    <dimen name="toolBarItem_margin">16dp</dimen>
+    <dimen name="activityTitle_size">20sp</dimen>
+    <dimen name="activityTitle_margin">32dp</dimen>
+    <dimen name="schedule_editText_padding">16dp</dimen>
+
+    <dimen name="detailActivity_layoutPadding">8dp</dimen>
+    <dimen name="detailActivity_item_margin">8dp</dimen>
+    <dimen name="detailActivity_item_margin_large">16dp</dimen>
 
 </resources>

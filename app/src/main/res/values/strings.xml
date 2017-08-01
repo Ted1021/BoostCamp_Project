@@ -1,3 +1,25 @@
 <resources>
     <string name="app_name">SmartSchedule</string>
+    <string name="registActivity_title">스케줄 등록</string>
+    <string name="detailActivity_title">스케줄 확인</string>
+
+    <string name="schedule_title">스케줄 제목</string>
+    <string name="schedule_description">스케줄 설명</string>
+    <string name="schedule_location">위치</string>
+    <string name="schedule_participant">참여자</string>
+    <string name="schedule_allDay">하루 종일</string>
+    <string name="schedule_start">시작</string>
+    <string name="schedule_end">종료</string>
+    <string name="schedule_startAlarm">출발 알림</string>
+    <string name="schedule_callAlarm">전화 알림</string>
+
+    <string name="title_hint">제목을 입력 해주세요</string>
+    <string name="desc_hint">설명을 입력 해주세요</string>
+    <string name="location_hint">위치를 입력해 주세요</string>
+    <string name="participant_hint">참여자를 추가해 주세요</string>
+    <string name="start_hint">시작 시간을 선택 해주세요</string>
+    <string name="end_hint">종료 시간을 선택 해주세요</string>
+
+    <string name="location_search">탐색</string>
+
 </resources>

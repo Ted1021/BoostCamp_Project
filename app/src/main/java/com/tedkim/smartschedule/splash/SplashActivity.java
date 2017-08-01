@@ -7,8 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.tedkim.smartschedule.home.HomeActivity;
 import com.tedkim.smartschedule.R;
+import com.tedkim.smartschedule.home.HomeActivity;
 
 /**
  * @file SplashActivity.java

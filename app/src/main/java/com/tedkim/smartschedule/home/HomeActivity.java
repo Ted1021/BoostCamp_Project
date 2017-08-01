@@ -14,7 +14,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.tedkim.smartschedule.R;
+import com.tedkim.smartschedule.calendar.CalendarFragment;
 import com.tedkim.smartschedule.regist.RegistActivity;
+import com.tedkim.smartschedule.schedule.ScheduleFragment;
 
 /**
  * @author 김태원
