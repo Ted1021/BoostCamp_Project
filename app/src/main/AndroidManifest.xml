@@ -22,7 +22,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:name=".util.RealmDatabaseInit">
+        android:name=".util.RealmDatabaseInit"
+        android:configChanges="orientation|screenSize">
 
         <activity android:name=".splash.SplashActivity">
             <intent-filter>

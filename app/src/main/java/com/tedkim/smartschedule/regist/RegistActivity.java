@@ -3,12 +3,12 @@ package com.tedkim.smartschedule.regist;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.model.ScheduleData;
@@ -70,6 +70,9 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
     private void addSchedule(){
 
+        if(isEmptyEditors(mTitle) || isEmptyEditors(mDesc) || isEmptyEditors(mLocation) || isEmptyEditors(mStart) || isEmptyEditors(mEnd)){
+            return;
+        }
         // Async database transaction
         mRealm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -116,10 +119,6 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
                 addSchedule();
 
-                ScheduleData check = mRealm.where(ScheduleData.class).equalTo("title","Ted").findFirst();
-                Toast.makeText(RegistActivity.this, R.string.database_transaction_success, Toast.LENGTH_SHORT).show();
-                Log.d("CHECK_TRANSACTION", ">>>>>>>>>>>>>>"+check.getDesc());
-
                 break;
 
             case R.id.imageButton_location:
@@ -137,5 +136,15 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         super.onDestroy();
 
         mRealm.close();
+    }
+
+    // 빈칸 확인
+    private boolean isEmptyEditors(EditText view) {
+        if(TextUtils.isEmpty(view.getText().toString())) {
+            view.setError("잘좀 써라");
+            view.requestFocus();
+            return true;
+        }
+        return false;
     }
 }
