@@ -22,4 +22,6 @@
 
     <string name="location_search">탐색</string>
 
+    <string name="database_transaction_success">트랜잭션 성공!!</string>
+
 </resources>

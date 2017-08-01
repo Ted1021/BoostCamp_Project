@@ -153,7 +153,7 @@
                     android:inputType="textPersonName"
                     android:paddingLeft="@dimen/schedule_editText_padding"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintRight_toLeftOf="@+id/imageButton"
+                    app:layout_constraintRight_toLeftOf="@+id/imageButton_location"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
@@ -167,7 +167,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageButton
-                    android:id="@+id/imageButton"
+                    android:id="@+id/imageButton_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
@@ -186,14 +186,14 @@
                 android:layout_marginBottom="8dp">
 
                 <EditText
-                    android:id="@+id/editText2"
+                    android:id="@+id/editText_contact"
                     android:layout_width="180dp"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="40dp"
                     android:ems="10"
                     android:inputType="textPersonName"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintRight_toRightOf="@+id/imageButton2"
+                    app:layout_constraintRight_toRightOf="@+id/imageButton_contact"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.6" />
 
@@ -208,18 +208,15 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageButton
-                    android:id="@+id/imageButton2"
+                    android:id="@+id/imageButton_contact"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginRight="-8dp"
+                    android:layout_marginRight="0dp"
                     android:background="@android:color/transparent"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
                     app:srcCompat="@drawable/ic_action_contact"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginTop="8dp"
-                    app:layout_constraintVertical_bias="0.0" />
+                    android:layout_marginTop="8dp" />
             </android.support.constraint.ConstraintLayout>
 
             <LinearLayout
@@ -352,7 +349,7 @@
                 android:layout_marginBottom="8dp">
 
                 <Switch
-                    android:id="@+id/switch2"
+                    android:id="@+id/switch_callAlarm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"

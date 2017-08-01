@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 
 import com.tedkim.smartschedule.R;
@@ -31,8 +32,8 @@ public class HomeActivity extends AppCompatActivity {
 
     private final int MAX_FRAGMENT = 2;
 
-    private final int TAB_SCHEDULE = 0;
-    private final int TAB_CALENDAR = 1;
+    private final int FRAG_SCHEDULE = 0;
+    private final int FRAG_CALENDAR = 1;
 
     TabLayout mTabLayout;
     ViewPager mViewPager;
@@ -44,6 +45,8 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        Log.d("CHECK_ENTER", "------------------- Home Activity");
 
         initView();
 
@@ -67,6 +70,11 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 tab.getIcon().setColorFilter(mSelectedColor, PorterDuff.Mode.SRC_IN);
+                if (tab.getPosition() == FRAG_SCHEDULE) {
+                    Log.d("CHECK_FRAG", "====================== Schedule Fragment from TAB");
+                }else{
+                    Log.d("CHECK_FRAG", "====================== Calendar Fragment from TAB");
+                }
             }
 
             @Override
@@ -110,12 +118,10 @@ public class HomeActivity extends AppCompatActivity {
 
             switch (position) {
 
-                case TAB_SCHEDULE:
-
+                case FRAG_SCHEDULE:
                     return new ScheduleFragment();
 
-                case TAB_CALENDAR:
-
+                case FRAG_CALENDAR:
                     return new CalendarFragment();
             }
 
