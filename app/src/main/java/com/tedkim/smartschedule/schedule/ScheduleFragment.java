@@ -33,7 +33,7 @@ public class ScheduleFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_schedule, container, false);
 
-        Log.d("CHECK_ENTER","------------------- Schedule Fragment");
+        Log.d("CHECK_ENTER","Schedule Fragment -------------------");
 
         return view;
     }

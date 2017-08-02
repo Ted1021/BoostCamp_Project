@@ -22,10 +22,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:name=".util.RealmDatabaseInit"
-        android:configChanges="orientation|screenSize">
+        android:name=".util.RealmDatabaseInit">
 
-        <activity android:name=".splash.SplashActivity">
+        <activity android:name=".splash.SplashActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -33,9 +33,15 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".home.HomeActivity" />
-        <activity android:name=".regist.RegistActivity" />
-        <activity android:name=".detail.DetailActivity"/>
+        <activity android:name=".home.HomeActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".regist.RegistActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".detail.DetailActivity"
+            android:screenOrientation="portrait"
+            />
     </application>
 
 </manifest>

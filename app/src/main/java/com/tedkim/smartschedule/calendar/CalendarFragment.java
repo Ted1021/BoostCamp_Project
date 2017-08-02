@@ -1,6 +1,7 @@
 package com.tedkim.smartschedule.calendar;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -12,8 +13,6 @@ import android.view.ViewGroup;
 import android.widget.CalendarView;
 
 import com.tedkim.smartschedule.R;
-
-import java.util.Calendar;
 
 /**
  * @file CalendarFragment.java
@@ -27,9 +26,21 @@ import java.util.Calendar;
 public class CalendarFragment extends Fragment {
 
     CalendarView mCalendarView;
-    Calendar mCurrentDate;
-
     RecyclerView mScheduleList;
+
+    OnCalendarSelectedListener mCallback;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mCallback = (OnCalendarSelectedListener) context;
+        } catch (ClassCastException e) {
+
+            e.printStackTrace();
+            Log.e("ERROR_DATE", "Error on attaching listener");
+        }
+    }
 
     public CalendarFragment() {
         // Required empty public constructor
@@ -42,7 +53,7 @@ public class CalendarFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_calendar, container, false);
 
-        Log.d("CHECK_ENTER","------------------- Calendar Fragment");
+        Log.d("CHECK_ENTER","Calendar Fragment -------------------");
 
         initView(view);
 
@@ -56,7 +67,12 @@ public class CalendarFragment extends Fragment {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
 
-                mCurrentDate.getInstance().set(year, month, dayOfMonth);
+                month = month+1;
+
+                String date = year+"-"+month+"-"+dayOfMonth;
+                Log.d("CHECK_DATE","Calendar Fragment >>>>>>>>>>>>>>>>>>>"+date);
+
+                mCallback.onDateSelectedListener(date);
             }
         });
 

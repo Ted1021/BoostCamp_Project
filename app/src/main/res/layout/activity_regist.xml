@@ -94,6 +94,7 @@
                     android:hint="@string/title_hint"
                     android:inputType="textPersonName"
                     android:paddingLeft="@dimen/schedule_editText_padding"
+                    android:paddingRight="@dimen/schedule_editText_padding"
                     android:singleLine="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
@@ -124,6 +125,7 @@
                     android:hint="@string/desc_hint"
                     android:inputType="textPersonName"
                     android:paddingLeft="@dimen/schedule_editText_padding"
+                    android:paddingRight="@dimen/schedule_editText_padding"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

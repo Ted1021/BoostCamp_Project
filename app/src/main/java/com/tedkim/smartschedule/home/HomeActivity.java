@@ -16,10 +16,17 @@ import android.view.View;
 
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.calendar.CalendarFragment;
+import com.tedkim.smartschedule.calendar.OnCalendarSelectedListener;
 import com.tedkim.smartschedule.regist.RegistActivity;
 import com.tedkim.smartschedule.schedule.ScheduleFragment;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import top.wefor.circularanim.CircularAnim;
+
+import static android.support.v4.view.ViewPager.SCROLL_STATE_DRAGGING;
+import static android.support.v4.view.ViewPager.SCROLL_STATE_IDLE;
 
 /**
  * @author 김태원
@@ -28,7 +35,7 @@ import top.wefor.circularanim.CircularAnim;
  * @date 2017.07.31
  */
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements OnCalendarSelectedListener{
 
     private final int MAX_FRAGMENT = 2;
 
@@ -40,13 +47,16 @@ public class HomeActivity extends AppCompatActivity {
     FloatingActionButton mFloatingButton;
 
     int mSelectedColor, mUnSelectedColor;
+    int mCurrentFragment = FRAG_SCHEDULE;
+
+    String mDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        Log.d("CHECK_ENTER", "------------------- Home Activity");
+        Log.d("CHECK_ENTER", "Home Activity -------------------");
 
         initView();
 
@@ -65,20 +75,55 @@ public class HomeActivity extends AppCompatActivity {
 
     private void setAction() {
 
+        // viewPager action
         mViewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager()));
-        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                tab.getIcon().setColorFilter(mSelectedColor, PorterDuff.Mode.SRC_IN);
-                if (tab.getPosition() == FRAG_SCHEDULE) {
-                    Log.d("CHECK_FRAG", "====================== Schedule Fragment from TAB");
-                }else{
-                    Log.d("CHECK_FRAG", "====================== Calendar Fragment from TAB");
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+                if(position == FRAG_CALENDAR){
+                    mCurrentFragment = FRAG_CALENDAR;
+                }
+                else{
+                    mCurrentFragment = FRAG_SCHEDULE;
                 }
             }
 
             @Override
+            public void onPageScrollStateChanged(int state) {
+
+                switch (state) {
+
+                    case SCROLL_STATE_IDLE:
+                        mFloatingButton.show();
+                        break;
+
+                    case SCROLL_STATE_DRAGGING:
+                        mFloatingButton.hide();
+                        break;
+                }
+            }
+        });
+
+        // tabLayout action
+        mTabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+
+                tab.getIcon().setColorFilter(mSelectedColor, PorterDuff.Mode.SRC_IN);
+
+            }
+
+            @Override
             public void onTabUnselected(TabLayout.Tab tab) {
+                mFloatingButton.hide();
                 tab.getIcon().setColorFilter(mUnSelectedColor, PorterDuff.Mode.SRC_IN);
             }
 
@@ -88,9 +133,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
-        mTabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
-
+        // floating button action
         mFloatingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,7 +143,17 @@ public class HomeActivity extends AppCompatActivity {
                         .go(new CircularAnim.OnAnimationEndListener() {
                             @Override
                             public void onAnimationEnd() {
-                                startActivity(new Intent(HomeActivity.this, RegistActivity.class));
+
+                                Intent intent = new Intent(HomeActivity.this, RegistActivity.class);
+
+                                if (mCurrentFragment == FRAG_SCHEDULE) {
+                                    mDate = getTime();
+                                }
+
+                                Log.d("CHECK_DATE","Home Activity >>>>>>>>>>>>>>>"+mDate);
+
+                                intent.putExtra("DATE", mDate);
+                                startActivity(intent);
                             }
                         });
             }
@@ -133,4 +186,19 @@ public class HomeActivity extends AppCompatActivity {
             return MAX_FRAGMENT;
         }
     }
+
+    private String getTime(){
+
+        long now = System.currentTimeMillis();
+        Date date = new Date(now);
+
+        return new SimpleDateFormat("yyyy-MM-dd").format(date);
+    }
+
+    @Override
+    public void onDateSelectedListener(String date) {
+
+        mDate = date;
+    }
+
 }

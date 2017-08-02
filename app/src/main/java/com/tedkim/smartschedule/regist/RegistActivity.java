@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.model.ScheduleData;
@@ -26,15 +27,21 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     // realm database instance
     private Realm mRealm;
 
+    private String mDate;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_regist);
 
-        Log.d("CHECK_ENTER","------------------- Regist Activity");
+        Log.d("CHECK_ENTER","Regist Activity -------------------");
 
         // init Realm database;
         mRealm = Realm.getDefaultInstance();
+
+        // init date
+        String date = getIntent().getStringExtra("DATE");
+        Log.d("CHECK_DATE", "Regist Activity >>>>>>>>>>>>>>>>"+date);
 
         initView();
     }
@@ -71,8 +78,11 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     private void addSchedule(){
 
         if(isEmptyEditors(mTitle) || isEmptyEditors(mDesc) || isEmptyEditors(mLocation) || isEmptyEditors(mStart) || isEmptyEditors(mEnd)){
+
+            Toast.makeText(this, "모든 항목을 채워 주셔야 합니다", Toast.LENGTH_SHORT).show();
             return;
         }
+
         // Async database transaction
         mRealm.executeTransaction(new Realm.Transaction() {
             @Override
