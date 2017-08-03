@@ -13,4 +13,10 @@
     <dimen name="detailActivity_item_margin">8dp</dimen>
     <dimen name="detailActivity_item_margin_large">16dp</dimen>
 
+    <dimen name="calendarScheduleList_item_margin">8dp</dimen>
+    <dimen name="calendarScheduleList_item_margin_small">4dp</dimen>
+    <dimen name="calendarScheduleList_item_margin_large">16dp</dimen>
+    <dimen name="calendarScheduleList_padding">8dp</dimen>
+    <dimen name="calendarScheduleList_padding_large">16dp</dimen>
+
 </resources>

@@ -48,7 +48,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
     public void initView(){
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar_regist);
         setSupportActionBar(mToolbar);
         mToolbar.setContentInsetsAbsolute(0,0);
 

@@ -4,6 +4,7 @@ package com.tedkim.smartschedule.calendar;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,14 +33,17 @@ import sun.bob.mcalendarview.vo.DateData;
 
 public class CalendarFragment extends Fragment {
 
+    // calendar components
     TextView mCalendarTitle;
     ExpCalendarView mCalendarView;
     ImageView mCalendarStyle;
-    RecyclerView mScheduleList;
-
     OnCalendarSelectedListener mCallback;
     String mSelectedDate;
     DateData mCurrentDate;
+
+    // list components
+    RecyclerView mScheduleList;
+    RecyclerView.LayoutManager mLayoutManager;
 
     private boolean isExpanded = true;
 
@@ -69,6 +73,8 @@ public class CalendarFragment extends Fragment {
 
         initView(view);
 
+        setRecyclerView();
+
         setCalendarAction();
 
         return view;
@@ -76,21 +82,33 @@ public class CalendarFragment extends Fragment {
 
     private void initView(View view) {
 
-        mCalendarTitle = (TextView) view.findViewById(R.id.textView_calendarTitle);
+        mCalendarTitle = (TextView) view.findViewById(R.id.textView_monthTitle);
         mCalendarTitle.setText(Calendar.getInstance().get(Calendar.YEAR) + "년 " + (Calendar.getInstance().get(Calendar.MONTH) + 1) + "월");
 
         mCalendarView = (ExpCalendarView) view.findViewById(R.id.calendarView_expCalendar);
         mCalendarStyle = (ImageView) view.findViewById(R.id.button_calendarStyle);
+
+        mScheduleList = (RecyclerView) view.findViewById(R.id.recyclerView_scheduleList);
     }
 
-    private void setCalendarAction(){
+    private void setRecyclerView() {
+
+        CalendarScheduleListAdapter adapter = new CalendarScheduleListAdapter(getContext(), getActivity());
+        mScheduleList.setAdapter(adapter);
+
+        mLayoutManager = new LinearLayoutManager(getContext());
+        mScheduleList.setLayoutManager(mLayoutManager);
+
+    }
+
+    private void setCalendarAction() {
 
         // Expand & Shrink Calendar
         mCalendarStyle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Log.e("CHECK_CALENDAR",">>>>>>>>>>>>>>"+isExpanded);
+                Log.e("CHECK_CALENDAR", ">>>>>>>>>>>>>>" + isExpanded);
 
                 if (isExpanded) {
 
@@ -113,18 +131,17 @@ public class CalendarFragment extends Fragment {
             }
         });
 
-        // Set up listeners.
-        mCalendarView.setOnDateClickListener(new OnExpDateClickListener(){
+        // Set calendar component listeners
+        mCalendarView.setOnDateClickListener(new OnExpDateClickListener() {
 
             @Override
             public void onDateClick(View view, DateData date) {
                 super.onDateClick(view, date);
 
-                mCurrentDate = date;
-                mSelectedDate = String.format("%d-%d-%d",date.getYear() ,date.getMonth(), date.getDay());
+                mSelectedDate = String.format("%d-%d-%d", date.getYear(), date.getMonth(), date.getDay());
 
                 mCallback.onDateSelectedListener(mSelectedDate);
-                Toast.makeText(getContext(),mSelectedDate, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), mSelectedDate, Toast.LENGTH_SHORT).show();
 
             }
 
@@ -139,7 +156,6 @@ public class CalendarFragment extends Fragment {
             public void onMonthScroll(float positionOffset) {
 //                Log.i("listener", "onMonthScroll:" + positionOffset);
             }
-
         });
     }
 }

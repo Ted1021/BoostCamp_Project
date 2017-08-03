@@ -1,5 +1,7 @@
 package com.tedkim.smartschedule.model;
 
+import java.util.Date;
+
 import io.realm.RealmObject;
 
 /**
@@ -15,6 +17,8 @@ public class ScheduleData extends RealmObject {
 
 //    @PrimaryKey
 //    private long _id;
+
+    private Date date;
 
     private String title;
     private String desc;
