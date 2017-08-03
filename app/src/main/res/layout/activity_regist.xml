@@ -221,13 +221,12 @@
                     android:layout_marginTop="8dp" />
             </android.support.constraint.ConstraintLayout>
 
-            <LinearLayout
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp"
-                android:background="@color/colorLightGray"
-                android:orientation="horizontal"></LinearLayout>
+                android:layout_height="1px"
+                android:layout_marginBottom="@dimen/detailActivity_item_margin"
+                android:layout_marginTop="@dimen/detailActivity_item_margin"
+                android:background="#ccc" />
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
@@ -310,13 +309,12 @@
                     app:layout_constraintTop_toTopOf="parent" />
             </android.support.constraint.ConstraintLayout>
 
-            <LinearLayout
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp"
-                android:background="@color/colorLightGray"
-                android:orientation="horizontal"></LinearLayout>
+                android:layout_height="1px"
+                android:layout_marginBottom="@dimen/detailActivity_item_margin"
+                android:layout_marginTop="@dimen/detailActivity_item_margin"
+                android:background="#ccc" />
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"

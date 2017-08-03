@@ -1,24 +1,61 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorCremeWhite"
+    android:orientation="vertical"
+
     tools:context="com.tedkim.smartschedule.calendar.CalendarFragment">
 
-    <CalendarView
-        android:id="@+id/calendarView"
+
+    <TextView
+        android:id="@+id/textView_calendarTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:elevation="0dp" />
+        android:background="@android:color/white"
+        android:gravity="center_horizontal"
+        android:padding="8dp"
+        android:text="2017 년"
+        android:textColor="@color/colorAppTheme"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#ccc" />
+
+    <sun.bob.mcalendarview.views.WeekColumnView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="12dp"
+        android:paddingTop="12dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#ccc" />
+
+    <sun.bob.mcalendarview.views.ExpCalendarView
+        android:id="@+id/calendarView_expCalendar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context=".CalendarFragment" />
+
+    <ImageView
+        android:id="@+id/button_calendarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:src="@mipmap/icon_arrow_up" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView_scheduleList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/calendarView"
+        android:layout_below="@+id/button_calendarStyle"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/scheduleList_margin" />
 
 
-</RelativeLayout>
+</LinearLayout>

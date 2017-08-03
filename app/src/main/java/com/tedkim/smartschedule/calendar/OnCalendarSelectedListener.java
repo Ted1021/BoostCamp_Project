@@ -1,7 +1,10 @@
 package com.tedkim.smartschedule.calendar;
 
 /**
- * Created by tedkim on 2017. 8. 2..
+ * @author 김태원
+ * @file OnCalendarSelectedListener.java
+ * @brief Transfer Selected Date in calendar to HomeActivity
+ * @date 2017.08.02
  */
 
 public interface OnCalendarSelectedListener {

@@ -34,14 +34,14 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_regist);
 
-        Log.d("CHECK_ENTER","Regist Activity -------------------");
+        Log.d("CHECK_ENTER","Register Activity -------------------");
 
         // init Realm database;
         mRealm = Realm.getDefaultInstance();
 
         // init date
         String date = getIntent().getStringExtra("DATE");
-        Log.d("CHECK_DATE", "Regist Activity >>>>>>>>>>>>>>>>"+date);
+        Log.d("CHECK_DATE", "In register >>>>>>>>>>>>>>>>"+date);
 
         initView();
     }

@@ -35,7 +35,7 @@ import static android.support.v4.view.ViewPager.SCROLL_STATE_IDLE;
  * @date 2017.07.31
  */
 
-public class HomeActivity extends AppCompatActivity implements OnCalendarSelectedListener{
+public class HomeActivity extends AppCompatActivity implements OnCalendarSelectedListener {
 
     private final int MAX_FRAGMENT = 2;
 
@@ -75,6 +75,8 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
 
     private void setAction() {
 
+        mDate = getTime();
+
         // viewPager action
         mViewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager()));
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
@@ -87,10 +89,9 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
             @Override
             public void onPageSelected(int position) {
 
-                if(position == FRAG_CALENDAR){
+                if (position == FRAG_CALENDAR) {
                     mCurrentFragment = FRAG_CALENDAR;
-                }
-                else{
+                } else {
                     mCurrentFragment = FRAG_SCHEDULE;
                 }
             }
@@ -150,7 +151,7 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
                                     mDate = getTime();
                                 }
 
-                                Log.d("CHECK_DATE","Home Activity >>>>>>>>>>>>>>>"+mDate);
+                                Log.d("CHECK_DATE", "Before Register >>>>>>>>>>>>>>>" + mDate);
 
                                 intent.putExtra("DATE", mDate);
                                 startActivity(intent);
@@ -177,7 +178,6 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
                 case FRAG_CALENDAR:
                     return new CalendarFragment();
             }
-
             return null;
         }
 
@@ -187,18 +187,20 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
         }
     }
 
-    private String getTime(){
+    private String getTime() {
 
         long now = System.currentTimeMillis();
         Date date = new Date(now);
 
-        return new SimpleDateFormat("yyyy-MM-dd").format(date);
+        return new SimpleDateFormat("yyyy-M-d").format(date);
     }
 
     @Override
     public void onDateSelectedListener(String date) {
 
         mDate = date;
+
+        Log.i("CHECK_DATE", "Date from calendar >>>>>>>>>>>" + mDate);
     }
 
 }
