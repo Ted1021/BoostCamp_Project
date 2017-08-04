@@ -37,14 +37,13 @@ public class CalendarScheduleListAdapter extends RecyclerView.Adapter<CalendarSc
         mContext = context;
         mActivity = activity;
 
-        int i=0;
+        int i = 0;
 
         // TODO - Realm Database 와 연결 하기
-        while(i<10){
+        while (i < 10) {
             mDataset.add(new ScheduleData());
             i++;
         }
-
         mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
     }
@@ -73,7 +72,6 @@ public class CalendarScheduleListAdapter extends RecyclerView.Adapter<CalendarSc
                             });
                 }
             });
-
         }
 
         private void setView(View itemView) {
@@ -82,7 +80,6 @@ public class CalendarScheduleListAdapter extends RecyclerView.Adapter<CalendarSc
             start = (TextView) itemView.findViewById(R.id.textView_calendarStartTime);
             end = (TextView) itemView.findViewById(R.id.textView_calendarEndTime);
             address = (TextView) itemView.findViewById(R.id.textView_calendarAddress);
-
         }
     }
 
@@ -101,7 +98,6 @@ public class CalendarScheduleListAdapter extends RecyclerView.Adapter<CalendarSc
         holder.start.setText("오후 3:00");
         holder.end.setText("오후 4:00");
         holder.address.setText("단국대학교");
-
     }
 
     @Override

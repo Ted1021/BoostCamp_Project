@@ -17,7 +17,7 @@
         android:padding="8dp"
         android:text="2017 년"
         android:textColor="@color/colorAppTheme"
-        android:textSize="30sp"
+        android:textSize="20sp"
         android:textStyle="bold" />
 
     <View
@@ -54,8 +54,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/button_calendarStyle"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/scheduleList_margin" />
+        android:layout_centerHorizontal="true" />
 
 
 </LinearLayout>

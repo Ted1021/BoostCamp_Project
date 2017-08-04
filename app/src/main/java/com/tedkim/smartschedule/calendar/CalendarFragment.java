@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -108,6 +110,7 @@ public class CalendarFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
+                Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.drop_down);
                 Log.e("CHECK_CALENDAR", ">>>>>>>>>>>>>>" + isExpanded);
 
                 if (isExpanded) {
@@ -116,8 +119,10 @@ public class CalendarFragment extends Fragment {
                     CellConfig.ifMonth = false;
 
                     mCalendarStyle.setImageResource(R.mipmap.icon_arrow_down);
+                    mCalendarStyle.startAnimation(animation);
+
                     mCalendarView.shrink();
-                    isExpanded = false;
+                    mCalendarView.startAnimation(animation);
 
                 } else {
 
@@ -125,9 +130,14 @@ public class CalendarFragment extends Fragment {
                     CellConfig.ifMonth = true;
 
                     mCalendarStyle.setImageResource(R.mipmap.icon_arrow_up);
+                    mCalendarStyle.setAnimation(animation);
+
                     mCalendarView.expand();
-                    isExpanded = true;
+                    mCalendarView.startAnimation(animation);
+
                 }
+
+                isExpanded = !isExpanded;
             }
         });
 
