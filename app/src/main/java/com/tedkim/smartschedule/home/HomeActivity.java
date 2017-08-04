@@ -20,7 +20,6 @@ import com.tedkim.smartschedule.calendar.OnCalendarSelectedListener;
 import com.tedkim.smartschedule.regist.RegistActivity;
 import com.tedkim.smartschedule.schedule.ScheduleFragment;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import top.wefor.circularanim.CircularAnim;
@@ -49,7 +48,7 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
     int mSelectedColor, mUnSelectedColor;
     int mCurrentFragment = FRAG_SCHEDULE;
 
-    String mDate;
+    Date mDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,16 +186,16 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
         }
     }
 
-    private String getTime() {
+    private Date getTime() {
 
         long now = System.currentTimeMillis();
         Date date = new Date(now);
 
-        return new SimpleDateFormat("yyyy-M-d").format(date);
+        return date;
     }
 
     @Override
-    public void onDateSelectedListener(String date) {
+    public void onDateSelectedListener(Date date) {
 
         mDate = date;
 

@@ -40,8 +40,8 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         mRealm = Realm.getDefaultInstance();
 
         // init date
-        String date = getIntent().getStringExtra("DATE");
-        Log.d("CHECK_DATE", "In register >>>>>>>>>>>>>>>>"+date);
+//        String date = getIntent().getExtras("DATE");
+//        Log.d("CHECK_DATE", "In register >>>>>>>>>>>>>>>>"+date);
 
         initView();
     }

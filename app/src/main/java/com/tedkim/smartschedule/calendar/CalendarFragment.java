@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.tedkim.smartschedule.R;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import sun.bob.mcalendarview.CellConfig;
@@ -39,7 +40,6 @@ public class CalendarFragment extends Fragment {
     ImageView mCalendarStyle;
     OnCalendarSelectedListener mCallback;
     String mSelectedDate;
-    DateData mCurrentDate;
 
     // list components
     RecyclerView mScheduleList;
@@ -139,8 +139,16 @@ public class CalendarFragment extends Fragment {
                 super.onDateClick(view, date);
 
                 mSelectedDate = String.format("%d-%d-%d", date.getYear(), date.getMonth(), date.getDay());
+                try {
 
-                mCallback.onDateSelectedListener(mSelectedDate);
+                    mCallback.onDateSelectedListener(new SimpleDateFormat("yyyy-M-d").parse(mSelectedDate));
+
+                } catch (Exception e) {
+
+                    e.printStackTrace();
+                    Log.e("PARSE_ERROR", "Before parsing >>>>>>>>>>>>");
+                }
+
                 Toast.makeText(getContext(), mSelectedDate, Toast.LENGTH_SHORT).show();
 
             }

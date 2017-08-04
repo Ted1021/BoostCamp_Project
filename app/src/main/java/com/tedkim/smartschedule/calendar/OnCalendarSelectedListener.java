@@ -1,5 +1,7 @@
 package com.tedkim.smartschedule.calendar;
 
+import java.util.Date;
+
 /**
  * @author 김태원
  * @file OnCalendarSelectedListener.java
@@ -9,5 +11,5 @@ package com.tedkim.smartschedule.calendar;
 
 public interface OnCalendarSelectedListener {
 
-    void onDateSelectedListener(String date);
+    void onDateSelectedListener(Date date);
 }

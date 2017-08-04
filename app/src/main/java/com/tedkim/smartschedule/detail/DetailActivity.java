@@ -39,8 +39,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         Log.d("CHECK_ENTER","------------------- Detail Activity");
 
         initView();
-
-
     }
 
     private void initView(){
