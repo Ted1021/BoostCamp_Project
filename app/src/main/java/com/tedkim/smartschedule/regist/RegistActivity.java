@@ -27,7 +27,24 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     // realm database instance
     private Realm mRealm;
 
+    // date info from Home Activity
     private String mDate;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // init Realm database
+        mRealm = Realm.getDefaultInstance();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        // close Realm database
+        mRealm.close();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,13 +52,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_regist);
 
         Log.d("CHECK_ENTER","Register Activity -------------------");
-
-        // init Realm database;
-        mRealm = Realm.getDefaultInstance();
-
-        // init date
-//        String date = getIntent().getExtras("DATE");
-//        Log.d("CHECK_DATE", "In register >>>>>>>>>>>>>>>>"+date);
+        Log.d("CHECK_DATE", "In register >>>>>>>>>>>>>>>>"+mDate);
 
         initView();
     }
@@ -120,15 +131,11 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         switch(v.getId()){
 
             case R.id.imageButton_back:
-
                 finish();
-
                 break;
 
             case R.id.imageButton_save:
-
                 addSchedule();
-
                 break;
 
             case R.id.imageButton_location:
@@ -141,14 +148,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        mRealm.close();
-    }
-
-    // 빈칸 확인
+    // check valid about editTexts
     private boolean isEmptyEditors(EditText view) {
         if(TextUtils.isEmpty(view.getText().toString())) {
             view.setError("잘좀 써라");
@@ -156,5 +156,17 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
             return true;
         }
         return false;
+    }
+
+    //
+    private int getNextKey(){
+
+        int currentKey = mRealm.where(ScheduleData.class).max("_id").intValue();
+        if(mRealm.where(ScheduleData.class).count() != 0){
+            return currentKey+1;
+        }
+        else{
+            return 0;
+        }
     }
 }
