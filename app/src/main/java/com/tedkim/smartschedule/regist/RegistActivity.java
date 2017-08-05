@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.model.ScheduleData;
@@ -51,6 +50,8 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_regist);
 
+        mDate = getIntent().getStringExtra("DATE");
+
         Log.d("CHECK_ENTER","Register Activity -------------------");
         Log.d("CHECK_DATE", "In register >>>>>>>>>>>>>>>>"+mDate);
 
@@ -86,21 +87,22 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
-    private void addSchedule(){
+    private void insertSchedule(){
 
-        if(isEmptyEditors(mTitle) || isEmptyEditors(mDesc) || isEmptyEditors(mLocation) || isEmptyEditors(mStart) || isEmptyEditors(mEnd)){
-
-            Toast.makeText(this, "모든 항목을 채워 주셔야 합니다", Toast.LENGTH_SHORT).show();
-            return;
-        }
+//        if(isEmptyEditors(mTitle) || isEmptyEditors(mDesc) || isEmptyEditors(mLocation) || isEmptyEditors(mStart) || isEmptyEditors(mEnd)){
+//
+//            Toast.makeText(this, "모든 항목을 채워 주셔야 합니다", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
 
         // Async database transaction
         mRealm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
 
-                ScheduleData newSchedule = mRealm.createObject(ScheduleData.class);
+                ScheduleData newSchedule = mRealm.createObject(ScheduleData.class,getNextKey());
 
+                newSchedule.setDate(mDate);
                 newSchedule.setTitle(mTitle.getText().toString());
                 newSchedule.setDesc(mDesc.getText().toString());
 //                newSchedule.setLocation();
@@ -135,7 +137,8 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                 break;
 
             case R.id.imageButton_save:
-                addSchedule();
+                insertSchedule();
+                finish();
                 break;
 
             case R.id.imageButton_location:
@@ -159,13 +162,15 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     //
-    private int getNextKey(){
-
-        int currentKey = mRealm.where(ScheduleData.class).max("_id").intValue();
-        if(mRealm.where(ScheduleData.class).count() != 0){
-            return currentKey+1;
-        }
-        else{
+    public int getNextKey() {
+        try {
+            Number number = mRealm.where(ScheduleData.class).max("_id");
+            if (number != null) {
+                return number.intValue() + 1;
+            } else {
+                return 0;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
             return 0;
         }
     }

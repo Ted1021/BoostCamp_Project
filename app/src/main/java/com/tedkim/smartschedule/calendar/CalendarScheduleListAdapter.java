@@ -38,15 +38,7 @@ public class CalendarScheduleListAdapter extends RecyclerView.Adapter<CalendarSc
         mActivity = activity;
         mDataset = dataset;
 
-        int i = 0;
-
-        // TODO - Realm Database 와 연결 하기
-        while (i < 10) {
-            mDataset.add(new ScheduleData());
-            i++;
-        }
         mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
     }
 
     public class ScheduleViewHolder extends RecyclerView.ViewHolder {
@@ -57,6 +49,20 @@ public class CalendarScheduleListAdapter extends RecyclerView.Adapter<CalendarSc
             super(itemView);
 
             setView(itemView);
+
+            setAction(itemView);
+        }
+
+        private void setView(View itemView) {
+
+            title = (TextView) itemView.findViewById(R.id.textView_calendarTitle);
+            start = (TextView) itemView.findViewById(R.id.textView_calendarStartTime);
+            end = (TextView) itemView.findViewById(R.id.textView_calendarEndTime);
+            address = (TextView) itemView.findViewById(R.id.textView_calendarAddress);
+        }
+
+        private void setAction(View itemView){
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -74,14 +80,6 @@ public class CalendarScheduleListAdapter extends RecyclerView.Adapter<CalendarSc
                 }
             });
         }
-
-        private void setView(View itemView) {
-
-            title = (TextView) itemView.findViewById(R.id.textView_calendarTitle);
-            start = (TextView) itemView.findViewById(R.id.textView_calendarStartTime);
-            end = (TextView) itemView.findViewById(R.id.textView_calendarEndTime);
-            address = (TextView) itemView.findViewById(R.id.textView_calendarAddress);
-        }
     }
 
     @Override
@@ -95,10 +93,12 @@ public class CalendarScheduleListAdapter extends RecyclerView.Adapter<CalendarSc
     @Override
     public void onBindViewHolder(ScheduleViewHolder holder, int position) {
 
-        holder.title.setText("이건 테스트 입니다");
-        holder.start.setText("오후 3:00");
-        holder.end.setText("오후 4:00");
-        holder.address.setText("단국대학교");
+        ScheduleData data = mDataset.get(position);
+
+        holder.title.setText(data.getTitle());
+        holder.start.setText(data.getStartTime());
+        holder.end.setText(data.getEndTime());
+        holder.address.setText(data.getAddress());
     }
 
     @Override

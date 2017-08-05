@@ -59,6 +59,8 @@
                         android:id="@+id/textView15"
                         android:layout_width="10dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/calendarScheduleList_item_margin"
+                        android:layout_marginRight="@dimen/calendarScheduleList_item_margin"
                         android:text="~"
                         android:textColor="@color/colorLightGray" />
 

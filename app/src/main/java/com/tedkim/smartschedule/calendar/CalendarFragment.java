@@ -25,6 +25,7 @@ import java.util.Calendar;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import sun.bob.mcalendarview.CellConfig;
+import sun.bob.mcalendarview.MarkStyle;
 import sun.bob.mcalendarview.listeners.OnExpDateClickListener;
 import sun.bob.mcalendarview.listeners.OnMonthScrollListener;
 import sun.bob.mcalendarview.views.ExpCalendarView;
@@ -47,6 +48,8 @@ public class CalendarFragment extends Fragment {
     String mSelectedDate;
     Animation mAnimation;
     boolean isExpanded = true;
+    int mCurrentYear = Calendar.getInstance().get(Calendar.YEAR);
+    int mCurrentMonth = Calendar.getInstance().get(Calendar.MONTH)+1;
 
     // list components
     RecyclerView mScheduleList;
@@ -106,12 +109,14 @@ public class CalendarFragment extends Fragment {
         mAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.drop_down);
 
         mCalendarTitle = (TextView) view.findViewById(R.id.textView_monthTitle);
-        mCalendarTitle.setText(Calendar.getInstance().get(Calendar.YEAR) + "년 " + (Calendar.getInstance().get(Calendar.MONTH) + 1) + "월");
+        mCalendarTitle.setText(String.format("%d년 %d월", mCurrentYear, mCurrentMonth));
 
         mCalendarView = (ExpCalendarView) view.findViewById(R.id.calendarView_expCalendar);
         mCalendarStyle = (ImageView) view.findViewById(R.id.button_calendarStyle);
 
         mScheduleList = (RecyclerView) view.findViewById(R.id.recyclerView_scheduleList);
+
+        checkExistSchedules(mCurrentYear, mCurrentMonth);
     }
 
     private void setRecyclerView() {
@@ -121,7 +126,6 @@ public class CalendarFragment extends Fragment {
 
         mLayoutManager = new LinearLayoutManager(getContext());
         mScheduleList.setLayoutManager(mLayoutManager);
-
     }
 
     private void setCalendarAction() {
@@ -130,7 +134,9 @@ public class CalendarFragment extends Fragment {
         mCalendarView.setOnMonthScrollListener(new OnMonthScrollListener() {
             @Override
             public void onMonthChange(int year, int month) {
+
                 mCalendarTitle.setText(String.format("%d년 %d월", year, month));
+                checkExistSchedules(year, month);
             }
 
             @Override
@@ -203,5 +209,22 @@ public class CalendarFragment extends Fragment {
         mDataset.clear();
         mDataset.addAll(mRealm.copyFromRealm(result));
         mAdapter.notifyDataSetChanged();
+    }
+
+    // 등록 된 모든 스케줄들에 대해 Dot 마커를 찍는다
+    private void checkExistSchedules(int year, int month){
+
+        RealmResults<ScheduleData> result = mRealm.where(ScheduleData.class).contains("date", year+"-"+month).findAll();
+
+        for(ScheduleData data : result){
+
+            int y = Integer.parseInt(data.getDate().split("-")[0]);
+            int m = Integer.parseInt(data.getDate().split("-")[1]);
+            int d = Integer.parseInt(data.getDate().split("-")[2]);
+
+            mCalendarView.markDate(new DateData(y,m,d).setMarkStyle(new MarkStyle(MarkStyle.DOT, R.color.colorAppTheme)));
+
+        }
+
     }
 }
