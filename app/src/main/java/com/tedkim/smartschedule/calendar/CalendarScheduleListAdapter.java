@@ -32,10 +32,11 @@ public class CalendarScheduleListAdapter extends RecyclerView.Adapter<CalendarSc
     ArrayList<ScheduleData> mDataset = new ArrayList<>();
     LayoutInflater mLayoutInflater;
 
-    public CalendarScheduleListAdapter(Context context, Activity activity) {
+    public CalendarScheduleListAdapter(Context context, Activity activity, ArrayList<ScheduleData> dataset) {
 
         mContext = context;
         mActivity = activity;
+        mDataset = dataset;
 
         int i = 0;
 
