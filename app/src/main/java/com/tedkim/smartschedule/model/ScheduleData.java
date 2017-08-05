@@ -1,8 +1,7 @@
 package com.tedkim.smartschedule.model;
 
-import java.util.Date;
-
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * @file ScheduleData.java
@@ -15,11 +14,10 @@ import io.realm.RealmObject;
 
 public class ScheduleData extends RealmObject {
 
-//    @PrimaryKey
-//    private long _id;
+    @PrimaryKey
+    private int _id;
 
-    private Date date;
-
+    private String date;
     private String title;
     private String desc;
 
@@ -30,16 +28,25 @@ public class ScheduleData extends RealmObject {
     private boolean isAlldaySchedule;
     private String startTime, endTime;
 
-//    private List<Integer> departureAlarmList;
+    // TODO - 다중 알람기능 추가를 위한 data type 구상필요
+
     private boolean isCallAlarm;
 
-//    public long get_id() {
-//        return _id;
-//    }
-//
-//    public void set_id(long _id) {
-//        this._id = _id;
-//    }
+    public int get_id() {
+        return _id;
+    }
+
+    public void set_id(int _id) {
+        this._id = _id;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
 
     public String getTitle() {
         return title;
@@ -96,14 +103,6 @@ public class ScheduleData extends RealmObject {
     public void setEndTime(String endTime) {
         this.endTime = endTime;
     }
-
-//    public List<Integer> getDepartureAlarmList() {
-//        return departureAlarmList;
-//    }
-//
-//    public void setDepartureAlarmList(List<Integer> departureAlarmList) {
-//        this.departureAlarmList = departureAlarmList;
-//    }
 
     public boolean isCallAlarm() {
         return isCallAlarm;

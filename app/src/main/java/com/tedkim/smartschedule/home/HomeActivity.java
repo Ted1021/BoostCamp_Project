@@ -20,6 +20,7 @@ import com.tedkim.smartschedule.calendar.OnCalendarSelectedListener;
 import com.tedkim.smartschedule.regist.RegistActivity;
 import com.tedkim.smartschedule.schedule.ScheduleFragment;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import top.wefor.circularanim.CircularAnim;
@@ -48,7 +49,7 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
     int mSelectedColor, mUnSelectedColor;
     int mCurrentFragment = FRAG_SCHEDULE;
 
-    Date mDate;
+    String mDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,11 +75,11 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
 
     private void setAction() {
 
-        mDate = getTime();
+        // init current time
+        getTime();
 
-        // viewPager action
+        // viewPager actions
         mViewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager()));
-        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -111,8 +112,7 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
             }
         });
 
-        // tabLayout action
-        mTabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+        // tabLayout actions
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -147,7 +147,7 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
                                 Intent intent = new Intent(HomeActivity.this, RegistActivity.class);
 
                                 if (mCurrentFragment == FRAG_SCHEDULE) {
-                                    mDate = getTime();
+                                    getTime();
                                 }
 
                                 Log.d("CHECK_DATE", "Before Register >>>>>>>>>>>>>>>" + mDate);
@@ -158,8 +158,13 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
                         });
             }
         });
+
+        // Enable interaction between ViewPager and TabLayout
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
+        mTabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
     }
 
+    // Fragment Adapter for ViewPager
     private class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
         public ViewPagerAdapter(FragmentManager fm) {
@@ -186,19 +191,23 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
         }
     }
 
-    private Date getTime() {
+    // Get current time
+    private void getTime() {
 
+        // get current day to Date Type
         long now = System.currentTimeMillis();
         Date date = new Date(now);
 
-        return date;
+        // convert current day to String Type using SimpleDateFormat
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d");
+        mDate = format.format(date);
     }
 
+    // Add Listener for choosing date from Calendar Fragment
     @Override
-    public void onDateSelectedListener(Date date) {
+    public void onDateSelectedListener(String date) {
 
         mDate = date;
-
         Log.i("CHECK_DATE", "Date from calendar >>>>>>>>>>>" + mDate);
     }
 
