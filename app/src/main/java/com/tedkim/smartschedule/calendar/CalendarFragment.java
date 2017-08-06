@@ -2,6 +2,7 @@ package com.tedkim.smartschedule.calendar;
 
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -61,6 +62,8 @@ public class CalendarFragment extends Fragment {
 
     // Schedule List Dataset
     ArrayList<ScheduleData> mDataset = new ArrayList<>();
+
+    Paint p = new Paint();
 
     public CalendarFragment() {
 
@@ -126,6 +129,7 @@ public class CalendarFragment extends Fragment {
 
         mLayoutManager = new LinearLayoutManager(getContext());
         mScheduleList.setLayoutManager(mLayoutManager);
+        mAdapter.notifyDataSetChanged();
     }
 
     private void setCalendarAction() {
@@ -225,6 +229,5 @@ public class CalendarFragment extends Fragment {
             mCalendarView.markDate(new DateData(y,m,d).setMarkStyle(new MarkStyle(MarkStyle.DOT, R.color.colorAppTheme)));
 
         }
-
     }
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.tedkim.smartschedule">
+    package="com.tedkim.smartschedule"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-sdk
         android:maxSdkVersion="25"
@@ -22,7 +23,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:name=".util.RealmDatabaseInit">
+        android:name=".util.RealmDatabaseInit"
+        tools:replace="android:icon">
 
         <activity android:name=".splash.SplashActivity"
             android:screenOrientation="portrait">
@@ -39,9 +41,6 @@
         <activity android:name=".regist.RegistActivity"
             android:screenOrientation="portrait"/>
 
-        <activity android:name=".detail.DetailActivity"
-            android:screenOrientation="portrait"
-            />
     </application>
 
 </manifest>

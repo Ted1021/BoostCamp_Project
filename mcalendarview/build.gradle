@@ -96,6 +96,7 @@ bintray {
         publish = true
     }
 }
+
 javadoc {
     options{
         encoding "UTF-8"
@@ -116,3 +117,4 @@ task exportJar(type: Copy) {
 }
 
 exportJar.dependsOn(deleteOldJar, build)
+

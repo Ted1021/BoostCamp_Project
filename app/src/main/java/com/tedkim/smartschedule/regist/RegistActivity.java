@@ -20,7 +20,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     // ui components
     private Toolbar mToolbar;
     private ImageButton mBack, mSave, mSearchLocation, mSearchContact;
-    private EditText mTitle, mDesc, mLocation, mStart, mEnd;
+    private EditText mTitle, mDesc, mAddress, mStart, mEnd;
     private Switch mAllDay, mCallAlarm;
 
     // realm database instance
@@ -78,7 +78,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
         mTitle = (EditText) findViewById(R.id.editText_title);
         mDesc = (EditText) findViewById(R.id.editText_desc);
-        mLocation = (EditText) findViewById(R.id.editText_location);
+        mAddress = (EditText) findViewById(R.id.editText_address);
         mStart = (EditText) findViewById(R.id.editText_start);
         mEnd = (EditText) findViewById(R.id.editText_end);
 
@@ -110,6 +110,8 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
                 newSchedule.setStartTime(mStart.getText().toString());
                 newSchedule.setEndTime(mEnd.getText().toString());
+
+                newSchedule.setAddress(mAddress.getText().toString());
 
                 if (mAllDay.isActivated()) {
                     newSchedule.setAlldaySchedule(true);

@@ -36,8 +36,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_alignParentBottom="false"
-                        android:layout_alignParentTop="false"
+                        android:layout_alignParentTop="true"
                         android:layout_marginLeft="@dimen/activityTitle_margin"
+                        android:layout_marginTop="4dp"
                         android:layout_toRightOf="@+id/imageButton_back"
                         android:text="@string/registActivity_title"
                         android:textAppearance="@style/TextAppearance.AppCompat"
@@ -147,7 +148,7 @@
                 android:layout_marginBottom="8dp">
 
                 <EditText
-                    android:id="@+id/editText_location"
+                    android:id="@+id/editText_address"
                     android:layout_width="180dp"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="7dp"
