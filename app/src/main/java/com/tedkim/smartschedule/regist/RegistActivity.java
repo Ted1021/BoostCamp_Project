@@ -6,9 +6,10 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Switch;
+import android.widget.TextView;
 
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.model.ScheduleData;
@@ -18,10 +19,11 @@ import io.realm.Realm;
 public class RegistActivity extends AppCompatActivity implements View.OnClickListener {
 
     // ui components
-    private Toolbar mToolbar;
-    private ImageButton mBack, mSave, mSearchLocation, mSearchContact;
-    private EditText mTitle, mDesc, mAddress, mStart, mEnd;
-    private Switch mAllDay, mCallAlarm;
+    Toolbar mToolbar;
+    ImageButton mBack, mSave;
+    EditText mTitle, mDesc, mAddress, mContacts;
+    TextView mCalendarDate, mStart, mEnd, mNotification;
+    CheckBox mAllDay, mFakeCall;
 
     // realm database instance
     private Realm mRealm;
@@ -70,21 +72,59 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         mSave = (ImageButton) findViewById(R.id.imageButton_save);
         mSave.setOnClickListener(this);
 
-        mSearchLocation = (ImageButton) findViewById(R.id.imageButton_location);
-        mSearchLocation.setOnClickListener(this);
-
-        mSearchContact = (ImageButton) findViewById(R.id.imageButton_contact);
-        mSearchContact.setOnClickListener(this);
-
         mTitle = (EditText) findViewById(R.id.editText_title);
         mDesc = (EditText) findViewById(R.id.editText_desc);
+
+        mCalendarDate = (TextView) findViewById(R.id.textView_date);
+        mCalendarDate.setText(mDate);
+        mCalendarDate.setOnClickListener(this);
+
+        mStart = (TextView) findViewById(R.id.textView_start);
+        mStart.setOnClickListener(this);
+
+        mEnd = (TextView) findViewById(R.id.textView_end);
+        mEnd.setOnClickListener(this);
+
         mAddress = (EditText) findViewById(R.id.editText_address);
-        mStart = (EditText) findViewById(R.id.editText_start);
-        mEnd = (EditText) findViewById(R.id.editText_end);
+        mContacts = (EditText) findViewById(R.id.editText_contacts);
 
-        mAllDay = (Switch) findViewById(R.id.switch_allDay);
-        mCallAlarm = (Switch) findViewById(R.id.switch_callAlarm);
+        mNotification = (TextView) findViewById(R.id.textView_notification);
+        mNotification.setOnClickListener(this);
 
+        mAllDay = (CheckBox) findViewById(R.id.checkBox_allDay);
+        mFakeCall = (CheckBox) findViewById(R.id.checkBox_fakeCall);
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        switch(v.getId()){
+
+            case R.id.imageButton_back:
+                finish();
+                break;
+
+            case R.id.imageButton_save:
+                insertSchedule();
+                finish();
+                break;
+
+            case R.id.textView_date:
+
+                break;
+
+            case R.id.textView_start:
+
+                break;
+
+            case R.id.textView_end:
+
+                break;
+
+            case R.id.textView_notification:
+
+                break;
+        }
     }
 
     private void insertSchedule(){
@@ -119,39 +159,15 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                     newSchedule.setAlldaySchedule(false);
                 }
 
-                if (mCallAlarm.isActivated()) {
+                if (mFakeCall.isActivated()) {
                     newSchedule.setCallAlarm(true);
                 } else {
                     newSchedule.setCallAlarm(false);
                 }
             }
-            // transaction onSuccess method
         });
     }
 
-    @Override
-    public void onClick(View v) {
-
-        switch(v.getId()){
-
-            case R.id.imageButton_back:
-                finish();
-                break;
-
-            case R.id.imageButton_save:
-                insertSchedule();
-                finish();
-                break;
-
-            case R.id.imageButton_location:
-
-                break;
-
-            case R.id.imageButton_contact:
-
-                break;
-        }
-    }
 
     // check valid about editTexts
     private boolean isEmptyEditors(EditText view) {
