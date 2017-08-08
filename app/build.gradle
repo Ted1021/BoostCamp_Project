@@ -42,7 +42,6 @@ dependencies {
     compile 'com.github.XunMengWinter:CircularAnim:0.3.4'
     compile 'com.google.android.gms:play-services-maps:10.0.1'
     compile 'com.google.android.gms:play-services-location:10.0.1'
-    compile 'com.daimajia.swipelayout:library:1.2.0@aar'
     compile 'com.ms-square:etsyblur:0.2.1'
     testCompile 'junit:junit:4.12'
-}
+    compile 'io.realm:android-adapters:2.0.0'}

@@ -10,15 +10,14 @@
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="60dp"
         app:cardCornerRadius="5dp"
-        app:cardElevation="3dp">
+        app:cardElevation="2dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="32dp"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:paddingTop="32dp">
@@ -32,7 +31,7 @@
                 android:layout_weight="1"
                 android:text="Event name"
                 android:textColor="@color/colorLightGray"
-                android:textSize="12sp" />
+                android:textSize="@dimen/detailFragment_textSize_small" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -53,6 +52,7 @@
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:text="Title"
+                    android:textSize="@dimen/detailFragment_textSize"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -72,7 +72,7 @@
                 android:layout_weight="1"
                 android:text="Date"
                 android:textColor="@color/colorLightGray"
-                android:textSize="12sp" />
+                android:textSize="@dimen/detailFragment_textSize_small" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -93,6 +93,7 @@
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:text="Date"
+                    android:textSize="@dimen/detailFragment_textSize"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -118,7 +119,7 @@
                     android:layout_weight="1"
                     android:text="Start"
                     android:textColor="@color/colorLightGray"
-                    android:textSize="12sp" />
+                    android:textSize="@dimen/detailFragment_textSize_small" />
 
                 <TextView
                     android:id="@+id/textView10"
@@ -149,6 +150,7 @@
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:text="Start Time"
+                    android:textSize="@dimen/detailFragment_textSize"
                     android:textStyle="bold" />
 
                 <TextView
@@ -158,6 +160,7 @@
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:text="End Time"
+                    android:textSize="@dimen/detailFragment_textSize"
                     android:textStyle="bold" />
 
             </LinearLayout>
@@ -178,7 +181,7 @@
                 android:layout_weight="1"
                 android:text="Address"
                 android:textColor="@color/colorLightGray"
-                android:textSize="12sp" />
+                android:textSize="@dimen/detailFragment_textSize_small" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -199,8 +202,44 @@
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:text="Address"
+                    android:textSize="@dimen/detailFragment_textSize"
                     android:textStyle="bold" />
             </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="32dp"
+                android:layout_weight="1">
+
+                <Button
+                    android:id="@+id/button_correct"
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginEnd="13dp"
+                    android:layout_toStartOf="@+id/button_delete"
+                    android:background="@android:color/transparent"
+                    android:drawableLeft="@drawable/ic_action_correct_navi"
+                    android:gravity="left|center_vertical"
+                    android:text="수정"
+                    android:textColor="@color/colorAppTheme" />
+
+                <Button
+                    android:id="@+id/button_delete"
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="false"
+                    android:layout_alignParentLeft="false"
+                    android:layout_alignParentRight="true"
+                    android:layout_gravity="right"
+                    android:background="@android:color/transparent"
+                    android:drawableLeft="@drawable/ic_action_delete_red"
+                    android:gravity="left|center_vertical"
+                    android:text="삭제"
+                    android:textColor="#B40010" />
+            </RelativeLayout>
 
         </LinearLayout>
     </android.support.v7.widget.CardView>

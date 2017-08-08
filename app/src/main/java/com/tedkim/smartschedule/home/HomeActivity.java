@@ -42,6 +42,8 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
     private final int FRAG_SCHEDULE = 0;
     private final int FRAG_CALENDAR = 1;
 
+    public static final int ACTION_CREATE = -1;
+
     TabLayout mTabLayout;
     ViewPager mViewPager;
     FloatingActionButton mFloatingButton;
@@ -116,9 +118,7 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-
                 tab.getIcon().setColorFilter(mSelectedColor, PorterDuff.Mode.SRC_IN);
-
             }
 
             @Override
@@ -153,7 +153,8 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
                                 Log.d("CHECK_DATE", "Before Register >>>>>>>>>>>>>>>" + mDate);
 
                                 intent.putExtra("DATE", mDate);
-                                startActivity(intent);
+                                intent.putExtra("POSITION", ACTION_CREATE);
+                                startActivityForResult(intent, 101);
                             }
                         });
             }
@@ -211,4 +212,13 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
         Log.i("CHECK_DATE", "Date from calendar >>>>>>>>>>>" + mDate);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == 101){
+
+
+        }
+    }
 }

@@ -56,7 +56,7 @@ public class DefaultCellView extends BaseCellView {
 
     public void setDateToday(){
         setBackgroundDrawable(MarkStyleExp.today);
-        textView.setTextColor(Color.rgb(105, 75, 125));
+        textView.setTextColor(Color.rgb(6, 153, 204));
     }
 
     public void setDateNormal() {

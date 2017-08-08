@@ -16,7 +16,8 @@ import sun.bob.mcalendarview.utils.ExpCalendarUtil;
 public class WeekColumnView extends LinearLayout {
 
     private int backgroundColor = Color.rgb(105, 75, 125);
-    private int startendTextColor = Color.rgb(188, 150, 211);
+    private int startTextColor = Color.rgb(188, 150, 211);
+    private int endTextColor = Color.rgb(188, 150, 211);
     private int midTextColor = Color.WHITE;
 
     public WeekColumnView(Context context) {
@@ -37,8 +38,9 @@ public class WeekColumnView extends LinearLayout {
 
     private void initParams() {
         backgroundColor = Color.WHITE;
-        startendTextColor = Color.LTGRAY;
-        midTextColor = Color.LTGRAY;
+        startTextColor = Color.RED;
+        endTextColor = Color.BLUE;
+        midTextColor = Color.BLACK;
     }
 
     private void initLayout() {
@@ -54,20 +56,21 @@ public class WeekColumnView extends LinearLayout {
 
         textView[0] = new TextView(getContext());
         textView[0].setText(ExpCalendarUtil.number2Week(7));
-        textView[0].setTextColor(startendTextColor);
+        textView[0].setTextColor(startTextColor);
         textView[0].setGravity(Gravity.CENTER);
         this.addView(textView[0], lp);
 
         for (int i = 1; i < 6; i++) {
             textView[i] = new TextView(getContext());
             textView[i].setGravity(Gravity.CENTER);
+
             textConfig(textView[i], ExpCalendarUtil.number2Week(i), midTextColor);
             this.addView(textView[i], lp);
         }
 
         textView[6] = new TextView(getContext());
         textView[6].setText(ExpCalendarUtil.number2Week(6));
-        textView[6].setTextColor(startendTextColor);
+        textView[6].setTextColor(endTextColor);
         textView[6].setGravity(Gravity.CENTER);
         this.addView(textView[6], lp);
     }

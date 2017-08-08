@@ -11,11 +11,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorAppTheme"
-        android:fitsSystemWindows="false">
+        android:fitsSystemWindows="false"
+        app:elevation="8dp">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:elevation="8dp"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
             app:toolbarId="@+id/toolbar_regist">
@@ -24,11 +26,13 @@
                 android:id="@+id/toolbar_regist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorAppTheme">
+                android:background="@color/colorAppTheme"
+                android:elevation="8dp">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:elevation="8dp"
                     tools:context="com.tedkim.smartschedule.regist.RegistActivity">
 
                     <TextView

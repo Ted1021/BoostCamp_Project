@@ -17,21 +17,21 @@ public class ScheduleData extends RealmObject {
     @PrimaryKey
     private int _id;
 
-    private String date;
     private String title;
     private String desc;
+
+    private String date;
+    private String startTime, endTime;
 
     //TODO - googleMap 의 전용 객체이므로 android 내장 객체를 이용해 주는 것이 좋아보임, Location 객체 학습해 볼 것.
     private String address;
 
     //    private ContactsContract.Contacts contacts;
 
-    private boolean isAlldaySchedule;
-    private String startTime, endTime;
+    private boolean alldaySchedule;
+    private boolean fakeCall;
 
     // TODO - 다중 알람기능 추가를 위한 data type 구상필요
-
-    private boolean isCallAlarm;
 
     public int get_id() {
         return _id;
@@ -81,14 +81,6 @@ public class ScheduleData extends RealmObject {
 //        this.contacts = contacts;
 //    }
 
-    public boolean isAlldaySchedule() {
-        return isAlldaySchedule;
-    }
-
-    public void setAlldaySchedule(boolean alldaySchedule) {
-        isAlldaySchedule = alldaySchedule;
-    }
-
     public String getStartTime() {
         return startTime;
     }
@@ -105,11 +97,19 @@ public class ScheduleData extends RealmObject {
         this.endTime = endTime;
     }
 
-    public boolean isCallAlarm() {
-        return isCallAlarm;
+    public boolean isAlldaySchedule() {
+        return alldaySchedule;
     }
 
-    public void setCallAlarm(boolean callAlarm) {
-        isCallAlarm = callAlarm;
+    public void setAlldaySchedule(boolean alldaySchedule) {
+        this.alldaySchedule = alldaySchedule;
+    }
+
+    public boolean isFakeCall() {
+        return fakeCall;
+    }
+
+    public void setFakeCall(boolean fakeCall) {
+        this.fakeCall = fakeCall;
     }
 }

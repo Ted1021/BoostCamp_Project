@@ -1,10 +1,7 @@
 package sun.bob.mcalendarview.views;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.util.AttributeSet;
@@ -18,7 +15,6 @@ import android.widget.TextView;
 
 import sun.bob.mcalendarview.CellConfig;
 import sun.bob.mcalendarview.MarkStyle;
-import sun.bob.mcalendarview.vo.DateData;
 import sun.bob.mcalendarview.vo.DayData;
 
 /**
@@ -71,7 +67,7 @@ public class DefaultMarkView extends BaseMarkView {
             case MarkStyle.DOT:
                 this.setLayoutParams(matchParentParams);
                 this.setOrientation(VERTICAL);
-                textView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, (float) 2.0));
+                textView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, (float) 1.0));
 
                 this.addView(new PlaceHolderVertical(getContext()));
                 this.addView(textView);
@@ -149,7 +145,7 @@ public class DefaultMarkView extends BaseMarkView {
             super(context);
             this.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, (float) 1.0));
             View dotView = new View(getContext());
-            LayoutParams lp = new RelativeLayout.LayoutParams(10, 10);
+            LayoutParams lp = new RelativeLayout.LayoutParams(20, 20);
             lp.addRule(CENTER_IN_PARENT,TRUE);
             dotView.setLayoutParams(lp);
             ShapeDrawable dot = new ShapeDrawable(new OvalShape());

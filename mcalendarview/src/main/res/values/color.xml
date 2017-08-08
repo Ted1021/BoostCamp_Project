@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorActivation">#0699cc</color>
-    <color name="colorLightGray">#bababa</color>
+    <color name="colorLightGray">#d3d3d3</color>
     <color name="colorAppTheme">#0699cc</color>
     <color name="colorCremeWhite">#f6f6f5</color>
     <color name="colorAlert">#CB1010</color>

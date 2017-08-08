@@ -17,13 +17,13 @@
         android:padding="8dp"
         android:text="2017 년"
         android:textColor="@color/colorAppTheme"
-        android:textSize="20sp"
+        android:textSize="30sp"
         android:textStyle="bold" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="#ccc" />
+    <!--<View-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="1px"-->
+        <!--android:background="#ccc" />-->
 
     <sun.bob.mcalendarview.views.WeekColumnView
         android:layout_width="match_parent"
@@ -34,6 +34,8 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:background="#ccc" />
 
     <sun.bob.mcalendarview.views.ExpCalendarView

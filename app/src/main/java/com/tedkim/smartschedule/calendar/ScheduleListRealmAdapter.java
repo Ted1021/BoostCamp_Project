@@ -2,6 +2,8 @@ package com.tedkim.smartschedule.calendar;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -14,46 +16,48 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.daimajia.swipe.SwipeLayout;
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.detail.DetailFragment;
 import com.tedkim.smartschedule.model.ScheduleData;
 
-import java.util.ArrayList;
+import io.realm.OrderedRealmCollection;
+import io.realm.RealmRecyclerViewAdapter;
+import io.realm.RealmResults;
 
 /**
  * @author 김태원
- * @file CalendarScheduleListAdapter.java
- * @brief Calendar RecyclerView Adapter
- * @date 2017.08.03
+ * @file ScheduleListRealmAdapter.java
+ * @brief RecyclerView Adapter for realm database
+ * @date 2017.08.08
  */
 
-public class CalendarScheduleListAdapter extends RecyclerView.Adapter<CalendarScheduleListAdapter.ScheduleViewHolder> {
+public class ScheduleListRealmAdapter extends RealmRecyclerViewAdapter<ScheduleData, ScheduleListRealmAdapter.ViewHolder>
+        implements DialogInterface.OnDismissListener{
 
     Context mContext;
     Activity mActivity;
+    LayoutInflater mInflater;
 
-    ArrayList<ScheduleData> mDataset = new ArrayList<>();
-    LayoutInflater mLayoutInflater;
+    RealmResults<ScheduleData> mDataset;
 
-    public CalendarScheduleListAdapter(Context context, Activity activity, ArrayList<ScheduleData> dataset) {
+    public ScheduleListRealmAdapter(@Nullable OrderedRealmCollection<ScheduleData> data,
+                                    boolean autoUpdate, Context context, Activity activity) {
+        super(data, autoUpdate);
 
         mContext = context;
         mActivity = activity;
-        mDataset = dataset;
 
-        mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
     }
 
-    public class ScheduleViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder{
 
         TextView title, start, end, address;
         CardView scheduleItem;
-
-        SwipeLayout item;
         LinearLayout itemLayout;
 
-        public ScheduleViewHolder(View itemView) {
+        public ViewHolder(View itemView) {
             super(itemView);
 
             title = (TextView) itemView.findViewById(R.id.textView_calendarTitle);
@@ -62,40 +66,39 @@ public class CalendarScheduleListAdapter extends RecyclerView.Adapter<CalendarSc
             address = (TextView) itemView.findViewById(R.id.textView_calendarAddress);
 
             scheduleItem = (CardView) itemView.findViewById(R.id.cardView_scheduleItem);
-
-            // TODO - swipe layout test
-            item = (SwipeLayout) itemView.findViewById(R.id.swipeLayout_item);
-            item.setShowMode(SwipeLayout.ShowMode.PullOut);
-
             itemLayout = (LinearLayout) itemView.findViewById(R.id.layout_scheduleItem);
         }
     }
 
     @Override
-    public ScheduleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View view = mLayoutInflater.inflate(R.layout.layout_calendar_schedule_item, parent, false);
+        View itemView = mInflater.inflate(R.layout.layout_calendar_schedule_item, parent, false);
 
-        return new ScheduleViewHolder(view);
+        return new ViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(ScheduleViewHolder holder, final int position) {
+    public void onBindViewHolder(ViewHolder holder, int position) {
 
-        final ScheduleData data = mDataset.get(position);
+        ScheduleData data = getItem(position);
 
         bindData(holder, data);
-
         setItemAction(holder, data);
 
     }
 
     @Override
-    public int getItemCount() {
-        return mDataset.size();
+    public long getItemId(int index) {
+        return super.getItemId(index);
     }
 
-    private void bindData(ScheduleViewHolder holder, ScheduleData data){
+    @Override
+    public int getItemCount() {
+        return super.getItemCount();
+    }
+
+    private void bindData(ViewHolder holder, ScheduleData data){
 
         holder.title.setText(data.getTitle());
         holder.start.setText(data.getStartTime());
@@ -103,7 +106,7 @@ public class CalendarScheduleListAdapter extends RecyclerView.Adapter<CalendarSc
         holder.address.setText(data.getAddress());
     }
 
-    private void setItemAction(ScheduleViewHolder holder, final ScheduleData data){
+    private void setItemAction(ViewHolder holder, final ScheduleData data){
 
         // go to Detail Activity
         holder.itemLayout.setOnClickListener(new View.OnClickListener() {
@@ -111,40 +114,6 @@ public class CalendarScheduleListAdapter extends RecyclerView.Adapter<CalendarSc
             public void onClick(View v) {
 
                 setFragmentDialog(data.get_id());
-            }
-        });
-
-        // TODO - Swipe layout action here
-        // swipe layout for item
-        holder.item.addSwipeListener(new SwipeLayout.SwipeListener() {
-            @Override
-            public void onStartOpen(SwipeLayout layout) {
-
-            }
-
-            @Override
-            public void onOpen(SwipeLayout layout) {
-
-            }
-
-            @Override
-            public void onStartClose(SwipeLayout layout) {
-
-            }
-
-            @Override
-            public void onClose(SwipeLayout layout) {
-
-            }
-
-            @Override
-            public void onUpdate(SwipeLayout layout, int leftOffset, int topOffset) {
-
-            }
-
-            @Override
-            public void onHandRelease(SwipeLayout layout, float xvel, float yvel) {
-
             }
         });
     }
@@ -161,5 +130,10 @@ public class CalendarScheduleListAdapter extends RecyclerView.Adapter<CalendarSc
 
         DetailFragment dialog = DetailFragment.newInstance(position);
         dialog.show(fragmentManager, "dialog");
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        notifyDataSetChanged();
     }
 }

@@ -21,6 +21,8 @@ import com.tedkim.smartschedule.model.ScheduleData;
 
 import io.realm.Realm;
 
+import static com.tedkim.smartschedule.home.HomeActivity.ACTION_CREATE;
+
 public class RegistActivity extends AppCompatActivity implements View.OnClickListener {
 
     // ui components
@@ -36,6 +38,8 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     // date info from Home Activity
     String mDateInfo, mStartInfo, mEndInfo;
 
+    int mPosition;
+
     private static final int SET_START = 0;
     private static final int SET_END = 1;
 
@@ -45,8 +49,8 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     protected void onStart() {
         super.onStart();
 
-        // init Realm database
-        mRealm = Realm.getDefaultInstance();
+//        // init Realm database
+//        mRealm = Realm.getDefaultInstance();
     }
 
     @Override
@@ -62,12 +66,20 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_regist);
 
+        // init Realm database
+        mRealm = Realm.getDefaultInstance();
+
+        mPosition = getIntent().getIntExtra("POSITION", ACTION_CREATE);
         mDateInfo = getIntent().getStringExtra("DATE");
 
         Log.d("CHECK_ENTER", "Register Activity -------------------");
         Log.d("CHECK_DATE", "In register >>>>>>>>>>>>>>>>" + mDateInfo);
 
         initView();
+
+        if (mPosition != ACTION_CREATE) {
+            setData();
+        }
     }
 
     public void initView() {
@@ -103,6 +115,24 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
         mAllDay = (CheckBox) findViewById(R.id.checkBox_allDay);
         mFakeCall = (CheckBox) findViewById(R.id.checkBox_fakeCall);
+    }
+
+    private void setData() {
+
+        ScheduleData result = mRealm.where(ScheduleData.class).equalTo("_id", mPosition).findFirst();
+
+        mTitle.setText(result.getTitle());
+        mDesc.setText(result.getDesc());
+        mStart.setText(result.getStartTime());
+        mEnd.setText(result.getEndTime());
+        mAddress.setText(result.getAddress());
+
+        // TODO - 참여자, 리마인더 표현방법 구상 필요
+//        mContacts.setText(result.getContacts());
+
+        mAllDay.setChecked(result.isAlldaySchedule());
+        mFakeCall.setChecked(result.isFakeCall());
+
     }
 
     @Override
@@ -169,22 +199,21 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
             String am_pm;
 
-            if(hourOfDay < 12) {
+            if (hourOfDay < 12) {
                 am_pm = "AM";
             } else {
-                if(hourOfDay!=12){
+                if (hourOfDay != 12) {
                     hourOfDay = hourOfDay - 12;
                 }
                 am_pm = "PM";
             }
 
-            if(mTimeset == SET_START){
-                mStartInfo = am_pm +" "+ hourOfDay + ":"+minute;
+            if (mTimeset == SET_START) {
+                mStartInfo = am_pm + " " + hourOfDay + ":" + minute;
                 mStart.setText(mStartInfo);
-            }
-            else{
+            } else {
 
-                mEndInfo = am_pm +" "+ hourOfDay + ":"+minute;
+                mEndInfo = am_pm + " " + hourOfDay + ":" + minute;
                 mEnd.setText(mEndInfo);
             }
 
@@ -193,7 +222,6 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
         }
     };
-
 
     private void insertSchedule() {
 
@@ -208,28 +236,34 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void execute(Realm realm) {
 
-                ScheduleData newSchedule = mRealm.createObject(ScheduleData.class, getNextKey());
+                ScheduleData scheduleData;
 
-                newSchedule.setTitle(mTitle.getText().toString());
-                newSchedule.setDesc(mDesc.getText().toString());
+                if (mPosition == ACTION_CREATE) {
+                    scheduleData = mRealm.createObject(ScheduleData.class, getNextKey());
+                } else {
+                    scheduleData = mRealm.where(ScheduleData.class).equalTo("_id", mPosition).findFirst();
+                }
 
-                newSchedule.setDate(mDateInfo);
+                scheduleData.setTitle(mTitle.getText().toString());
+                scheduleData.setDesc(mDesc.getText().toString());
 
-                newSchedule.setStartTime(mStartInfo);
-                newSchedule.setEndTime(mEndInfo);
+                scheduleData.setDate(mDate.getText().toString());
 
-                newSchedule.setAddress(mAddress.getText().toString());
+                scheduleData.setStartTime(mStart.getText().toString());
+                scheduleData.setEndTime(mEnd.getText().toString());
+
+                scheduleData.setAddress(mAddress.getText().toString());
 
                 if (mAllDay.isActivated()) {
-                    newSchedule.setAlldaySchedule(true);
+                    scheduleData.setAlldaySchedule(true);
                 } else {
-                    newSchedule.setAlldaySchedule(false);
+                    scheduleData.setAlldaySchedule(false);
                 }
 
                 if (mFakeCall.isActivated()) {
-                    newSchedule.setCallAlarm(true);
+                    scheduleData.setFakeCall(true);
                 } else {
-                    newSchedule.setCallAlarm(false);
+                    scheduleData.setFakeCall(false);
                 }
             }
         });

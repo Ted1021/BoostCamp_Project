@@ -2,9 +2,9 @@ package com.tedkim.smartschedule.calendar;
 
 
 import android.content.Context;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -20,9 +20,12 @@ import android.widget.Toast;
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.model.ScheduleData;
 
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
+import io.realm.OrderedCollectionChangeSet;
+import io.realm.OrderedRealmCollectionChangeListener;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import sun.bob.mcalendarview.CellConfig;
@@ -50,20 +53,18 @@ public class CalendarFragment extends Fragment {
     Animation mAnimation;
     boolean isExpanded = true;
     int mCurrentYear = Calendar.getInstance().get(Calendar.YEAR);
-    int mCurrentMonth = Calendar.getInstance().get(Calendar.MONTH)+1;
+    int mCurrentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
 
     // list components
     RecyclerView mScheduleList;
     RecyclerView.LayoutManager mLayoutManager;
-    CalendarScheduleListAdapter mAdapter;
+    ScheduleListRealmAdapter mAdapter;
 
     // Realm instance
     Realm mRealm;
 
     // Schedule List Dataset
-    ArrayList<ScheduleData> mDataset = new ArrayList<>();
-
-    Paint p = new Paint();
+    RealmResults<ScheduleData> mDataset;
 
     public CalendarFragment() {
 
@@ -124,12 +125,16 @@ public class CalendarFragment extends Fragment {
 
     private void setRecyclerView() {
 
-        mAdapter = new CalendarScheduleListAdapter(getContext(), getActivity(), mDataset);
+        long now = System.currentTimeMillis();
+        Date date = new Date(now);
+        SimpleDateFormat form = new SimpleDateFormat("yyyy-M-d");
+
+        mDataset = mRealm.where(ScheduleData.class).equalTo("date", form.format(date)).findAll();
+        mAdapter = new ScheduleListRealmAdapter(mDataset, true, getContext(), getActivity());
         mScheduleList.setAdapter(mAdapter);
 
         mLayoutManager = new LinearLayoutManager(getContext());
         mScheduleList.setLayoutManager(mLayoutManager);
-        mAdapter.notifyDataSetChanged();
     }
 
     private void setCalendarAction() {
@@ -203,31 +208,36 @@ public class CalendarFragment extends Fragment {
 
         // convert 'DateData' to 'Date'
         mSelectedDate = String.format("%d-%d-%d", date.getYear(), date.getMonth(), date.getDay());
+        Toast.makeText(getContext(), mSelectedDate, Toast.LENGTH_SHORT).show();
         mCallback.onDateSelectedListener(mSelectedDate);
 
-        Log.d("CHECK_SELECTION", "=-=-=-=-=-=-=-=-=" + mSelectedDate);
-        Toast.makeText(getContext(), mSelectedDate, Toast.LENGTH_SHORT).show();
-
         // realm query call
-        RealmResults<ScheduleData> result = mRealm.where(ScheduleData.class).equalTo("date", mSelectedDate).findAll();
-        mDataset.clear();
-        mDataset.addAll(mRealm.copyFromRealm(result));
+        mDataset = mRealm.where(ScheduleData.class).equalTo("date", mSelectedDate).findAll();
+        mAdapter = new ScheduleListRealmAdapter(mDataset, true, getContext(), getActivity());
+        mScheduleList.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
+
+        mDataset.addChangeListener(new OrderedRealmCollectionChangeListener<RealmResults<ScheduleData>>() {
+            @Override
+            public void onChange(RealmResults<ScheduleData> collection, OrderedCollectionChangeSet changeSet) {
+
+                mAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     // 등록 된 모든 스케줄들에 대해 Dot 마커를 찍는다
-    private void checkExistSchedules(int year, int month){
+    private void checkExistSchedules(int year, int month) {
 
-        RealmResults<ScheduleData> result = mRealm.where(ScheduleData.class).contains("date", year+"-"+month).findAll();
+        RealmResults<ScheduleData> result = mRealm.where(ScheduleData.class).contains("date", year + "-" + month).findAll();
 
-        for(ScheduleData data : result){
+        for (ScheduleData data : result) {
 
             int y = Integer.parseInt(data.getDate().split("-")[0]);
             int m = Integer.parseInt(data.getDate().split("-")[1]);
             int d = Integer.parseInt(data.getDate().split("-")[2]);
 
-            mCalendarView.markDate(new DateData(y,m,d).setMarkStyle(new MarkStyle(MarkStyle.DOT, R.color.colorAppTheme)));
-
+            mCalendarView.markDate(new DateData(y, m, d).setMarkStyle(MarkStyle.DOT, ContextCompat.getColor(getContext(), R.color.colorAppTheme)));
         }
     }
 }
