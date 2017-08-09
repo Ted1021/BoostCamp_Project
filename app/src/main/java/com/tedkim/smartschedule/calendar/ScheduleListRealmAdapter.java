@@ -22,7 +22,6 @@ import com.tedkim.smartschedule.model.ScheduleData;
 
 import io.realm.OrderedRealmCollection;
 import io.realm.RealmRecyclerViewAdapter;
-import io.realm.RealmResults;
 
 /**
  * @author 김태원
@@ -38,8 +37,6 @@ public class ScheduleListRealmAdapter extends RealmRecyclerViewAdapter<ScheduleD
     Activity mActivity;
     LayoutInflater mInflater;
 
-    RealmResults<ScheduleData> mDataset;
-
     public ScheduleListRealmAdapter(@Nullable OrderedRealmCollection<ScheduleData> data,
                                     boolean autoUpdate, Context context, Activity activity) {
         super(data, autoUpdate);
@@ -48,7 +45,6 @@ public class ScheduleListRealmAdapter extends RealmRecyclerViewAdapter<ScheduleD
         mActivity = activity;
 
         mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
@@ -85,7 +81,6 @@ public class ScheduleListRealmAdapter extends RealmRecyclerViewAdapter<ScheduleD
 
         bindData(holder, data);
         setItemAction(holder, data);
-
     }
 
     @Override

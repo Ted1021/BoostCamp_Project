@@ -1,246 +1,202 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp"
-    tools:context="com.tedkim.smartschedule.detail.DetailFragment">
-
+    android:layout_height="wrap_content">
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        app:cardCornerRadius="5dp"
-        app:cardElevation="2dp">
+        android:layout_marginBottom="32dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="56dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingTop="32dp">
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="40dp"
-                android:layout_weight="1"
-                android:text="Event name"
-                android:textColor="@color/colorLightGray"
-                android:textSize="@dimen/detailFragment_textSize_small" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/linearLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_title" />
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:background="@color/colorAppTheme"
+                android:elevation="4dp"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/textView_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_horizontal"
                     android:text="Title"
-                    android:textSize="@dimen/detailFragment_textSize"
-                    android:textStyle="bold" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                    android:textColor="@color/colorCremeWhite" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView_start"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginRight="4dp"
+                        android:layout_weight="1"
+                        android:gravity="right"
+                        android:text="start time"
+                        android:textColor="@color/colorCremeWhite" />
+
+                    <TextView
+                        android:id="@+id/textView7"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="~"
+                        android:textColor="@color/colorCremeWhite" />
+
+                    <TextView
+                        android:id="@+id/textView_end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginLeft="4dp"
+                        android:layout_weight="1"
+                        android:text="end time"
+                        android:textColor="@color/colorCremeWhite" />
+                </LinearLayout>
+
             </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:layout_marginBottom="16dp"
-                android:layout_marginTop="16dp"
-                android:background="#ccc" />
-
-            <TextView
-                android:id="@+id/textView2"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="40dp"
-                android:layout_weight="1"
-                android:text="Date"
-                android:textColor="@color/colorLightGray"
-                android:textSize="@dimen/detailFragment_textSize_small" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/imageView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_date" />
+                android:orientation="vertical"
+                android:paddingBottom="8dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:paddingTop="16dp">
 
                 <TextView
-                    android:id="@+id/textView_date"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/textView4"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
+                    android:layout_marginLeft="40dp"
                     android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:text="Date"
-                    android:textSize="@dimen/detailFragment_textSize"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:layout_marginBottom="16dp"
-                android:layout_marginTop="16dp"
-                android:background="#ccc" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="40dp"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/textView11"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Start"
+                    android:text="Address"
                     android:textColor="@color/colorLightGray"
                     android:textSize="@dimen/detailFragment_textSize_small" />
 
-                <TextView
-                    android:id="@+id/textView10"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/imageView4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_location" />
+
+                    <TextView
+                        android:id="@+id/textView_address"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="8dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:text="Address"
+                        android:textSize="@dimen/detailFragment_textSize"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/imageView7"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_margin="8dp"
                     android:layout_weight="1"
-                    android:text="End"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/map_sample" />
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1"
+                    android:text="Member"
                     android:textColor="@color/colorLightGray"
-                    android:textSize="12sp" />
-            </LinearLayout>
+                    android:textSize="@dimen/detailFragment_textSize_small" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/imageView3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_clock" />
-
-                <TextView
-                    android:id="@+id/textView_start"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:text="Start Time"
-                    android:textSize="@dimen/detailFragment_textSize"
-                    android:textStyle="bold" />
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/textView_end"
-                    android:layout_width="wrap_content"
+                    <ImageView
+                        android:id="@+id/imageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_title" />
+
+                    <TextView
+                        android:id="@+id/textView_contact"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="8dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:text="없음"
+                        android:textSize="@dimen/detailFragment_textSize"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:text="End Time"
-                    android:textSize="@dimen/detailFragment_textSize"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="16dp"
+                    android:layout_weight="1">
+
+                    <Button
+                        android:id="@+id/button_correct"
+                        android:layout_width="70dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginEnd="13dp"
+                        android:layout_toStartOf="@+id/button_delete"
+                        android:background="@android:color/transparent"
+                        android:drawableLeft="@drawable/ic_action_correct_navi"
+                        android:gravity="left|center_vertical"
+                        android:text="수정"
+                        android:textColor="@color/colorAppTheme" />
+
+                    <Button
+                        android:id="@+id/button_delete"
+                        android:layout_width="70dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="false"
+                        android:layout_alignParentLeft="false"
+                        android:layout_alignParentRight="true"
+                        android:layout_gravity="right"
+                        android:background="@android:color/transparent"
+                        android:drawableLeft="@drawable/ic_action_delete_red"
+                        android:gravity="left|center_vertical"
+                        android:text="삭제"
+                        android:textColor="@color/colorAlert" />
+                </RelativeLayout>
 
             </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:layout_marginBottom="16dp"
-                android:layout_marginTop="16dp"
-                android:background="#ccc" />
-
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="40dp"
-                android:layout_weight="1"
-                android:text="Address"
-                android:textColor="@color/colorLightGray"
-                android:textSize="@dimen/detailFragment_textSize_small" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/imageView4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_location" />
-
-                <TextView
-                    android:id="@+id/textView_address"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:text="Address"
-                    android:textSize="@dimen/detailFragment_textSize"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="32dp"
-                android:layout_weight="1">
-
-                <Button
-                    android:id="@+id/button_correct"
-                    android:layout_width="70dp"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginEnd="13dp"
-                    android:layout_toStartOf="@+id/button_delete"
-                    android:background="@android:color/transparent"
-                    android:drawableLeft="@drawable/ic_action_correct_navi"
-                    android:gravity="left|center_vertical"
-                    android:text="수정"
-                    android:textColor="@color/colorAppTheme" />
-
-                <Button
-                    android:id="@+id/button_delete"
-                    android:layout_width="70dp"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="false"
-                    android:layout_alignParentLeft="false"
-                    android:layout_alignParentRight="true"
-                    android:layout_gravity="right"
-                    android:background="@android:color/transparent"
-                    android:drawableLeft="@drawable/ic_action_delete_red"
-                    android:gravity="left|center_vertical"
-                    android:text="삭제"
-                    android:textColor="#B40010" />
-            </RelativeLayout>
-
         </LinearLayout>
     </android.support.v7.widget.CardView>
-</FrameLayout>
+</LinearLayout>

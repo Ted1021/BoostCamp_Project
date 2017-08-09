@@ -63,6 +63,7 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
 
         mRealm = Realm.getDefaultInstance();
 
+//        R.layout.fragment_detail
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
 
         initView(view);
@@ -75,7 +76,7 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
     private void initView(View view) {
 
         mTitle = (TextView) view.findViewById(R.id.textView_title);
-        mDate = (TextView) view.findViewById(R.id.textView_date);
+//        mDate = (TextView) view.findViewById(R.id.textView_date);
         mStart = (TextView) view.findViewById(R.id.textView_start);
         mEnd = (TextView) view.findViewById(R.id.textView_end);
         mAddress = (TextView) view.findViewById(R.id.textView_address);
@@ -94,7 +95,7 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
         mResult = mRealm.where(ScheduleData.class).equalTo("_id", mPosition).findFirst();
 
         mTitle.setText(mResult.getTitle());
-        mDate.setText(mResult.getDate());
+//        mDate.setText(mResult.getDate());
         mStart.setText(mResult.getStartTime());
         mEnd.setText(mResult.getEndTime());
         mAddress.setText(mResult.getAddress());

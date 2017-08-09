@@ -7,6 +7,7 @@
     <color name="colorLightGray">#bababa</color>
     <color name="colorAppTheme">#0699cc</color>
     <color name="colorCremeWhite">#f6f6f5</color>
-    <color name="colorAlert">#CB1010</color>
+    <color name="colorAlert">#B40010</color>
     <color name="colorShadow">#757575</color>
+    <color name="lightGray">#d3a6a6a6</color>
 </resources>

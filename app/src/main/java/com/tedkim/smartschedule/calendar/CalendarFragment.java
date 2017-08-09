@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,6 +60,7 @@ public class CalendarFragment extends Fragment {
     RecyclerView mScheduleList;
     RecyclerView.LayoutManager mLayoutManager;
     ScheduleListRealmAdapter mAdapter;
+    LinearLayout mNoSchedule;
 
     // Realm instance
     Realm mRealm;
@@ -118,6 +120,7 @@ public class CalendarFragment extends Fragment {
         mCalendarView = (ExpCalendarView) view.findViewById(R.id.calendarView_expCalendar);
         mCalendarStyle = (ImageView) view.findViewById(R.id.button_calendarStyle);
 
+        mNoSchedule = (LinearLayout) view.findViewById(R.id.layout_no_schedule);
         mScheduleList = (RecyclerView) view.findViewById(R.id.recyclerView_scheduleList);
 
         checkExistSchedules(mCurrentYear, mCurrentMonth);
@@ -131,9 +134,8 @@ public class CalendarFragment extends Fragment {
 
         mDataset = mRealm.where(ScheduleData.class).equalTo("date", form.format(date)).findAll();
 
-        if(mDataset.size()!=0){
+        showNoItemImage();
 
-        }
         mAdapter = new ScheduleListRealmAdapter(mDataset, true, getContext(), getActivity());
         mScheduleList.setAdapter(mAdapter);
 
@@ -218,6 +220,7 @@ public class CalendarFragment extends Fragment {
         // realm query call
         mDataset = mRealm.where(ScheduleData.class).equalTo("date", mSelectedDate).findAll();
         mAdapter = new ScheduleListRealmAdapter(mDataset, true, getContext(), getActivity());
+
         mScheduleList.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
 
@@ -226,8 +229,10 @@ public class CalendarFragment extends Fragment {
             public void onChange(RealmResults<ScheduleData> collection, OrderedCollectionChangeSet changeSet) {
 
                 mAdapter.notifyDataSetChanged();
+                showNoItemImage();
             }
         });
+        showNoItemImage();
     }
 
     // 등록 된 모든 스케줄들에 대해 Dot 마커를 찍는다
@@ -242,6 +247,16 @@ public class CalendarFragment extends Fragment {
             int d = Integer.parseInt(data.getDate().split("-")[2]);
 
             mCalendarView.markDate(new DateData(y, m, d).setMarkStyle(MarkStyle.DOT, ContextCompat.getColor(getContext(), R.color.colorAppTheme)));
+        }
+    }
+
+    private void showNoItemImage(){
+
+        if(mDataset.size()!=0){
+            mNoSchedule.setVisibility(View.GONE);
+        }
+        else{
+            mNoSchedule.setVisibility(View.VISIBLE);
         }
     }
 }
