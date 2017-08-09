@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -50,6 +51,14 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:src="@mipmap/icon_arrow_up" />
+
+    <ImageView
+        android:id="@+id/imageView6"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="center"
+        android:visibility="visible"
+        app:srcCompat="@drawable/no_schedule" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView_scheduleList"

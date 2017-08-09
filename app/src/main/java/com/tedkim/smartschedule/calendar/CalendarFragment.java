@@ -130,6 +130,10 @@ public class CalendarFragment extends Fragment {
         SimpleDateFormat form = new SimpleDateFormat("yyyy-M-d");
 
         mDataset = mRealm.where(ScheduleData.class).equalTo("date", form.format(date)).findAll();
+
+        if(mDataset.size()!=0){
+
+        }
         mAdapter = new ScheduleListRealmAdapter(mDataset, true, getContext(), getActivity());
         mScheduleList.setAdapter(mAdapter);
 

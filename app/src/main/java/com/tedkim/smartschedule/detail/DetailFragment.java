@@ -20,7 +20,8 @@ import com.tedkim.smartschedule.model.ScheduleData;
 import com.tedkim.smartschedule.regist.RegistActivity;
 
 import io.realm.Realm;
-import top.wefor.circularanim.CircularAnim;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * @author 김태원
@@ -114,21 +115,15 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
 
             case R.id.button_correct:
 
-                CircularAnim.fullActivity(getActivity(), v)
-                        .colorOrImageRes(R.color.colorAppTheme)
-                        .go(new CircularAnim.OnAnimationEndListener() {
-                            @Override
-                            public void onAnimationEnd() {
+                Log.d("CHECK_POSITION", "In Detail Fragment >>>>>>>>>>>> "+mPosition);
 
-                                Log.d("CHECK_POSITION", "In Detail Fragment >>>>>>>>>>>> "+mPosition);
-                                Intent intent = new Intent(getContext(), RegistActivity.class);
-                                intent.putExtra("POSITION", mPosition);
-                                intent.putExtra("DATE", mResult.getDate());
-                                startActivityForResult(intent, 100);
+                Intent intent = new Intent(getContext(), RegistActivity.class);
+                intent.putExtra("POSITION", mPosition);
+                intent.putExtra("DATE", mResult.getDate());
+                startActivityForResult(intent, 100);
 
-                                getDialog().hide();
-                            }
-                        });
+                getDialog().hide();
+
                 break;
 
             case R.id.button_delete:
@@ -146,4 +141,14 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == 100){
+            if(resultCode == RESULT_OK){
+                setData();
+            }
+        }
+    }
 }

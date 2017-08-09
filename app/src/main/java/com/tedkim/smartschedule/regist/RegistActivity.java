@@ -265,6 +265,8 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                 } else {
                     scheduleData.setFakeCall(false);
                 }
+
+                setResult(RESULT_OK);
             }
         });
     }
