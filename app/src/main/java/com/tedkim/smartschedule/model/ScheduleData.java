@@ -26,6 +26,7 @@ public class ScheduleData extends RealmObject {
 
     //TODO - googleMap 의 전용 객체이므로 android 내장 객체를 이용해 주는 것이 좋아보임, Location 객체 학습해 볼 것.
     private String address;
+    private float latitude, longitude;
 
     //    private ContactsContract.Contacts contacts;
 
@@ -35,7 +36,6 @@ public class ScheduleData extends RealmObject {
 
     private boolean alldaySchedule;
     private boolean fakeCall;
-
 
     public long get_id() {
         return _id;
@@ -76,7 +76,24 @@ public class ScheduleData extends RealmObject {
     public void setAddress(String address) {
         this.address = address;
     }
-//
+
+    public float getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(float latitude) {
+        this.latitude = latitude;
+    }
+
+    public float getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(float longitude) {
+        this.longitude = longitude;
+    }
+
+    //
 //    public ContactsContract.Contacts getContacts() {
 //        return contacts;
 //    }

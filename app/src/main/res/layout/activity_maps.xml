@@ -1,8 +1,92 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.tedkim.smartschedule.regist.MapsActivity" />
+    android:orientation="vertical"
+    tools:context="com.tedkim.smartschedule.regist.ReminderActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_maps"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAppTheme"
+        android:elevation="8dp"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="69dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="8dp"
+            tools:context="com.tedkim.smartschedule.regist.RegistActivity">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="false"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="@dimen/activityTitle_margin"
+                android:layout_marginTop="4dp"
+                android:layout_toRightOf="@+id/imageButton_back"
+                android:text="@string/title_activity_maps"
+                android:textAppearance="@style/TextAppearance.AppCompat"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/activityTitle_size" />
+
+            <ImageButton
+                android:id="@+id/imageButton_save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/toolBarItem_margin"
+                android:background="@android:color/transparent"
+                app:srcCompat="@drawable/ic_action_save" />
+
+            <ImageButton
+                android:id="@+id/imageButton_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="@dimen/toolBarItem_margin"
+                android:background="@android:color/transparent"
+                app:srcCompat="@drawable/ic_action_back" />
+        </RelativeLayout>
+
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <EditText
+            android:id="@+id/editText_searchLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="textPostalAddress" />
+
+        <ImageButton
+            android:id="@+id/imageButton_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="16dp"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/ic_action_add_address" />
+
+    </LinearLayout>
+
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

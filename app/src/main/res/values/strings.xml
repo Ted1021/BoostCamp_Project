@@ -24,10 +24,13 @@
 
     <string name="database_transaction_success">트랜잭션 성공!!</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_maps">주소 등록</string>
 
     <string name="title_activity_reminder">리마인더</string>
+
+    <string name="error_message_editText">필수 항목을 채워 주셔야 합니다</string>
+    <string name="error_message_address">주소를 검색 해 주셔야 합니다</string>
+    <string name="error_message_timePicker">잘못 된 시간 설정 입니다</string>
+    <string name="error_message_reminder">알림 시점을 설정 해 주셔야 합니다</string>
 
 </resources>

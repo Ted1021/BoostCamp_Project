@@ -4,9 +4,13 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -32,12 +36,12 @@ import io.realm.RealmList;
 
 import static com.tedkim.smartschedule.home.HomeActivity.ACTION_CREATE;
 
-public class RegistActivity extends AppCompatActivity implements View.OnClickListener {
+public class RegistActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher {
 
     // ui components
     Toolbar mToolbar;
     ImageButton mBack, mSave;
-    EditText mTitle, mDesc, mAddress, mContacts;
+    EditText mTitle, mMemo, mAddress, mContacts;
     TextView mDate, mStart, mEnd;
     CheckBox mAllDay, mFakeCall;
     Button mAddReminder, mSearchLocation;
@@ -50,11 +54,13 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     long mPosition;
     String mDateInfo, mStartInfo, mEndInfo;
 
-    // dataset from other activity
+    // dataset from other activity or screen
     String mSelectedAddress;
     RealmList<ReminderData> mReminders;
     ArrayList<String> mStringList = new ArrayList<>();
     ArrayAdapter<String> mAdapter;
+    float mLatitude, mLongitude;
+    int mStartHour, mEndHour, mStartMin, mEndMin;
 
     private static final int SET_START = 0;
     private static final int SET_END = 1;
@@ -70,6 +76,12 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+        mRealm = Realm.getDefaultInstance();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_regist);
@@ -80,7 +92,6 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         mPosition = getIntent().getLongExtra("POSITION", ACTION_CREATE);
         mDateInfo = getIntent().getStringExtra("DATE");
 
-        Log.d("CHECK_ENTER", "Register Activity -------------------");
         Log.d("CHECK_DATE", "In register >>>>>>>>>>>>>>>>" + mDateInfo);
 
         initView();
@@ -88,7 +99,6 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         // 수정 작업일 경우, 이전 내용을 binding 아니면 빈칸으로 Activity 를 시작
         if (mPosition != ACTION_CREATE) {
             setData();
-            Log.d("CORRECT",">>>>>>>>>>>>>>>>>");
         }
     }
 
@@ -105,7 +115,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         mSave.setOnClickListener(this);
 
         mTitle = (EditText) findViewById(R.id.editText_title);
-        mDesc = (EditText) findViewById(R.id.editText_desc);
+        mMemo = (EditText) findViewById(R.id.editText_desc);
 
         mDate = (TextView) findViewById(R.id.textView_date);
         mDate.setText(mDateInfo);
@@ -119,8 +129,11 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
         mSearchLocation = (Button) findViewById(R.id.button_searchLocation);
         mSearchLocation.setOnClickListener(this);
+        mSearchLocation.setEnabled(false);
 
         mAddress = (EditText) findViewById(R.id.editText_address);
+        mAddress.addTextChangedListener(this);
+
         mContacts = (EditText) findViewById(R.id.editText_contacts);
 
         mReminderList = (ListView) findViewById(R.id.listView_reminderList);
@@ -128,16 +141,11 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         mAddReminder = (Button) findViewById(R.id.button_addReminder);
         mAddReminder.setOnClickListener(this);
 
-        mAllDay = (CheckBox) findViewById(R.id.checkBox_allDay);
-        mFakeCall = (CheckBox) findViewById(R.id.checkBox_fakeCall);
-
-        setListView();
-    }
-
-    private void setListView(){
-
         mAdapter = new ArrayAdapter<>(RegistActivity.this, android.R.layout.simple_list_item_1, mStringList);
         mReminderList.setAdapter(mAdapter);
+
+        mAllDay = (CheckBox) findViewById(R.id.checkBox_allDay);
+        mFakeCall = (CheckBox) findViewById(R.id.checkBox_fakeCall);
     }
 
     private void setData() {
@@ -147,63 +155,20 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         Log.d("CORRECT",">>>>>>>>>>>>>>>>> "+mPosition);
 
         mTitle.setText(result.getTitle());
-        mDesc.setText(result.getDesc());
+        mMemo.setText(result.getDesc());
         mStart.setText(result.getStartTime());
         mEnd.setText(result.getEndTime());
         mAddress.setText(result.getAddress());
-
-        // TODO - 참여자 표현방법 구상 필요
-//        mContacts.setText(result.getContacts());
-
+        mSelectedAddress = result.getAddress();
         mAllDay.setChecked(result.isAlldaySchedule());
         mFakeCall.setChecked(result.isFakeCall());
+        // TODO - 참여자 표현방법 구상 필요
+//        mContacts.setText(result.getContacts());
 
         for(ReminderData reminder : result.getReminderList()){
             mStringList.add(reminder.getReminder());
         }
         mAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onClick(View v) {
-
-        // TODO - 각각 현재 날짜와 시간 가져오는 방법을 알아 볼 것
-        DatePickerDialog dateDialog = new DatePickerDialog(this, mDateListener, 2017, 8 - 1, 7);
-        TimePickerDialog timeDialog = new TimePickerDialog(this, mTimeListener, 15, 24, false);
-
-        switch (v.getId()) {
-
-            case R.id.imageButton_back:
-                finish();
-                break;
-
-            case R.id.imageButton_save:
-                insertSchedule();
-                finish();
-                break;
-
-            case R.id.textView_date:
-                dateDialog.show();
-                break;
-
-            case R.id.textView_start:
-                mTimeset = SET_START;
-                timeDialog.show();
-                break;
-
-            case R.id.textView_end:
-                mTimeset = SET_END;
-                timeDialog.show();
-                break;
-
-            case R.id.button_searchLocation:
-                addAddress();
-                break;
-
-            case R.id.button_addReminder:
-                addReminder();
-                break;
-        }
     }
 
     private DatePickerDialog.OnDateSetListener mDateListener = new DatePickerDialog.OnDateSetListener() {
@@ -241,9 +206,13 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
             }
 
             if (mTimeset == SET_START) {
+                mStartHour = hourOfDay;
+                mStartMin = minute;
                 mStartInfo = am_pm + " " + hourOfDay + ":" + minute;
                 mStart.setText(am_pm+" "+form.format(calendar.getTime()));
             } else {
+                mEndHour = hourOfDay;
+                mEndMin = minute;
                 mEndInfo = am_pm + " " + hourOfDay + ":" + minute;
                 mEnd.setText(am_pm+" "+form.format(calendar.getTime()));
             }
@@ -251,12 +220,6 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     };
 
     private void insertSchedule() {
-
-//        if(isEmptyEditors(mTitle) || isEmptyEditors(mDesc) || isEmptyEditors(mLocation) || isEmptyEditors(mStart) || isEmptyEditors(mEnd)){
-//
-//            Toast.makeText(this, "모든 항목을 채워 주셔야 합니다", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
 
         // Async database transaction
         mRealm.executeTransaction(new Realm.Transaction() {
@@ -274,26 +237,23 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                     scheduleData = mRealm.where(ScheduleData.class).equalTo("_id", mPosition).findFirst();
                 }
 
-
                 scheduleData.setTitle(mTitle.getText().toString());
-                scheduleData.setDesc(mDesc.getText().toString());
-
+                scheduleData.setDesc(mMemo.getText().toString());
                 scheduleData.setDate(mDate.getText().toString());
-
                 scheduleData.setStartTime(mStart.getText().toString());
                 scheduleData.setEndTime(mEnd.getText().toString());
-
                 scheduleData.setAddress(mSelectedAddress);
-
+                scheduleData.setLatitude(mLatitude);
+                scheduleData.setLongitude(mLongitude);
                 scheduleData.setReminderList(mReminders);
 
-                if (mAllDay.isActivated()) {
+                if (mAllDay.isChecked()) {
                     scheduleData.setAlldaySchedule(true);
                 } else {
                     scheduleData.setAlldaySchedule(false);
                 }
 
-                if (mFakeCall.isActivated()) {
+                if (mFakeCall.isChecked()) {
                     scheduleData.setFakeCall(true);
                 } else {
                     scheduleData.setFakeCall(false);
@@ -304,9 +264,49 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         });
     }
 
+    private boolean checkDataValid(){
+
+        // EditText Check
+        if(isEmptyEditors(mTitle) || isEmptyEditors(mAddress)){
+            Snackbar.make(getWindow().getDecorView().getRootView(), R.string.error_message_editText, Snackbar.LENGTH_LONG).show();
+            return false;
+        }
+
+        // Time Picker Check (Only Start Time)
+        if((mStartHour > mEndHour) || (mStartMin > mEndMin)){
+            Snackbar.make(getWindow().getDecorView().getRootView(), R.string.error_message_timePicker, Snackbar.LENGTH_LONG).show();
+            return false;
+        }
+
+        // address Check
+        if(mSelectedAddress == null){
+            Snackbar.make(getWindow().getDecorView().getRootView(), R.string.error_message_address, Snackbar.LENGTH_LONG).show();
+            return false;
+        }
+
+        // Reminder Check
+        if(mStringList.isEmpty()){
+            Snackbar.make(getWindow().getDecorView().getRootView(), R.string.error_message_reminder, Snackbar.LENGTH_LONG).show();
+            return false;
+        }
+
+        return true;
+    }
+
+    // Check valid about editTexts
+    private boolean isEmptyEditors(EditText view) {
+        if (TextUtils.isEmpty(view.getText().toString())) {
+            view.setError("필수 항목");
+            view.requestFocus();
+            return true;
+        }
+        return false;
+    }
+
     // Call Maps Activity
     private void addAddress(){
         Intent intent = new Intent(RegistActivity.this, MapsActivity.class);
+        intent.putExtra("ADDRESS", mAddress.getText().toString());
         startActivityForResult(intent, 103);
     }
 
@@ -315,16 +315,6 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
         Intent intent = new Intent(RegistActivity.this, ReminderActivity.class);
         startActivityForResult(intent, 102);
-    }
-
-    // Check valid about editTexts
-    private boolean isEmptyEditors(EditText view) {
-        if (TextUtils.isEmpty(view.getText().toString())) {
-            view.setError("잘좀 써라");
-            view.requestFocus();
-            return true;
-        }
-        return false;
     }
 
     // Realm Object Auto Increment
@@ -361,7 +351,74 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
             if(resultCode == RESULT_OK){
 
                 mSelectedAddress = data.getStringExtra("ADDRESS");
+                mAddress.setText(mSelectedAddress);
+
+                mLatitude = data.getFloatExtra("LATITUDE", 0);
+                mLongitude = data.getFloatExtra("LONGITUDE", 0);
             }
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        // TODO - 각각 현재 날짜와 시간 가져오는 방법을 알아 볼 것
+        DatePickerDialog dateDialog = new DatePickerDialog(this, mDateListener, 2017, 8 - 1, 7);
+        TimePickerDialog timeDialog = new TimePickerDialog(this, mTimeListener, 15, 24, false);
+
+        switch (v.getId()) {
+
+            case R.id.imageButton_back:
+                finish();
+                break;
+
+            case R.id.imageButton_save:
+                if(checkDataValid()){
+                    insertSchedule();
+                    finish();
+                }
+                break;
+
+            case R.id.textView_date:
+                dateDialog.show();
+                break;
+
+            case R.id.textView_start:
+                mTimeset = SET_START;
+                timeDialog.show();
+                break;
+
+            case R.id.textView_end:
+                mTimeset = SET_END;
+                timeDialog.show();
+                break;
+
+            case R.id.button_searchLocation:
+                addAddress();
+                break;
+
+            case R.id.button_addReminder:
+                addReminder();
+                break;
+        }
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        if (s.toString().length() < 2) {
+            mSearchLocation.setEnabled(false);
+            mSearchLocation.setTextColor(ContextCompat.getColor(RegistActivity.this, R.color.colorLightGray));
+        } else {
+            mSearchLocation.setEnabled(true);
+            mSearchLocation.setTextColor(ContextCompat.getColor(RegistActivity.this, R.color.colorActivation));
+        }
+    }
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+    @Override
+    public void afterTextChanged(Editable s) {
+
     }
 }
