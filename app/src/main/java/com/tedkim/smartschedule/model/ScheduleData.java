@@ -1,5 +1,6 @@
 package com.tedkim.smartschedule.model;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -15,7 +16,7 @@ import io.realm.annotations.PrimaryKey;
 public class ScheduleData extends RealmObject {
 
     @PrimaryKey
-    private int _id;
+    private long _id;
 
     private String title;
     private String desc;
@@ -28,16 +29,19 @@ public class ScheduleData extends RealmObject {
 
     //    private ContactsContract.Contacts contacts;
 
+    // TODO - 다중 알람기능 추가를 위한 data type 구상필요...
+    // 아니 이걸 이렇게 써야 하다니 ... 아직 한참 멀었구만 ...
+    private RealmList<ReminderData> reminderList;
+
     private boolean alldaySchedule;
     private boolean fakeCall;
 
-    // TODO - 다중 알람기능 추가를 위한 data type 구상필요
 
-    public int get_id() {
+    public long get_id() {
         return _id;
     }
 
-    public void set_id(int _id) {
+    public void set_id(long _id) {
         this._id = _id;
     }
 
@@ -95,6 +99,14 @@ public class ScheduleData extends RealmObject {
 
     public void setEndTime(String endTime) {
         this.endTime = endTime;
+    }
+
+    public RealmList<ReminderData> getReminderList() {
+        return reminderList;
+    }
+
+    public void setReminderList(RealmList<ReminderData> reminderList) {
+        this.reminderList = reminderList;
     }
 
     public boolean isAlldaySchedule() {

@@ -113,7 +113,7 @@ public class ScheduleListRealmAdapter extends RealmRecyclerViewAdapter<ScheduleD
         });
     }
 
-    private void setFragmentDialog(int position){
+    private void setFragmentDialog(long position){
 
         FragmentManager fragmentManager = ((AppCompatActivity)mContext).getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();

@@ -1,10 +1,12 @@
-package com.tedkim.smartschedule.model;
+package com.tedkim.smartschedule.schedule;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.tedkim.smartschedule.model.ScheduleData;
 
 import io.realm.OrderedRealmCollection;
 import io.realm.RealmRecyclerViewAdapter;

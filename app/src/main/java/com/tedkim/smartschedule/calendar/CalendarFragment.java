@@ -241,7 +241,6 @@ public class CalendarFragment extends Fragment {
         RealmResults<ScheduleData> result = mRealm.where(ScheduleData.class).contains("date", year + "-" + month).findAll();
 
         for (ScheduleData data : result) {
-
             int y = Integer.parseInt(data.getDate().split("-")[0]);
             int m = Integer.parseInt(data.getDate().split("-")[1]);
             int d = Integer.parseInt(data.getDate().split("-")[2]);

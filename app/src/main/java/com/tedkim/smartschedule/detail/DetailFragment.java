@@ -38,11 +38,11 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
     Realm mRealm;
     ScheduleData mResult;
 
-    static int mPosition = 0;
+    static long mPosition = 0;
 
     public static final int ACTION_CORRECT = 1;
 
-    public static DetailFragment newInstance(int position) {
+    public static DetailFragment newInstance(long position) {
 
         DetailFragment fragment = new DetailFragment();
         mPosition = position;
@@ -142,6 +142,7 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
         }
     }
 
+    // TODO - RequestCode Application 객체에 정리해 둘 것
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

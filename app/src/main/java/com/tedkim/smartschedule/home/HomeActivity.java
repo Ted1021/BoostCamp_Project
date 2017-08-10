@@ -212,6 +212,7 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
         Log.i("CHECK_DATE", "Date from calendar >>>>>>>>>>>" + mDate);
     }
 
+    // TODO - RequestCode 를 Application 객체에 정리해 둘 것
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

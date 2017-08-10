@@ -48,13 +48,15 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true"
-
         android:elevation="4dp"
         android:paddingBottom="2dp"
         android:paddingTop="2dp"
+
         app:tabIndicatorColor="@android:color/transparent"
         app:tabSelectedTextColor="@color/colorActivation"
         app:tabTextColor="@color/colorLightGray"
+        app:tabBackground="@drawable/tab_item_click_effect"
+
         tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="8dp">
 

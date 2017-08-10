@@ -1,9 +1,150 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.tedkim.smartschedule.regist.ReminderActivity">
 
-</android.support.constraint.ConstraintLayout>
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_reminder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAppTheme"
+        android:elevation="8dp"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="69dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="8dp"
+            tools:context="com.tedkim.smartschedule.regist.RegistActivity">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="false"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="@dimen/activityTitle_margin"
+                android:layout_marginTop="4dp"
+                android:layout_toRightOf="@+id/imageButton_back"
+                android:text="@string/title_activity_reminder"
+                android:textAppearance="@style/TextAppearance.AppCompat"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/activityTitle_size" />
+
+            <ImageButton
+                android:id="@+id/imageButton_save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/toolBarItem_margin"
+                android:background="@android:color/transparent"
+                app:srcCompat="@drawable/ic_action_save" />
+
+            <ImageButton
+                android:id="@+id/imageButton_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="@dimen/toolBarItem_margin"
+                android:background="@android:color/transparent"
+                app:srcCompat="@drawable/ic_action_back" />
+        </RelativeLayout>
+
+    </android.support.v7.widget.Toolbar>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp">
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/radioButton_onTime"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/reminderActivity_radioButton_margin"
+                android:layout_weight="1"
+                android:paddingLeft="@dimen/reminderActivity_radioButton_padding"
+                android:text="정시" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
+                android:background="#ccc" />
+
+            <RadioButton
+                android:id="@+id/radioButton_10min"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="@dimen/reminderActivity_radioButton_padding"
+                android:text="10분 전" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
+                android:background="#ccc" />
+
+            <RadioButton
+                android:id="@+id/radioButton_30min"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="@dimen/reminderActivity_radioButton_padding"
+                android:text="30분 전" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
+                android:background="#ccc" />
+
+            <RadioButton
+                android:id="@+id/radioButton_1hour"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="@dimen/reminderActivity_radioButton_padding"
+                android:text="1시간 전" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
+                android:background="#ccc" />
+
+            <RadioButton
+                android:id="@+id/radioButton_1day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="@dimen/reminderActivity_radioButton_padding"
+                android:text="1일 전" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
+                android:background="#ccc" />
+        </RadioGroup>
+
+    </FrameLayout>
+
+</LinearLayout>
