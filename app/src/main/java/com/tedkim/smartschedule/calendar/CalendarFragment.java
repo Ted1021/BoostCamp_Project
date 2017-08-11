@@ -13,28 +13,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.github.sundeepk.compactcalendarview.CompactCalendarView;
+import com.github.sundeepk.compactcalendarview.domain.Event;
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.model.ScheduleData;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 import io.realm.OrderedCollectionChangeSet;
 import io.realm.OrderedRealmCollectionChangeListener;
 import io.realm.Realm;
 import io.realm.RealmResults;
-import sun.bob.mcalendarview.CellConfig;
-import sun.bob.mcalendarview.MarkStyle;
-import sun.bob.mcalendarview.listeners.OnExpDateClickListener;
-import sun.bob.mcalendarview.listeners.OnMonthScrollListener;
-import sun.bob.mcalendarview.views.ExpCalendarView;
-import sun.bob.mcalendarview.vo.DateData;
 
 /**
  * @author 김태원
@@ -45,14 +44,17 @@ import sun.bob.mcalendarview.vo.DateData;
 
 public class CalendarFragment extends Fragment {
 
+    private Calendar currentCalender = Calendar.getInstance(Locale.getDefault());
+    private SimpleDateFormat dateFormatForDisplaying = new SimpleDateFormat("yyyy-M-d", Locale.getDefault());
+    private SimpleDateFormat dateFormatForMonth = new SimpleDateFormat("yyyy년 M월", Locale.getDefault());
+
     // calendar components
     OnCalendarSelectedListener mCallback;
     TextView mCalendarTitle;
-    ExpCalendarView mCalendarView;
-    ImageView mCalendarStyle;
-    String mSelectedDate;
+    CompactCalendarView mCalendarView;
+    ImageButton mCalendarStyle;
     Animation mAnimation;
-    boolean isExpanded = true;
+    boolean isExpanded = false;
     int mCurrentYear = Calendar.getInstance().get(Calendar.YEAR);
     int mCurrentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
 
@@ -117,23 +119,23 @@ public class CalendarFragment extends Fragment {
         mCalendarTitle = (TextView) view.findViewById(R.id.textView_monthTitle);
         mCalendarTitle.setText(String.format("%d년 %d월", mCurrentYear, mCurrentMonth));
 
-        mCalendarView = (ExpCalendarView) view.findViewById(R.id.calendarView_expCalendar);
-        mCalendarStyle = (ImageView) view.findViewById(R.id.button_calendarStyle);
+        mCalendarView = (CompactCalendarView) view.findViewById(R.id.calendarView_expCalendar);
+        mCalendarView.displayOtherMonthDays(true);
+        mCalendarStyle = (ImageButton) view.findViewById(R.id.button_calendarStyle);
 
         mNoSchedule = (LinearLayout) view.findViewById(R.id.layout_no_schedule);
         mScheduleList = (RecyclerView) view.findViewById(R.id.recyclerView_scheduleList);
-
-        checkExistSchedules(mCurrentYear, mCurrentMonth);
     }
 
     private void setRecyclerView() {
 
         long now = System.currentTimeMillis();
         Date date = new Date(now);
-        SimpleDateFormat form = new SimpleDateFormat("yyyy-M-d");
 
-        mDataset = mRealm.where(ScheduleData.class).equalTo("date", form.format(date)).findAll();
+        checkExistSchedules(date);
 
+        mDataset = mRealm.where(ScheduleData.class).equalTo("date", dateFormatForDisplaying.format(date)).findAll();
+        Log.e("CHECK_DATA", dateFormatForDisplaying.format(date));
         showNoItemImage();
 
         mAdapter = new ScheduleListRealmAdapter(mDataset, true, getContext(), getActivity());
@@ -145,18 +147,18 @@ public class CalendarFragment extends Fragment {
 
     private void setCalendarAction() {
 
-        // Change year & month info on scrolling
-        mCalendarView.setOnMonthScrollListener(new OnMonthScrollListener() {
+        mCalendarView.setListener(new CompactCalendarView.CompactCalendarViewListener() {
             @Override
-            public void onMonthChange(int year, int month) {
-
-                mCalendarTitle.setText(String.format("%d년 %d월", year, month));
-                checkExistSchedules(year, month);
+            public void onDayClick(Date dateClicked) {
+                updateScheduleList(dateClicked);
+                mCallback.onDateSelectedListener(dateFormatForDisplaying.format(dateClicked));
             }
 
             @Override
-            public void onMonthScroll(float positionOffset) {
-                Log.i("listener", "onMonthScroll:" + positionOffset);
+            public void onMonthScroll(Date firstDayOfNewMonth) {
+
+                checkExistSchedules(firstDayOfNewMonth);
+                mCalendarTitle.setText(dateFormatForMonth.format(firstDayOfNewMonth));
             }
         });
 
@@ -165,60 +167,37 @@ public class CalendarFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                changeCalendarType();
+                if (!mCalendarView.isAnimating()) {
+                    if (isExpanded) {
+
+                        mCalendarStyle.setImageResource(R.mipmap.icon_arrow_up);
+                        mCalendarStyle.setAnimation(mAnimation);
+
+                        mCalendarView.clearAnimation();
+                        mCalendarView.showCalendar();
+                    }
+                    else {
+
+                        mCalendarStyle.setImageResource(R.mipmap.icon_arrow_down);
+                        mCalendarStyle.startAnimation(mAnimation);
+
+                        mCalendarView.clearAnimation();
+                        mCalendarView.hideCalendar();
+                    }
+                    isExpanded = !isExpanded;
+                }
             }
         });
-
-        // Update schedules when date is clicked
-        mCalendarView.setOnDateClickListener(new OnExpDateClickListener() {
-            @Override
-            public void onDateClick(View view, DateData date) {
-                super.onDateClick(view, date);
-
-                updateScheduleList(date);
-            }
-        });
-    }
-
-    private void changeCalendarType() {
-
-        Log.d("CHECK_CALENDAR", ">>>>>>>>>>>>>> " + isExpanded);
-
-        if (isExpanded) {
-
-            CellConfig.Month2WeekPos = CellConfig.middlePosition;
-            CellConfig.ifMonth = false;
-
-            mCalendarStyle.setImageResource(R.mipmap.icon_arrow_down);
-            mCalendarStyle.startAnimation(mAnimation);
-
-            mCalendarView.shrink();
-            mCalendarView.startAnimation(mAnimation);
-
-        } else {
-
-            CellConfig.Week2MonthPos = CellConfig.middlePosition;
-            CellConfig.ifMonth = true;
-
-            mCalendarStyle.setImageResource(R.mipmap.icon_arrow_up);
-            mCalendarStyle.setAnimation(mAnimation);
-
-            mCalendarView.expand();
-            mCalendarView.startAnimation(mAnimation);
-        }
-        isExpanded = !isExpanded;
     }
 
     // 특정 날짜가 선택 되었을 때, mDataset 을 update 시키는 method
-    private void updateScheduleList(DateData date) {
+    private void updateScheduleList(Date date) {
 
-        // convert 'DateData' to 'Date'
-        mSelectedDate = String.format("%d-%d-%d", date.getYear(), date.getMonth(), date.getDay());
-        Toast.makeText(getContext(), mSelectedDate, Toast.LENGTH_SHORT).show();
-        mCallback.onDateSelectedListener(mSelectedDate);
+        Log.d("CHECK_UPDATE", "inside onclick " + dateFormatForDisplaying.format(date));
 
         // realm query call
-        mDataset = mRealm.where(ScheduleData.class).equalTo("date", mSelectedDate).findAll();
+        mDataset = mRealm.where(ScheduleData.class).equalTo("date", dateFormatForDisplaying.format(date)).findAll();
+        Log.e("CHECK_DATA", ">>>>>>>>>>> "+mDataset.size());
         mAdapter = new ScheduleListRealmAdapter(mDataset, true, getContext(), getActivity());
 
         mScheduleList.setAdapter(mAdapter);
@@ -236,25 +215,28 @@ public class CalendarFragment extends Fragment {
     }
 
     // 등록 된 모든 스케줄들에 대해 Dot 마커를 찍는다
-    private void checkExistSchedules(int year, int month) {
+    private void checkExistSchedules(Date date) {
 
-        RealmResults<ScheduleData> result = mRealm.where(ScheduleData.class).contains("date", year + "-" + month).findAll();
-
+        List<Event> eventList = new ArrayList<>();
+        RealmResults<ScheduleData> result = mRealm.where(ScheduleData.class).contains("date", dateFormatForDisplaying.format(date)).findAll();
         for (ScheduleData data : result) {
-            int y = Integer.parseInt(data.getDate().split("-")[0]);
-            int m = Integer.parseInt(data.getDate().split("-")[1]);
-            int d = Integer.parseInt(data.getDate().split("-")[2]);
+            try {
+                date = new SimpleDateFormat("yyyy-MM-dd").parse(data.getDate());
+                Log.e("CHECK_MILLIS",">>>>>> "+date.getTime());
 
-            mCalendarView.markDate(new DateData(y, m, d).setMarkStyle(MarkStyle.DOT, ContextCompat.getColor(getContext(), R.color.colorAppTheme)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            eventList.add(new Event(ContextCompat.getColor(getContext(), R.color.colorActivation), date.getTime()));
         }
+        mCalendarView.addEvents(eventList);
     }
 
-    private void showNoItemImage(){
+    private void showNoItemImage() {
 
-        if(mDataset.size()!=0){
+        if (mDataset.size() != 0) {
             mNoSchedule.setVisibility(View.GONE);
-        }
-        else{
+        } else {
             mNoSchedule.setVisibility(View.VISIBLE);
         }
     }

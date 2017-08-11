@@ -47,4 +47,7 @@ dependencies {
     compile 'com.ms-square:etsyblur:0.2.1'
     compile 'io.realm:android-adapters:2.0.0'
     testCompile 'junit:junit:4.12'
+
+    compile 'com.github.sundeepk:compact-calendar-view:2.0.2.2'
+
 }

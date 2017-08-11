@@ -42,7 +42,7 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
     private final int FRAG_SCHEDULE = 0;
     private final int FRAG_CALENDAR = 1;
 
-    public static final int ACTION_CREATE = -1;
+    public static final long ACTION_CREATE = -1;
 
     TabLayout mTabLayout;
     ViewPager mViewPager;

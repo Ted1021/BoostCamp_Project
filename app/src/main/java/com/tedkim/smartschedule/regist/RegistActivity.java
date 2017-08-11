@@ -23,6 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.github.sundeepk.compactcalendarview.domain.Event;
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.model.ReminderData;
 import com.tedkim.smartschedule.model.ScheduleData;
@@ -30,6 +31,7 @@ import com.tedkim.smartschedule.model.ScheduleData;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -46,6 +48,8 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     CheckBox mAllDay, mFakeCall;
     Button mAddReminder, mSearchLocation;
     ListView mReminderList;
+
+    List<Event> mEvents;
 
     // realm database instance
     Realm mRealm;
@@ -89,8 +93,10 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         // init Realm database
         mRealm = Realm.getDefaultInstance();
 
-        mPosition = getIntent().getLongExtra("POSITION", ACTION_CREATE);
-        mDateInfo = getIntent().getStringExtra("DATE");
+        if(getIntent() != null){
+            mPosition = getIntent().getLongExtra("POSITION", ACTION_CREATE);
+            mDateInfo = getIntent().getStringExtra("DATE");
+        }
 
         Log.d("CHECK_DATE", "In register >>>>>>>>>>>>>>>>" + mDateInfo);
 
