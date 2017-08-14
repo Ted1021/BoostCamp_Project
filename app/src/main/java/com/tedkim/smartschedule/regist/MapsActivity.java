@@ -40,7 +40,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     Geocoder mGeocoder;
     LatLng mCurrentPosition;
 
-    float mLatitude, mLongitude;
+    Double mLatitude, mLongitude;
     String mCurrentAddress;
 
     static final int MAX_LEN = 1;

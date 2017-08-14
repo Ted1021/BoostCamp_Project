@@ -63,7 +63,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     RealmList<ReminderData> mReminders;
     ArrayList<String> mStringList = new ArrayList<>();
     ArrayAdapter<String> mAdapter;
-    float mLatitude, mLongitude;
+    Double mLatitude, mLongitude;
     int mStartHour, mEndHour, mStartMin, mEndMin;
 
     private static final int SET_START = 0;
@@ -359,8 +359,8 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                 mSelectedAddress = data.getStringExtra("ADDRESS");
                 mAddress.setText(mSelectedAddress);
 
-                mLatitude = data.getFloatExtra("LATITUDE", 0);
-                mLongitude = data.getFloatExtra("LONGITUDE", 0);
+                mLatitude = data.getDoubleExtra("LATITUDE", 0);
+                mLongitude = data.getDoubleExtra("LONGITUDE", 0);
             }
         }
     }
