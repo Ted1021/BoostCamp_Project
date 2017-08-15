@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.detail.DetailFragment;
 import com.tedkim.smartschedule.model.ScheduleData;
+import com.tedkim.smartschedule.util.DateConvertUtil;
 
 import io.realm.OrderedRealmCollection;
 import io.realm.RealmRecyclerViewAdapter;
@@ -55,16 +56,13 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
             departInfo = (TextView) itemView.findViewById(R.id.textView_departInfo);
             totalTime = (TextView) itemView.findViewById(R.id.textView_totalTime);
             transport = (TextView) itemView.findViewById(R.id.textView_transport);
-
             title = (TextView) itemView.findViewById(R.id.textView_title);
             start = (TextView) itemView.findViewById(R.id.textView_start);
             end = (TextView) itemView.findViewById(R.id.textView_end);
             memo = (TextView) itemView.findViewById(R.id.textView_memo);
             address = (TextView) itemView.findViewById(R.id.textView_address);
-
             moreInfo = (ImageButton) itemView.findViewById(R.id.imageButton_moreInfo);
             search = (Button) itemView.findViewById(R.id.button_search);
-
             itemLayout = (LinearLayout) itemView.findViewById(R.id.layout_scheduleItem);
         }
     }
@@ -98,12 +96,11 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
 
     private void bindData(ViewHolder holder, ScheduleData data){
 
-        holder.departInfo.setText(data.getDepartTime());
+        holder.departInfo.setText(DateConvertUtil.time2string(data.getDepartTime()));
         holder.totalTime.setText(data.getTotalTime()+"분");
-
         holder.title.setText(data.getTitle());
-        holder.start.setText(data.getStartTime());
-        holder.end.setText(data.getEndTime());
+        holder.start.setText(DateConvertUtil.time2string(data.getStartTime()));
+        holder.end.setText(DateConvertUtil.time2string(data.getEndTime()));
         holder.address.setText(data.getAddress());
     }
 

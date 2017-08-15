@@ -23,10 +23,9 @@ import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.model.RouteData;
 import com.tedkim.smartschedule.model.ScheduleData;
 import com.tedkim.smartschedule.util.AppController;
+import com.tedkim.smartschedule.util.DateConvertUtil;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -47,7 +46,6 @@ public class ScheduleFragment extends Fragment {
 
     Realm mRealm;
 
-    private SimpleDateFormat dateFormatForDisplaying = new SimpleDateFormat("yyyy-M-d", Locale.getDefault());
     RealmResults<ScheduleData> mDataset;
     ScheduleRouteListAdapter mAdapter;
     RecyclerView mScheduleList;
@@ -88,7 +86,7 @@ public class ScheduleFragment extends Fragment {
         long now = System.currentTimeMillis();
         Date date = new Date(now);
 
-        mDataset = mRealm.where(ScheduleData.class).equalTo("date", dateFormatForDisplaying.format(date)).findAll();
+        mDataset = mRealm.where(ScheduleData.class).equalTo("date", DateConvertUtil.date2string(date)).findAll();
 
         mAdapter = new ScheduleRouteListAdapter(mDataset, true, getContext());
         mScheduleList.setAdapter(mAdapter);

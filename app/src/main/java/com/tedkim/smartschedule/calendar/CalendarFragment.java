@@ -21,14 +21,12 @@ import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.model.ScheduleData;
+import com.tedkim.smartschedule.util.DateConvertUtil;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import io.realm.OrderedCollectionChangeSet;
 import io.realm.OrderedRealmCollectionChangeListener;
@@ -43,10 +41,6 @@ import io.realm.RealmResults;
  */
 
 public class CalendarFragment extends Fragment {
-
-    private Calendar currentCalender = Calendar.getInstance(Locale.getDefault());
-    private SimpleDateFormat dateFormatForDisplaying = new SimpleDateFormat("yyyy-M-d", Locale.getDefault());
-    private SimpleDateFormat dateFormatForMonth = new SimpleDateFormat("yyyy년 M월", Locale.getDefault());
 
     // calendar components
     OnCalendarSelectedListener mCallback;
@@ -131,14 +125,11 @@ public class CalendarFragment extends Fragment {
 
         long now = System.currentTimeMillis();
         Date date = new Date(now);
-
         checkExistSchedules(date);
+        mDataset = mRealm.where(ScheduleData.class).equalTo("date", DateConvertUtil.date2string(date)).findAll();
+        checkItemCount();
 
-        mDataset = mRealm.where(ScheduleData.class).equalTo("date", dateFormatForDisplaying.format(date)).findAll();
-        Log.e("CHECK_DATA", dateFormatForDisplaying.format(date));
-        showNoItemImage();
-
-        mAdapter = new ScheduleListRealmAdapter(mDataset, true, getContext(), getActivity());
+        mAdapter = new ScheduleListRealmAdapter(mDataset, true, getContext());
         mScheduleList.setAdapter(mAdapter);
 
         mLayoutManager = new LinearLayoutManager(getContext());
@@ -151,14 +142,14 @@ public class CalendarFragment extends Fragment {
             @Override
             public void onDayClick(Date dateClicked) {
                 updateScheduleList(dateClicked);
-                mCallback.onDateSelectedListener(dateFormatForDisplaying.format(dateClicked));
+                mCallback.onDateSelectedListener(dateClicked);
             }
 
             @Override
             public void onMonthScroll(Date firstDayOfNewMonth) {
 
                 checkExistSchedules(firstDayOfNewMonth);
-                mCalendarTitle.setText(dateFormatForMonth.format(firstDayOfNewMonth));
+                mCalendarTitle.setText(DateConvertUtil.month2string(firstDayOfNewMonth));
             }
         });
 
@@ -193,46 +184,47 @@ public class CalendarFragment extends Fragment {
     // 특정 날짜가 선택 되었을 때, mDataset 을 update 시키는 method
     private void updateScheduleList(Date date) {
 
-        Log.d("CHECK_UPDATE", "inside onclick " + dateFormatForDisplaying.format(date));
+        Log.d("CHECK_UPDATE", "inside onclick " + DateConvertUtil.date2string(date));
 
-        // realm query call
-        mDataset = mRealm.where(ScheduleData.class).equalTo("date", dateFormatForDisplaying.format(date)).findAll();
-        Log.e("CHECK_DATA", ">>>>>>>>>>> "+mDataset.size());
-        mAdapter = new ScheduleListRealmAdapter(mDataset, true, getContext(), getActivity());
-
+        // 새로이 날짜를 클릭 했을 때,
+        mDataset = mRealm.where(ScheduleData.class).equalTo("date", DateConvertUtil.date2string(date)).findAll();
+        mAdapter = new ScheduleListRealmAdapter(mDataset, true, getContext());
         mScheduleList.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
 
+        // 클릭한 날짜 내에서 새로운 일정이 추가 되거나 기존의 일정이 변경 및 삭제 될 떄,
         mDataset.addChangeListener(new OrderedRealmCollectionChangeListener<RealmResults<ScheduleData>>() {
             @Override
             public void onChange(RealmResults<ScheduleData> collection, OrderedCollectionChangeSet changeSet) {
 
                 mAdapter.notifyDataSetChanged();
-                showNoItemImage();
+                checkItemCount();
             }
         });
-        showNoItemImage();
+        checkItemCount();
     }
 
     // 등록 된 모든 스케줄들에 대해 Dot 마커를 찍는다
     private void checkExistSchedules(Date date) {
 
+        // 캘린더 이벤트 초기화
+        mCalendarView.removeAllEvents();
         List<Event> eventList = new ArrayList<>();
-        RealmResults<ScheduleData> result = mRealm.where(ScheduleData.class).contains("date", dateFormatForDisplaying.format(date)).findAll();
-        for (ScheduleData data : result) {
-            try {
-                date = new SimpleDateFormat("yyyy-MM-dd").parse(data.getDate());
-                Log.e("CHECK_MILLIS",">>>>>> "+date.getTime());
 
-            } catch (ParseException e) {
-                e.printStackTrace();
+        // 해당 월의 모든 일정을 가져 옴
+        RealmResults<ScheduleData> result = mRealm.where(ScheduleData.class).contains("date", DateConvertUtil.yearMonth2string(date)).findAll();
+        Log.e("CHECK_MARKER", ">>>>>>>>>> "+result.size());
+        if(!result.isEmpty()) {
+            for (ScheduleData data : result) {
+                eventList.add(new Event(ContextCompat.getColor(getContext(), R.color.colorActivation), DateConvertUtil.string2date(data.getDate()).getTime()));
             }
-            eventList.add(new Event(ContextCompat.getColor(getContext(), R.color.colorActivation), date.getTime()));
         }
         mCalendarView.addEvents(eventList);
     }
 
-    private void showNoItemImage() {
+
+    // 일정이 없을 때 노출 되는 view
+    private void checkItemCount() {
 
         if (mDataset.size() != 0) {
             mNoSchedule.setVisibility(View.GONE);

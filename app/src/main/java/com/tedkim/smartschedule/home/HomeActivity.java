@@ -19,8 +19,9 @@ import com.tedkim.smartschedule.calendar.CalendarFragment;
 import com.tedkim.smartschedule.calendar.OnCalendarSelectedListener;
 import com.tedkim.smartschedule.regist.RegistActivity;
 import com.tedkim.smartschedule.schedule.ScheduleFragment;
+import com.tedkim.smartschedule.util.AppController;
+import com.tedkim.smartschedule.util.DateConvertUtil;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import top.wefor.circularanim.CircularAnim;
@@ -154,7 +155,7 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
 
                                 intent.putExtra("DATE", mDate);
                                 intent.putExtra("POSITION", ACTION_CREATE);
-                                startActivityForResult(intent, 101);
+                                startActivityForResult(intent, AppController.REQ_CREATE);
                             }
                         });
             }
@@ -199,26 +200,22 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
         long now = System.currentTimeMillis();
         Date date = new Date(now);
 
-        // convert current day to String Type using SimpleDateFormat
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d");
-        mDate = format.format(date);
+        mDate = DateConvertUtil.date2string(date);
     }
 
     // Add Listener for choosing date from Calendar Fragment
     @Override
-    public void onDateSelectedListener(String date) {
+    public void onDateSelectedListener(Date date) {
 
-        mDate = date;
+        mDate = DateConvertUtil.date2string(date);
         Log.i("CHECK_DATE", "Date from calendar >>>>>>>>>>>" + mDate);
     }
 
-    // TODO - RequestCode 를 Application 객체에 정리해 둘 것
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == 101){
-
+        if(requestCode == AppController.REQ_CREATE){
 
         }
     }

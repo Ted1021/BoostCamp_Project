@@ -1,6 +1,5 @@
 package com.tedkim.smartschedule.calendar;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.Nullable;
@@ -19,6 +18,7 @@ import android.widget.TextView;
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.detail.DetailFragment;
 import com.tedkim.smartschedule.model.ScheduleData;
+import com.tedkim.smartschedule.util.DateConvertUtil;
 
 import io.realm.OrderedRealmCollection;
 import io.realm.RealmRecyclerViewAdapter;
@@ -34,18 +34,13 @@ public class ScheduleListRealmAdapter extends RealmRecyclerViewAdapter<ScheduleD
         implements DialogInterface.OnDismissListener{
 
     Context mContext;
-    Activity mActivity;
     LayoutInflater mInflater;
 
     public ScheduleListRealmAdapter(@Nullable OrderedRealmCollection<ScheduleData> data,
-                                    boolean autoUpdate, Context context, Activity activity) {
+                                    boolean autoUpdate, Context context) {
         super(data, autoUpdate);
 
         mContext = context;
-
-        // TODO - Activity 필요없어짐. 삭제 할 것
-        mActivity = activity;
-
         mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -98,8 +93,8 @@ public class ScheduleListRealmAdapter extends RealmRecyclerViewAdapter<ScheduleD
     private void bindData(ViewHolder holder, ScheduleData data){
 
         holder.title.setText(data.getTitle());
-        holder.start.setText(data.getStartTime());
-        holder.end.setText(data.getEndTime());
+        holder.start.setText(DateConvertUtil.time2string(data.getStartTime()));
+        holder.end.setText(DateConvertUtil.time2string(data.getEndTime()));
         holder.address.setText(data.getAddress());
     }
 

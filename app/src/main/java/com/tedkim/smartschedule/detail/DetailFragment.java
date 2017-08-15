@@ -18,6 +18,8 @@ import com.ms_square.etsyblur.BlurDialogFragment;
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.model.ScheduleData;
 import com.tedkim.smartschedule.regist.RegistActivity;
+import com.tedkim.smartschedule.util.AppController;
+import com.tedkim.smartschedule.util.DateConvertUtil;
 
 import io.realm.Realm;
 
@@ -32,7 +34,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class DetailFragment extends BlurDialogFragment implements View.OnClickListener {
 
-    TextView mTitle, mDate, mStart, mEnd, mAddress;
+    TextView mTitle, mStart, mEnd, mAddress;
     Button mCorrect, mDelete;
 
     Realm mRealm;
@@ -76,28 +78,22 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
     private void initView(View view) {
 
         mTitle = (TextView) view.findViewById(R.id.textView_title);
-//        mDate = (TextView) view.findViewById(R.id.textView_date);
         mStart = (TextView) view.findViewById(R.id.textView_start);
         mEnd = (TextView) view.findViewById(R.id.textView_end);
         mAddress = (TextView) view.findViewById(R.id.textView_address);
-
         mCorrect = (Button) view.findViewById(R.id.button_correct);
         mCorrect.setOnClickListener(this);
-
         mDelete = (Button) view.findViewById(R.id.button_delete);
         mDelete.setOnClickListener(this);
-
     }
 
     private void setData() {
 
         Log.e("CHECK_POSITION", mPosition + "");
         mResult = mRealm.where(ScheduleData.class).equalTo("_id", mPosition).findFirst();
-
         mTitle.setText(mResult.getTitle());
-//        mDate.setText(mResult.getDate());
-        mStart.setText(mResult.getStartTime());
-        mEnd.setText(mResult.getEndTime());
+        mStart.setText(DateConvertUtil.time2string(mResult.getStartTime()));
+        mEnd.setText(DateConvertUtil.time2string(mResult.getEndTime()));
         mAddress.setText(mResult.getAddress());
     }
 
@@ -121,7 +117,7 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
                 Intent intent = new Intent(getContext(), RegistActivity.class);
                 intent.putExtra("POSITION", mPosition);
                 intent.putExtra("DATE", mResult.getDate());
-                startActivityForResult(intent, 100);
+                startActivityForResult(intent, AppController.REQ_CORRECT);
 
                 getDialog().hide();
 
@@ -147,7 +143,7 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == 100){
+        if(requestCode == AppController.REQ_CORRECT){
             if(resultCode == RESULT_OK){
                 setData();
             }

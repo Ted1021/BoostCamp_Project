@@ -23,15 +23,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.github.sundeepk.compactcalendarview.domain.Event;
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.model.ReminderData;
 import com.tedkim.smartschedule.model.ScheduleData;
+import com.tedkim.smartschedule.util.AppController;
+import com.tedkim.smartschedule.util.DateConvertUtil;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
+import java.util.Date;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -44,19 +44,16 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     Toolbar mToolbar;
     ImageButton mBack, mSave;
     EditText mTitle, mMemo, mAddress, mContacts;
-    TextView mDate, mStart, mEnd;
+    TextView mDateText, mStartText, mEndText;
     CheckBox mAllDay, mFakeCall;
     Button mAddReminder, mSearchLocation;
     ListView mReminderList;
-
-    List<Event> mEvents;
 
     // realm database instance
     Realm mRealm;
 
     // date info from Home Activity
     long mPosition;
-    String mDateInfo, mStartInfo, mEndInfo;
 
     // dataset from other activity or screen
     String mSelectedAddress;
@@ -64,7 +61,8 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     ArrayList<String> mStringList = new ArrayList<>();
     ArrayAdapter<String> mAdapter;
     double mLatitude, mLongitude;
-    int mStartHour, mEndHour, mStartMin, mEndMin;
+    Date mStart, mEnd;
+    String mDate;
 
     private static final int SET_START = 0;
     private static final int SET_END = 1;
@@ -93,12 +91,12 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         // init Realm database
         mRealm = Realm.getDefaultInstance();
 
-        if(getIntent() != null){
+        if (getIntent() != null) {
             mPosition = getIntent().getLongExtra("POSITION", ACTION_CREATE);
-            mDateInfo = getIntent().getStringExtra("DATE");
+            mDate = getIntent().getStringExtra("DATE");
         }
 
-        Log.d("CHECK_DATE", "In register >>>>>>>>>>>>>>>>" + mDateInfo);
+        Log.d("CHECK_DATE", "In register >>>>>>>>>>>>>>>>" + mDate);
 
         initView();
 
@@ -109,6 +107,9 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     public void initView() {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar_regist);
         setSupportActionBar(mToolbar);
@@ -123,15 +124,20 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         mTitle = (EditText) findViewById(R.id.editText_title);
         mMemo = (EditText) findViewById(R.id.editText_desc);
 
-        mDate = (TextView) findViewById(R.id.textView_date);
-        mDate.setText(mDateInfo);
-        mDate.setOnClickListener(this);
+        mDateText = (TextView) findViewById(R.id.textView_date);
+        mDateText.setText(mDate);
+        mDateText.setOnClickListener(this);
 
-        mStart = (TextView) findViewById(R.id.textView_start);
-        mStart.setOnClickListener(this);
+        mStart = calendar.getTime();
+        mStartText = (TextView) findViewById(R.id.textView_start);
+        mStartText.setText(DateConvertUtil.time2string(mStart));
+        mStartText.setOnClickListener(this);
 
-        mEnd = (TextView) findViewById(R.id.textView_end);
-        mEnd.setOnClickListener(this);
+        calendar.add(Calendar.HOUR_OF_DAY, 1);
+        mEnd = calendar.getTime();
+        mEndText = (TextView) findViewById(R.id.textView_end);
+        mEndText.setText(DateConvertUtil.time2string(mEnd));
+        mEndText.setOnClickListener(this);
 
         mSearchLocation = (Button) findViewById(R.id.button_searchLocation);
         mSearchLocation.setOnClickListener(this);
@@ -157,23 +163,27 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     private void setData() {
 
         ScheduleData result = mRealm.where(ScheduleData.class).equalTo("_id", mPosition).findFirst();
-
-        Log.d("CORRECT",">>>>>>>>>>>>>>>>> "+mPosition);
+        Log.d("CORRECT", ">>>>>>>>>>>>>>>>> " + mPosition);
 
         mTitle.setText(result.getTitle());
         mMemo.setText(result.getDesc());
-        mStart.setText(result.getStartTime());
-        mEnd.setText(result.getEndTime());
+        mDate = result.getDate();
+        mDateText.setText(mDate);
+        mStart = result.getStartTime();
+        mStartText.setText(DateConvertUtil.time2string(result.getStartTime()));
+        mEnd = result.getEndTime();
+        mEndText.setText(DateConvertUtil.time2string(result.getEndTime()));
         mAddress.setText(result.getAddress());
         mSelectedAddress = result.getAddress();
         mLatitude = result.getLatitude();
         mLongitude = result.getLongitude();
         mAllDay.setChecked(result.isAlldaySchedule());
         mFakeCall.setChecked(result.isFakeCall());
+
         // TODO - 참여자 표현방법 구상 필요
 //        mContacts.setText(result.getContacts());
 
-        for(ReminderData reminder : result.getReminderList()){
+        for (ReminderData reminder : result.getReminderList()) {
             mStringList.add(reminder.getReminder());
         }
         mAdapter.notifyDataSetChanged();
@@ -183,9 +193,14 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 
-            monthOfYear = monthOfYear + 1;
-            mDateInfo = year + "-" + monthOfYear + "-" + dayOfMonth;
-            mDate.setText(mDateInfo);
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.MONTH, monthOfYear);
+            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            Date date = calendar.getTime();
+
+            mDate = DateConvertUtil.date2string(date);
+            mDateText.setText(mDate);
         }
     };
 
@@ -193,36 +208,22 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
-            String am_pm;
-
-            SimpleDateFormat form = new SimpleDateFormat("hh:mm");
             Calendar calendar = Calendar.getInstance();
 
-            // TODO - Hour, HourOfDay 의 차이점은? & DateUtils 의 정확한 사용법 알아볼것
-            // 얘가 12hours / 24hours 포맷 전부 지원하고 AM/PM 여부 또한 계산해줌.
-            // 하지만, 파라미터가 milliseconds 임
             calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
             calendar.set(Calendar.MINUTE, minute);
 
-            if (hourOfDay < 12) {
-                am_pm = "AM";
-            } else {
-                if (hourOfDay != 12) {
-                    hourOfDay = hourOfDay - 12;
-                }
-                am_pm = "PM";
-            }
-
             if (mTimeset == SET_START) {
-                mStartHour = hourOfDay;
-                mStartMin = minute;
-                mStartInfo = am_pm + " " + hourOfDay + ":" + minute;
-                mStart.setText(am_pm+" "+form.format(calendar.getTime()));
+                mStart = calendar.getTime();
+                mStartText.setText(DateConvertUtil.time2string(mStart));
+
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay + 1);
+                mEnd = calendar.getTime();
+                mEndText.setText(DateConvertUtil.time2string(mEnd));
+
             } else {
-                mEndHour = hourOfDay;
-                mEndMin = minute;
-                mEndInfo = am_pm + " " + hourOfDay + ":" + minute;
-                mEnd.setText(am_pm+" "+form.format(calendar.getTime()));
+                mEnd = calendar.getTime();
+                mEndText.setText(DateConvertUtil.time2string(mEnd));
             }
         }
     };
@@ -247,17 +248,14 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
                 scheduleData.setTitle(mTitle.getText().toString());
                 scheduleData.setDesc(mMemo.getText().toString());
-                scheduleData.setDate(mDate.getText().toString());
-                scheduleData.setStartTime(mStart.getText().toString());
-                scheduleData.setEndTime(mEnd.getText().toString());
+                scheduleData.setDate(mDate);
+                scheduleData.setStartTime(mStart);
+                scheduleData.setEndTime(mEnd);
 
                 // TODO - '입력' 이나 '수정' 과정에서 어떻게 대중교통데이터를 받아 올 지 고민해 볼 것
-                scheduleData.setDepartTime(mStart.getText().toString());
-                Log.i("CHECK_REGIST", "-------- "+scheduleData.getDepartTime());
-
+                scheduleData.setDepartTime(mStart);
+                // TODO - 이제 totalTime 은 ScheduleData 에 속해있지 않음. 다르게 전달 해야 함
                 scheduleData.setTotalTime(0);
-                Log.i("CHECK_REGIST", "-------- "+scheduleData.getTotalTime());
-
                 scheduleData.setAddress(mSelectedAddress);
                 scheduleData.setLatitude(mLatitude);
                 scheduleData.setLongitude(mLongitude);
@@ -275,37 +273,37 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                     scheduleData.setFakeCall(false);
                 }
 
+                Log.d("CHECK_DATE", "Regist Activity >>>>>>>>>>>> "+scheduleData.getDate());
                 setResult(RESULT_OK);
             }
         });
     }
 
-    private boolean checkDataValid(){
+    private boolean checkDataValid() {
 
         // EditText Check
-        if(isEmptyEditors(mTitle) || isEmptyEditors(mAddress)){
+        if (isEmptyEditors(mTitle) || isEmptyEditors(mAddress)) {
             Snackbar.make(getWindow().getDecorView().getRootView(), R.string.error_message_editText, Snackbar.LENGTH_LONG).show();
             return false;
         }
 
-        // Time Picker Check (Only Start Time)
-        if((mStartHour > mEndHour) || (mStartMin > mEndMin)){
+        // Time Picker Check
+        if (mStart.getTime() > mEnd.getTime()) {
             Snackbar.make(getWindow().getDecorView().getRootView(), R.string.error_message_timePicker, Snackbar.LENGTH_LONG).show();
             return false;
         }
 
         // address Check
-        if(mSelectedAddress == null){
+        if (mSelectedAddress == null) {
             Snackbar.make(getWindow().getDecorView().getRootView(), R.string.error_message_address, Snackbar.LENGTH_LONG).show();
             return false;
         }
 
         // Reminder Check
-        if(mStringList.isEmpty()){
+        if (mStringList.isEmpty()) {
             Snackbar.make(getWindow().getDecorView().getRootView(), R.string.error_message_reminder, Snackbar.LENGTH_LONG).show();
             return false;
         }
-
         return true;
     }
 
@@ -320,14 +318,14 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     // Call Maps Activity
-    private void addAddress(){
+    private void addAddress() {
         Intent intent = new Intent(RegistActivity.this, MapsActivity.class);
         intent.putExtra("ADDRESS", mAddress.getText().toString());
-        startActivityForResult(intent, 103);
+        startActivityForResult(intent, AppController.REQ_GOOGLEMAP);
     }
 
     // Call Reminder Activity
-    private void addReminder(){
+    private void addReminder() {
 
         Intent intent = new Intent(RegistActivity.this, ReminderActivity.class);
         startActivityForResult(intent, 102);
@@ -348,23 +346,24 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    // TODO - RequestCode 모두 Application 객체에 모아 둘 것
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         // add reminder
-        if(requestCode == 102){
-            if(resultCode == RESULT_OK){
+        if (requestCode == AppController.REQ_REMINDER) {
+            if (resultCode == RESULT_OK) {
 
-                mStringList.add(data.getStringExtra("REMINDER"));
-                mAdapter.notifyDataSetChanged();
+                if(data.getStringExtra("REMINDER") != null) {
+                    mStringList.add(data.getStringExtra("REMINDER"));
+                    mAdapter.notifyDataSetChanged();
+                }
             }
         }
 
         // search location
-        else if(requestCode == 103){
-            if(resultCode == RESULT_OK){
+        else if (requestCode == AppController.REQ_GOOGLEMAP) {
+            if (resultCode == RESULT_OK) {
 
                 mSelectedAddress = data.getStringExtra("ADDRESS");
                 mAddress.setText(mSelectedAddress);
@@ -389,7 +388,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                 break;
 
             case R.id.imageButton_save:
-                if(checkDataValid()){
+                if (checkDataValid()) {
                     insertSchedule();
                     finish();
                 }
@@ -429,10 +428,12 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
             mSearchLocation.setTextColor(ContextCompat.getColor(RegistActivity.this, R.color.colorActivation));
         }
     }
+
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
     }
+
     @Override
     public void afterTextChanged(Editable s) {
 

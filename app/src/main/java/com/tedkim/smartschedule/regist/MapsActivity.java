@@ -96,6 +96,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void getPosition(){
+
         try {
             List<Address> addressList = mGeocoder.getFromLocationName(mCurrentAddress, MAX_LEN);
             mCurrentPosition = new LatLng(addressList.get(0).getLatitude(), addressList.get(0).getLongitude());
@@ -164,9 +165,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 intent.putExtra("ADDRESS", mCurrentAddress);
                 intent.putExtra("LATITUDE", mLatitude);
-                Log.i("CHECK_MAP_POSITION", ">>>>>>>>> "+mLatitude);
                 intent.putExtra("LONGITUDE", mLongitude);
-                Log.i("CHECK_MAP_POSITION", ">>>>>>>>> "+mLongitude);
                 setResult(RESULT_OK, intent);
 
                 finish();

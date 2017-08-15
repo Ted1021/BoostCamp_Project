@@ -20,6 +20,11 @@ public class AppController extends Application {
     private static Retrofit mRetrofit;
     private static ScheduleManagingService mService;
 
+    public static int REQ_CORRECT = 100;
+    public static int REQ_CREATE = 101;
+    public static int REQ_REMINDER = 102;
+    public static int REQ_GOOGLEMAP = 103;
+
     @Override
     public void onCreate() {
         super.onCreate();

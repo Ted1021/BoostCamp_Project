@@ -1,5 +1,7 @@
 package com.tedkim.smartschedule.model;
 
+import java.util.Date;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -22,8 +24,8 @@ public class ScheduleData extends RealmObject {
     private String desc;
 
     private String date;
-    private String startTime, endTime;
-    private String departTime;
+    private Date startTime, endTime;
+    private Date departTime;
     private int totalTime;
 
     private String address;
@@ -103,27 +105,27 @@ public class ScheduleData extends RealmObject {
 //        this.contacts = contacts;
 //    }
 
-    public String getStartTime() {
+    public Date getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(String startTime) {
+    public void setStartTime(Date startTime) {
         this.startTime = startTime;
     }
 
-    public String getEndTime() {
+    public Date getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(String endTime) {
+    public void setEndTime(Date endTime) {
         this.endTime = endTime;
     }
 
-    public String getDepartTime() {
+    public Date getDepartTime() {
         return departTime;
     }
 
-    public void setDepartTime(String departTime) {
+    public void setDepartTime(Date departTime) {
         this.departTime = departTime;
     }
 

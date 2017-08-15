@@ -7,6 +7,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import com.tedkim.smartschedule.R;
 
@@ -15,6 +16,7 @@ public class ReminderActivity extends AppCompatActivity implements View.OnClickL
     Toolbar mToolbar;
     ImageButton mBack, mSave;
     RadioButton mOnTime, mTenMin, mThirtyMin, mOneHour, mOneDay;
+    RadioGroup mRadioGroup;
 
     String mTime;
 
@@ -52,6 +54,8 @@ public class ReminderActivity extends AppCompatActivity implements View.OnClickL
 
         mOneDay = (RadioButton) findViewById(R.id.radioButton_1day);
         mOneDay.setOnClickListener(this);
+
+        mRadioGroup = (RadioGroup) findViewById(R.id.radioGroup);
     }
 
     private void setReminder(){
@@ -71,7 +75,9 @@ public class ReminderActivity extends AppCompatActivity implements View.OnClickL
                 break;
 
             case R.id.imageButton_save:
-                setReminder();
+                if(mRadioGroup.getCheckedRadioButtonId() != -1){
+                    setReminder();
+                }
                 break;
 
             case R.id.radioButton_onTime:
