@@ -2,9 +2,11 @@ package com.tedkim.smartschedule.util;
 
 import android.app.Application;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.tedkim.smartschedule.schedule.ScheduleManagingService;
 
 import io.realm.Realm;
+import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -27,6 +29,8 @@ public class AppController extends Application {
 
         // init Retrofit service
         mRetrofit = new Retrofit.Builder()
+                .client(new OkHttpClient().newBuilder()
+                .addNetworkInterceptor(new StethoInterceptor()).build())
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();

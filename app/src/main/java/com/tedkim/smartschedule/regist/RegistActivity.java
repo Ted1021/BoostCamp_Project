@@ -63,7 +63,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     RealmList<ReminderData> mReminders;
     ArrayList<String> mStringList = new ArrayList<>();
     ArrayAdapter<String> mAdapter;
-    Double mLatitude, mLongitude;
+    double mLatitude, mLongitude;
     int mStartHour, mEndHour, mStartMin, mEndMin;
 
     private static final int SET_START = 0;
@@ -248,6 +248,14 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                 scheduleData.setDate(mDate.getText().toString());
                 scheduleData.setStartTime(mStart.getText().toString());
                 scheduleData.setEndTime(mEnd.getText().toString());
+
+                // TODO - '입력' 이나 '수정' 과정에서 어떻게 대중교통데이터를 받아 올 지 고민해 볼 것
+                scheduleData.setDepartTime(mStart.getText().toString());
+                Log.i("CHECK_REGIST", "-------- "+scheduleData.getDepartTime());
+
+                scheduleData.setTotalTime(0);
+                Log.i("CHECK_REGIST", "-------- "+scheduleData.getTotalTime());
+
                 scheduleData.setAddress(mSelectedAddress);
                 scheduleData.setLatitude(mLatitude);
                 scheduleData.setLongitude(mLongitude);

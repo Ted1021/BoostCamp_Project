@@ -40,7 +40,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     Geocoder mGeocoder;
     LatLng mCurrentPosition;
 
-    Double mLatitude, mLongitude;
+    double mLatitude, mLongitude;
     String mCurrentAddress;
 
     static final int MAX_LEN = 1;
@@ -99,6 +99,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         try {
             List<Address> addressList = mGeocoder.getFromLocationName(mCurrentAddress, MAX_LEN);
             mCurrentPosition = new LatLng(addressList.get(0).getLatitude(), addressList.get(0).getLongitude());
+            mLatitude = mCurrentPosition.latitude;
+            mLongitude = mCurrentPosition.longitude;
 
         } catch (IOException e) {
             Log.e("ERROR_GeoCoder", ">>>>>>>>>>>>>>> "+mCurrentPosition);
@@ -162,7 +164,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 intent.putExtra("ADDRESS", mCurrentAddress);
                 intent.putExtra("LATITUDE", mLatitude);
+                Log.i("CHECK_MAP_POSITION", ">>>>>>>>> "+mLatitude);
                 intent.putExtra("LONGITUDE", mLongitude);
+                Log.i("CHECK_MAP_POSITION", ">>>>>>>>> "+mLongitude);
                 setResult(RESULT_OK, intent);
 
                 finish();
@@ -193,6 +197,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMarkerDragEnd(Marker marker) {
 
         mCurrentPosition = marker.getPosition();
+        mLatitude = mCurrentPosition.latitude;
+        mLongitude = mCurrentPosition.longitude;
+
         moveCamera(mCurrentPosition);
 
         try {

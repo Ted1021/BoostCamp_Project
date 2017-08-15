@@ -23,10 +23,11 @@ public class ScheduleData extends RealmObject {
 
     private String date;
     private String startTime, endTime;
+    private String departTime;
+    private int totalTime;
 
-    //TODO - googleMap 의 전용 객체이므로 android 내장 객체를 이용해 주는 것이 좋아보임, Location 객체 학습해 볼 것.
     private String address;
-    private Double latitude, longitude;
+    private double latitude, longitude;
 
     //    private ContactsContract.Contacts contacts;
 
@@ -77,19 +78,19 @@ public class ScheduleData extends RealmObject {
         this.address = address;
     }
 
-    public Double getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Double latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public Double getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Double longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
@@ -116,6 +117,22 @@ public class ScheduleData extends RealmObject {
 
     public void setEndTime(String endTime) {
         this.endTime = endTime;
+    }
+
+    public String getDepartTime() {
+        return departTime;
+    }
+
+    public void setDepartTime(String departTime) {
+        this.departTime = departTime;
+    }
+
+    public int getTotalTime() {
+        return totalTime;
+    }
+
+    public void setTotalTime(int totalTime) {
+        this.totalTime = totalTime;
     }
 
     public RealmList<ReminderData> getReminderList() {

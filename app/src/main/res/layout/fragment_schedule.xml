@@ -1,34 +1,27 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/refreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorCremeWhite"
-    android:orientation="vertical"
-    tools:context="com.tedkim.smartschedule.schedule.ScheduleFragment">
+    android:layout_marginTop="12dp">
 
-    <TextView
-        android:id="@+id/textView6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="소요시간"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
-
-    <TextView
-        android:id="@+id/textView_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="0"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
-
-    <Button
-        android:id="@+id/button_route"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="get route" />
+        android:layout_height="match_parent"
+        android:background="@color/colorCremeWhite"
+        android:orientation="vertical"
+        tools:context="com.tedkim.smartschedule.schedule.ScheduleFragment">
 
-    <Button
-        android:id="@+id/button_check"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Check" />
-</LinearLayout>
+        <Button
+            android:id="@+id/button_route"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="get route" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView_scheduleList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+</android.support.v4.widget.SwipeRefreshLayout>

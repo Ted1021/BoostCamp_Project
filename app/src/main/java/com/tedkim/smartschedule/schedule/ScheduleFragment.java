@@ -2,21 +2,28 @@ package com.tedkim.smartschedule.schedule;
 
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.tedkim.smartschedule.R;
-import com.tedkim.smartschedule.model.Message;
 import com.tedkim.smartschedule.model.RouteData;
+import com.tedkim.smartschedule.model.ScheduleData;
 import com.tedkim.smartschedule.util.AppController;
+import com.tedkim.smartschedule.util.CurrentLocation;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+import io.realm.Realm;
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -30,24 +37,36 @@ import retrofit2.Response;
 
 public class ScheduleFragment extends Fragment {
 
-    TextView mTime;
-    Button mRoute, mCheck;
+    SwipeRefreshLayout mRefreshLayout;
+
+    Button mRoute;
+
+    Realm mRealm;
+
+    private SimpleDateFormat dateFormatForDisplaying = new SimpleDateFormat("yyyy-M-d", Locale.getDefault());
+    RealmResults<ScheduleData> mDataset;
+    ScheduleRouteListAdapter mAdapter;
+    RecyclerView mScheduleList;
+    RecyclerView.LayoutManager mLayoutManager;
 
     public ScheduleFragment() {
-        // Required empty public constructor
+
     }
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-
-        View view = inflater.inflate(R.layout.fragment_schedule, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         Log.d("CHECK_ENTER", "Schedule Fragment -------------------");
 
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_schedule, container, false);
+
+        // init Realm database
+        mRealm = Realm.getDefaultInstance();
+
         initView(view);
+        setRecyclerView();
         setAction();
 
         return view;
@@ -55,54 +74,61 @@ public class ScheduleFragment extends Fragment {
 
     private void initView(View view) {
 
-        mTime = (TextView) view.findViewById(R.id.textView_time);
-        mRoute = (Button) view.findViewById(R.id.button_route);
-        mCheck = (Button) view.findViewById(R.id.button_check);
+        mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refreshLayout);
 
+        mRoute = (Button) view.findViewById(R.id.button_route);
+        mScheduleList = (RecyclerView) view.findViewById(R.id.recyclerView_scheduleList);
     }
 
     private void setRecyclerView() {
 
+        long now = System.currentTimeMillis();
+        Date date = new Date(now);
 
+        mDataset = mRealm.where(ScheduleData.class).equalTo("date", dateFormatForDisplaying.format(date)).findAll();
+
+        mAdapter = new ScheduleRouteListAdapter(mDataset, true, getContext());
+        mScheduleList.setAdapter(mAdapter);
+
+        mLayoutManager = new LinearLayoutManager(getContext());
+        mScheduleList.setLayoutManager(mLayoutManager);
     }
 
     private void setAction() {
 
+        // 모든 오늘자 스케줄에 대한 업데이트 진행
         mRoute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callRouteData();
-            }
-        });
 
-        mCheck.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selfCheck();
+                for (ScheduleData data : mDataset) {
+                    callRouteData(data);
+                }
             }
         });
     }
 
-    private void callRouteData() {
+    private void callRouteData(final ScheduleData data) {
 
-        // TODO - 서비스로부터 얻어오는 출발 위치 및 DB 로 부터 얻어오는 도착 위치 필요
+        double lng = CurrentLocation.getCurrentLocation()[0];
+        double lat = CurrentLocation.getCurrentLocation()[1];
+
         Call<RouteData> routeDataCall = AppController.getRouteInfo()
-                .getTransportInfo(127.028584f, 37.263406f, 127.1089531f, 37.4014619f);
+                .getTransportInfo(lng, lat, data.getLongitude(), data.getLatitude());
+
         routeDataCall.enqueue(new Callback<RouteData>() {
             @Override
             public void onResponse(Call<RouteData> call, Response<RouteData> response) {
 
-                Log.d("CHECK_CALL", ">>>>>>>>>>>>>> isExecuted? " + call.isExecuted());
-                Log.d("CHECK_CALL", ">>>>>>>>>>>>>> isCanceled? " + call.isCanceled());
-
                 if (response.isSuccessful()) {
 
                     RouteData result = response.body();
+                    final int totalTime = result.getResult().getPath()[0].getInfo().getTotalTime();
 
-                    Log.d("CHECK_RESULT", ">>>>>>>>>>>> 경로 수 : " +result.getResult().getPath().length);
-                    Log.d("CHECK_RESULT", ">>>>>>>>>>>> 소요시간 : " +result.getResult().getPath()[0].getInfo().getTotalTime()+"분");
-
-                    mTime.setText(result.getResult().getPath()[0].getInfo().getTotalTime()+"분");
+                    mRealm.beginTransaction();
+                    ScheduleData obj = mRealm.where(ScheduleData.class).equalTo("_id", data.get_id()).findFirst();
+                    obj.setTotalTime(totalTime);
+                    mRealm.commitTransaction();
 
                 } else {
                     Log.e("CHECK_FAIL_RETROFIT", "----------- fail to get data");
@@ -114,36 +140,6 @@ public class ScheduleFragment extends Fragment {
 
                 t.printStackTrace();
                 Log.e("CHECK_FAIL_SERVER", "----------- server access failure");
-            }
-        });
-    }
-
-    private void selfCheck() {
-
-        Call<Message> messageDataCall = AppController.getRouteInfo().getMessage();
-        messageDataCall.enqueue(new Callback<Message>() {
-            @Override
-            public void onResponse(Call<Message> call, final Response<Message> response) {
-
-                if (response.isSuccessful()) {
-                    new Handler().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                } else {
-                    Log.e("CHECK_FAIL_RETROFIT", "----------- fail to get data");
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Message> call, Throwable t) {
-
-                t.printStackTrace();
-                Log.e("CHECK_FAIL_SERVER", "----------- server access failure");
-
             }
         });
     }

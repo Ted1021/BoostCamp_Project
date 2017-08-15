@@ -1,18 +1,17 @@
-package com.tedkim.smartschedule.calendar;
+package com.tedkim.smartschedule.schedule;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -25,45 +24,47 @@ import io.realm.RealmRecyclerViewAdapter;
 
 /**
  * @author 김태원
- * @file ScheduleListRealmAdapter.java
+ * @file ScheduleRouteListAdapter.java
  * @brief RecyclerView Adapter for realm database
  * @date 2017.08.08
  */
 
-public class ScheduleListRealmAdapter extends RealmRecyclerViewAdapter<ScheduleData, ScheduleListRealmAdapter.ViewHolder>
-        implements DialogInterface.OnDismissListener{
+public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleData, ScheduleRouteListAdapter.ViewHolder> {
 
     Context mContext;
-    Activity mActivity;
     LayoutInflater mInflater;
 
-    public ScheduleListRealmAdapter(@Nullable OrderedRealmCollection<ScheduleData> data,
-                                    boolean autoUpdate, Context context, Activity activity) {
+    public ScheduleRouteListAdapter(@Nullable OrderedRealmCollection<ScheduleData> data, boolean autoUpdate, Context context) {
         super(data, autoUpdate);
 
         mContext = context;
-
-        // TODO - Activity 필요없어짐. 삭제 할 것
-        mActivity = activity;
-
         mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        TextView title, start, end, address;
-        CardView scheduleItem;
+        TextView title, start, end, address, memo, departInfo, totalTime, transport;
+        ImageButton moreInfo;
+        Button search;
+
         LinearLayout itemLayout;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
-            title = (TextView) itemView.findViewById(R.id.textView_calendarTitle);
-            start = (TextView) itemView.findViewById(R.id.textView_calendarStartTime);
-            end = (TextView) itemView.findViewById(R.id.textView_calendarEndTime);
-            address = (TextView) itemView.findViewById(R.id.textView_calendarAddress);
+            departInfo = (TextView) itemView.findViewById(R.id.textView_departInfo);
+            totalTime = (TextView) itemView.findViewById(R.id.textView_totalTime);
+            transport = (TextView) itemView.findViewById(R.id.textView_transport);
 
-            scheduleItem = (CardView) itemView.findViewById(R.id.cardView_scheduleItem);
+            title = (TextView) itemView.findViewById(R.id.textView_title);
+            start = (TextView) itemView.findViewById(R.id.textView_start);
+            end = (TextView) itemView.findViewById(R.id.textView_end);
+            memo = (TextView) itemView.findViewById(R.id.textView_memo);
+            address = (TextView) itemView.findViewById(R.id.textView_address);
+
+            moreInfo = (ImageButton) itemView.findViewById(R.id.imageButton_moreInfo);
+            search = (Button) itemView.findViewById(R.id.button_search);
+
             itemLayout = (LinearLayout) itemView.findViewById(R.id.layout_scheduleItem);
         }
     }
@@ -71,7 +72,7 @@ public class ScheduleListRealmAdapter extends RealmRecyclerViewAdapter<ScheduleD
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        View itemView = mInflater.inflate(R.layout.layout_calendar_schedule_item, parent, false);
+        View itemView = mInflater.inflate(R.layout.layout_schedule_route_item, parent, false);
 
         return new ViewHolder(itemView);
     }
@@ -97,6 +98,9 @@ public class ScheduleListRealmAdapter extends RealmRecyclerViewAdapter<ScheduleD
 
     private void bindData(ViewHolder holder, ScheduleData data){
 
+        holder.departInfo.setText(data.getDepartTime());
+        holder.totalTime.setText(data.getTotalTime()+"분");
+
         holder.title.setText(data.getTitle());
         holder.start.setText(data.getStartTime());
         holder.end.setText(data.getEndTime());
@@ -104,6 +108,22 @@ public class ScheduleListRealmAdapter extends RealmRecyclerViewAdapter<ScheduleD
     }
 
     private void setItemAction(ViewHolder holder, final ScheduleData data){
+
+        // show more transport information
+        holder.moreInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        // go to 'Google Map App'
+        holder.search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
         // go to Detail Activity
         holder.itemLayout.setOnClickListener(new View.OnClickListener() {
@@ -127,10 +147,5 @@ public class ScheduleListRealmAdapter extends RealmRecyclerViewAdapter<ScheduleD
 
         DetailFragment dialog = DetailFragment.newInstance(position);
         dialog.show(fragmentManager, "dialog");
-    }
-
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-        notifyDataSetChanged();
     }
 }

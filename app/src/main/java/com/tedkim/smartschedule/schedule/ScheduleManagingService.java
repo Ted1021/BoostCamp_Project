@@ -17,8 +17,8 @@ import retrofit2.http.Query;
 public interface ScheduleManagingService {
 
     @GET("/route")
-    Call<RouteData> getTransportInfo(@Query("SX") float SX, @Query("SY") float SY,
-                                     @Query("EX") float EX, @Query("EY") float EY);
+    Call<RouteData> getTransportInfo(@Query("SX") double SX, @Query("SY") double SY,
+                                     @Query("EX") double EX, @Query("EY") double EY);
 
     @GET("/message")
     Call<Message> getMessage();

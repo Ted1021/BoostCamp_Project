@@ -21,6 +21,8 @@ public class CurrentLocation {
     // Acquire a reference to the system Location Manager
     private static LocationManager mLocationManager;
 
+    private static double[] mLocation = {127.1089531, 37.4014619};
+
     public CurrentLocation(Context context) {
 
         mContext = context;
@@ -83,6 +85,11 @@ public class CurrentLocation {
             double lat = lastKnownLocation.getLatitude();
             Log.d("Main", "longtitude=" + lng + ", latitude=" + lat);
         }
+    }
+
+    public static double[] getCurrentLocation(){
+
+        return mLocation;
     }
 
 }
