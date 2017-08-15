@@ -1,7 +1,15 @@
 package com.tedkim.smartschedule.schedule;
 
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,13 +18,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.model.RouteData;
 import com.tedkim.smartschedule.model.ScheduleData;
 import com.tedkim.smartschedule.util.AppController;
-import com.tedkim.smartschedule.util.CurrentLocation;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,8 +45,6 @@ public class ScheduleFragment extends Fragment {
 
     SwipeRefreshLayout mRefreshLayout;
 
-    Button mRoute;
-
     Realm mRealm;
 
     private SimpleDateFormat dateFormatForDisplaying = new SimpleDateFormat("yyyy-M-d", Locale.getDefault());
@@ -49,10 +53,11 @@ public class ScheduleFragment extends Fragment {
     RecyclerView mScheduleList;
     RecyclerView.LayoutManager mLayoutManager;
 
+    Location mCurrentLocation;
+
     public ScheduleFragment() {
 
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -75,8 +80,6 @@ public class ScheduleFragment extends Fragment {
     private void initView(View view) {
 
         mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refreshLayout);
-
-        mRoute = (Button) view.findViewById(R.id.button_route);
         mScheduleList = (RecyclerView) view.findViewById(R.id.recyclerView_scheduleList);
     }
 
@@ -97,12 +100,31 @@ public class ScheduleFragment extends Fragment {
     private void setAction() {
 
         // 모든 오늘자 스케줄에 대한 업데이트 진행
-        mRoute.setOnClickListener(new View.OnClickListener() {
+        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onClick(View v) {
+            public void onRefresh() {
 
-                for (ScheduleData data : mDataset) {
-                    callRouteData(data);
+                if(mDataset.size() != 0){
+                    // 현재 좌표 호출
+                    LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+                    locationManager.removeUpdates(mLocationListener);
+
+                    // splash 에서 권한 허용 되었 때,
+                    if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                            ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
+                    }
+                    // splash 에서 권한 허용을 하지 않았을 때
+                    else {
+
+                        // TODO - 스낵바에 버튼을 달아 설정 화면으로 분기 하도록 해야 함
+                        Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), R.string.error_message_location, Snackbar.LENGTH_LONG).show();
+                        mRefreshLayout.setRefreshing(false);
+                    }
+                }
+                else{
+                    mRefreshLayout.setRefreshing(false);
                 }
             }
         });
@@ -110,11 +132,9 @@ public class ScheduleFragment extends Fragment {
 
     private void callRouteData(final ScheduleData data) {
 
-        double lng = CurrentLocation.getCurrentLocation()[0];
-        double lat = CurrentLocation.getCurrentLocation()[1];
-
+        // 현재 위치와 스케줄 상의 위치를 입력 받아 서버에 요청
         Call<RouteData> routeDataCall = AppController.getRouteInfo()
-                .getTransportInfo(lng, lat, data.getLongitude(), data.getLatitude());
+                .getTransportInfo(mCurrentLocation.getLongitude(), mCurrentLocation.getLatitude(), data.getLongitude(), data.getLatitude());
 
         routeDataCall.enqueue(new Callback<RouteData>() {
             @Override
@@ -130,6 +150,8 @@ public class ScheduleFragment extends Fragment {
                     obj.setTotalTime(totalTime);
                     mRealm.commitTransaction();
 
+                    mRefreshLayout.setRefreshing(false);
+
                 } else {
                     Log.e("CHECK_FAIL_RETROFIT", "----------- fail to get data");
                 }
@@ -143,4 +165,34 @@ public class ScheduleFragment extends Fragment {
             }
         });
     }
+
+    LocationListener mLocationListener = new LocationListener() {
+
+        @Override
+        public void onLocationChanged(Location location) {
+            LocationManager lm = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+
+            mCurrentLocation = location;
+            Log.d("CHECK_C_LOCATION", mCurrentLocation.getLongitude() + " / " + mCurrentLocation.getLatitude());
+
+            for (ScheduleData data : mDataset) {
+                callRouteData(data);
+            }
+
+            lm.removeUpdates(this);
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+
+    };
 }

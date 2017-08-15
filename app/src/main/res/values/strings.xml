@@ -33,4 +33,6 @@
     <string name="error_message_timePicker">잘못 된 시간 설정 입니다</string>
     <string name="error_message_reminder">알림 시점을 설정 해 주셔야 합니다</string>
 
+    <string name="error_message_location">GPS 접근을 허용 해 주셔야 합니다</string>
+
 </resources>

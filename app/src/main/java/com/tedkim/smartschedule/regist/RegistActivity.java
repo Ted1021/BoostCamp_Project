@@ -166,6 +166,8 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         mEnd.setText(result.getEndTime());
         mAddress.setText(result.getAddress());
         mSelectedAddress = result.getAddress();
+        mLatitude = result.getLatitude();
+        mLongitude = result.getLongitude();
         mAllDay.setChecked(result.isAlldaySchedule());
         mFakeCall.setChecked(result.isFakeCall());
         // TODO - 참여자 표현방법 구상 필요
