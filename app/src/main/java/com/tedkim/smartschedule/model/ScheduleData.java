@@ -29,7 +29,9 @@ public class ScheduleData extends RealmObject {
     private int totalTime;
 
     private String address;
+
     private double latitude, longitude;
+    private double currentLatitude=0, currentLongitude=0;
 
     //    private ContactsContract.Contacts contacts;
 
@@ -39,6 +41,8 @@ public class ScheduleData extends RealmObject {
 
     private boolean alldaySchedule;
     private boolean fakeCall;
+
+    private RealmList<RouteInfo> routeInfoList;
 
     public long get_id() {
         return _id;
@@ -94,6 +98,22 @@ public class ScheduleData extends RealmObject {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public double getCurrentLatitude() {
+        return currentLatitude;
+    }
+
+    public void setCurrentLatitude(double currentLatitude) {
+        this.currentLatitude = currentLatitude;
+    }
+
+    public double getCurrentLongitude() {
+        return currentLongitude;
+    }
+
+    public void setCurrentLongitude(double currentLongitude) {
+        this.currentLongitude = currentLongitude;
     }
 
     //
@@ -159,5 +179,13 @@ public class ScheduleData extends RealmObject {
 
     public void setFakeCall(boolean fakeCall) {
         this.fakeCall = fakeCall;
+    }
+
+    public RealmList<RouteInfo> getRouteInfoList() {
+        return routeInfoList;
+    }
+
+    public void setRouteInfoList(RealmList<RouteInfo> routeInfoList) {
+        this.routeInfoList = routeInfoList;
     }
 }

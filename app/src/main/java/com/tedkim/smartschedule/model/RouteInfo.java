@@ -2,17 +2,20 @@ package com.tedkim.smartschedule.model;
 
 import java.util.Date;
 
+import io.realm.RealmList;
+import io.realm.RealmObject;
+
 /**
  * Created by tedkim on 2017. 8. 16..
  */
 
-public class RouteInfo {
+public class RouteInfo extends RealmObject {
 
-    Date departTime, arriveTime;
-    int totalTime;
+    private Date departTime, arriveTime;
+    private int totalTime;
 
-    // RealmList<RouteSeqData> routeSequence;
-    int busStationCount, subwayStationCount;
+    private RealmList<RouteSeqData> routeSequence;
+    private int busStationCount, subwayStationCount;
 
-    int payment;
+    private int payment;
 }

@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +49,7 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
         ImageButton moreInfo;
         Button search;
 
-        LinearLayout itemLayout;
+        LinearLayout itemLayout, routeInfoLayout;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -64,6 +65,7 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
             moreInfo = (ImageButton) itemView.findViewById(R.id.imageButton_moreInfo);
             search = (Button) itemView.findViewById(R.id.button_search);
             itemLayout = (LinearLayout) itemView.findViewById(R.id.layout_scheduleItem);
+            routeInfoLayout = (LinearLayout) itemView.findViewById(R.id.layout_routeInfo);
         }
     }
 
@@ -95,6 +97,11 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
     }
 
     private void bindData(ViewHolder holder, ScheduleData data){
+
+        if(data.getCurrentLatitude() != 0 || data.getCurrentLongitude() != 0){
+            Log.d("CHECK_INIT_LOCATION", ">>>> longitude : "+data.getCurrentLongitude()+" / latitude : "+data.getCurrentLatitude());
+            holder.routeInfoLayout.setVisibility(View.VISIBLE);
+        }
 
         holder.departInfo.setText(DateConvertUtil.time2string(data.getDepartTime()));
         holder.totalTime.setText(data.getTotalTime()+"분");

@@ -131,9 +131,10 @@ public class ScheduleFragment extends Fragment {
 
     private void callRouteData(final ScheduleData data) {
 
+        Log.d("CHECK_UPDATE_DATA", ">>>>>>>>>>>> "+data.get_id());
         // 현재 위치와 스케줄 상의 위치를 입력 받아 서버에 요청
         Call<RouteData> routeDataCall = AppController.getRouteInfo()
-                .getTransportInfo(mCurrentLocation.getLongitude(), mCurrentLocation.getLatitude(), data.getLongitude(), data.getLatitude());
+                .getTransportInfo(data.getCurrentLongitude(), data.getCurrentLatitude(), data.getLongitude(), data.getLatitude());
 
         routeDataCall.enqueue(new Callback<RouteData>() {
             @Override
@@ -148,8 +149,6 @@ public class ScheduleFragment extends Fragment {
                     ScheduleData obj = mRealm.where(ScheduleData.class).equalTo("_id", data.get_id()).findFirst();
                     obj.setTotalTime(totalTime);
                     mRealm.commitTransaction();
-
-                    mRefreshLayout.setRefreshing(false);
 
                 } else {
                     Log.e("CHECK_FAIL_RETROFIT", "----------- fail to get data");
@@ -169,15 +168,26 @@ public class ScheduleFragment extends Fragment {
 
         @Override
         public void onLocationChanged(Location location) {
-            LocationManager lm = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
 
+            LocationManager lm = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
             mCurrentLocation = location;
-            Log.d("CHECK_C_LOCATION", mCurrentLocation.getLongitude() + " / " + mCurrentLocation.getLatitude());
 
             for (ScheduleData data : mDataset) {
-                callRouteData(data);
-            }
 
+                Log.d("CHECK_COMPARE_LONGITUDE", data.getCurrentLongitude() + " / " + mCurrentLocation.getLongitude());
+                Log.d("CHECK_COMPARE_LATITUDE", data.getCurrentLatitude() + " / " + mCurrentLocation.getLatitude());
+
+                if(data.getCurrentLongitude() != mCurrentLocation.getLongitude() || data.getCurrentLatitude() != mCurrentLocation.getLatitude()){
+
+                    mRealm.beginTransaction();
+                    data.setCurrentLongitude(mCurrentLocation.getLongitude());
+                    data.setCurrentLatitude(mCurrentLocation.getLatitude());
+                    mRealm.commitTransaction();
+
+                    callRouteData(data);
+                }
+            }
+            mRefreshLayout.setRefreshing(false);
             lm.removeUpdates(this);
         }
 
