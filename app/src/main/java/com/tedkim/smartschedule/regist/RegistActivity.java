@@ -7,19 +7,17 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -41,13 +39,12 @@ import static com.tedkim.smartschedule.home.HomeActivity.ACTION_CREATE;
 public class RegistActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher {
 
     // ui components
-    Toolbar mToolbar;
     ImageButton mBack, mSave;
-    EditText mTitle, mMemo, mAddress, mContacts;
-    TextView mDateText, mStartText, mEndText;
+    EditText mTitle, mMemo, mAddress;
+    TextView mDateText, mStartText, mEndText, mSetting, mStartDate, mEndDate;
     CheckBox mAllDay, mFakeCall;
     Button mAddReminder, mSearchLocation;
-    ListView mReminderList;
+    LinearLayout mMoreSetting;
 
     // realm database instance
     Realm mRealm;
@@ -59,7 +56,6 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     String mSelectedAddress;
     RealmList<ReminderData> mReminders;
     ArrayList<String> mStringList = new ArrayList<>();
-    ArrayAdapter<String> mAdapter;
     double mLatitude, mLongitude;
     Date mStart, mEnd;
     String mDate;
@@ -111,10 +107,6 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar_regist);
-        setSupportActionBar(mToolbar);
-        mToolbar.setContentInsetsAbsolute(0, 0);
-
         mBack = (ImageButton) findViewById(R.id.imageButton_back);
         mBack.setOnClickListener(this);
 
@@ -146,18 +138,22 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         mAddress = (EditText) findViewById(R.id.editText_address);
         mAddress.addTextChangedListener(this);
 
-        mContacts = (EditText) findViewById(R.id.editText_contacts);
-
-        mReminderList = (ListView) findViewById(R.id.listView_reminderList);
-
         mAddReminder = (Button) findViewById(R.id.button_addReminder);
         mAddReminder.setOnClickListener(this);
 
-        mAdapter = new ArrayAdapter<>(RegistActivity.this, android.R.layout.simple_list_item_1, mStringList);
-        mReminderList.setAdapter(mAdapter);
-
         mAllDay = (CheckBox) findViewById(R.id.checkBox_allDay);
         mFakeCall = (CheckBox) findViewById(R.id.checkBox_fakeCall);
+
+        mSetting = (TextView) findViewById(R.id.textView_setting);
+        mSetting.setOnClickListener(this);
+
+        mMoreSetting = (LinearLayout) findViewById(R.id.layout_setting);
+
+        mStartDate = (TextView) findViewById(R.id.textView_startDate);
+        mStartDate.setText(mDate);
+
+        mEndDate = (TextView) findViewById(R.id.textView_endDate);
+        mEndDate.setText(mDate);
     }
 
     private void setData() {
@@ -186,7 +182,6 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         for (ReminderData reminder : result.getReminderList()) {
             mStringList.add(reminder.getReminder());
         }
-        mAdapter.notifyDataSetChanged();
     }
 
     private DatePickerDialog.OnDateSetListener mDateListener = new DatePickerDialog.OnDateSetListener() {
@@ -352,7 +347,6 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
                 if(data.getStringExtra("REMINDER") != null) {
                     mStringList.add(data.getStringExtra("REMINDER"));
-                    mAdapter.notifyDataSetChanged();
                 }
             }
         }
@@ -410,6 +404,11 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
             case R.id.button_addReminder:
                 addReminder();
+                break;
+
+            case R.id.textView_setting:
+                mSetting.setVisibility(View.GONE);
+                mMoreSetting.setVisibility(View.VISIBLE);
                 break;
         }
     }

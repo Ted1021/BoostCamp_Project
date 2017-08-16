@@ -67,7 +67,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mBack = (ImageButton) findViewById(R.id.imageButton_back);
         mBack.setOnClickListener(this);
 
-        mSave = (ImageButton) findViewById(R.id.imageButton_save);
+        mSave = (ImageButton) findViewById(R.id.imageButton_moreInfo);
         mSave.setOnClickListener(this);
 
         mSearch = (ImageButton) findViewById(R.id.imageButton_search);
@@ -159,7 +159,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 finish();
                 break;
 
-            case R.id.imageButton_save:
+            case R.id.imageButton_moreInfo:
 
                 Intent intent = new Intent();
 

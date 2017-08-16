@@ -3,10 +3,11 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303f9f</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="colorActivation">#0699cc</color>
-    <color name="colorLightGray">#bababa</color>
-    <color name="colorAppTheme">#0699cc</color>
-    <color name="colorCremeWhite">#f6f6f5</color>
+    <color name="colorActivation">#41a6e7</color>
+    <color name="colorAppTheme">#41a6e7</color>
+    <color name="colorLightAppColor">#a3d9fb</color>
+    <color name="colorLightGray">#b8bfc7</color>
+    <color name="colorCremeWhite">#fafafa</color>
     <color name="colorAlert">#B40010</color>
     <color name="colorShadow">#757575</color>
     <color name="lightGray">#d3a6a6a6</color>

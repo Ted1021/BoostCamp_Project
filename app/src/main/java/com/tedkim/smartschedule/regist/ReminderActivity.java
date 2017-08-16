@@ -37,7 +37,7 @@ public class ReminderActivity extends AppCompatActivity implements View.OnClickL
         mBack = (ImageButton) findViewById(R.id.imageButton_back);
         mBack.setOnClickListener(this);
 
-        mSave = (ImageButton) findViewById(R.id.imageButton_save);
+        mSave = (ImageButton) findViewById(R.id.imageButton_moreInfo);
         mSave.setOnClickListener(this);
 
         mOnTime = (RadioButton) findViewById(R.id.radioButton_onTime);
@@ -74,7 +74,7 @@ public class ReminderActivity extends AppCompatActivity implements View.OnClickL
                 finish();
                 break;
 
-            case R.id.imageButton_save:
+            case R.id.imageButton_moreInfo:
                 if(mRadioGroup.getCheckedRadioButtonId() != -1){
                     setReminder();
                 }

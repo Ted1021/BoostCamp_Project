@@ -1,423 +1,344 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/parentLayout"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorCremeWhite">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@android:color/white">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/appbar"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorAppTheme"
-        android:fitsSystemWindows="false"
-        app:elevation="8dp">
+        android:elevation="8dp"
+        tools:context="com.tedkim.smartschedule.regist.RegistActivity">
 
-        <android.support.design.widget.CollapsingToolbarLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:elevation="8dp"
-            app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
-            app:toolbarId="@+id/toolbar_regist">
+        <ImageButton
+            android:id="@+id/imageButton_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@+id/imageButton_back"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/toolBarItem_margin"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/ic_action_save" />
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar_regist"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorAppTheme"
-                android:elevation="8dp">
+        <ImageButton
+            android:id="@+id/imageButton_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="false"
+            android:layout_alignParentTop="false"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/toolBarItem_margin"
+            android:background="@android:color/transparent"
+            android:baselineAlignBottom="false"
+            app:srcCompat="@drawable/ic_action_back" />
+    </RelativeLayout>
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:elevation="8dp"
-                    tools:context="com.tedkim.smartschedule.regist.RegistActivity">
-
-                    <TextView
-                        android:id="@+id/textView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_alignParentBottom="false"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="@dimen/activityTitle_margin"
-                        android:layout_marginTop="4dp"
-                        android:layout_toRightOf="@+id/imageButton_back"
-                        android:text="@string/registActivity_title"
-                        android:textAppearance="@style/TextAppearance.AppCompat"
-                        android:textColor="@android:color/white"
-                        android:textSize="@dimen/activityTitle_size" />
-
-                    <ImageButton
-                        android:id="@+id/imageButton_save"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_marginRight="@dimen/toolBarItem_margin"
-                        android:background="@android:color/transparent"
-                        app:srcCompat="@drawable/ic_action_save" />
-
-                    <ImageButton
-                        android:id="@+id/imageButton_back"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_marginLeft="@dimen/toolBarItem_margin"
-                        android:background="@android:color/transparent"
-                        app:srcCompat="@drawable/ic_action_back" />
-                </RelativeLayout>
-
-            </android.support.v7.widget.Toolbar>
-        </android.support.design.widget.CollapsingToolbarLayout>
-    </android.support.design.widget.AppBarLayout>
-
-    <android.support.v4.widget.NestedScrollView
+    <EditText
+        android:id="@+id/editText_title"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:background="@android:color/transparent"
+        android:ems="10"
+        android:gravity="center_horizontal"
+        android:hint="제목"
+        android:inputType="textPersonName"
+        android:textColor="@color/colorActivation"
+        android:textColorHint="@color/colorLightAppColor"
+        android:textSize="22sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="16dp"
-
-            android:orientation="vertical"
-            android:paddingBottom="8dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingTop="8dp"
-            tools:context="com.tedkim.smartschedule.regist.RegistActivity">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    app:srcCompat="@drawable/ic_title" />
-
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginLeft="8dp">
-
-                    <EditText
-                        android:id="@+id/editText_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@android:color/transparent"
-                        android:hint="Title"
-                        android:singleLine="true"
-                        android:textColorHighlight="@color/colorActivation"
-                        android:textColorLink="@color/colorActivation" />
-                </android.support.design.widget.TextInputLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/imageView10"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    app:srcCompat="@drawable/ic_title" />
-
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginLeft="8dp">
-
-                    <EditText
-                        android:id="@+id/editText_desc"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@android:color/transparent"
-                        android:hint="Memo (optional)"
-                        android:singleLine="true"
-                        android:textColorHighlight="@color/colorActivation"
-                        android:textColorLink="@color/colorActivation" />
-                </android.support.design.widget.TextInputLayout>
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:layout_marginBottom="16dp"
-                android:layout_marginTop="16dp"
-                android:background="#ccc" />
+            android:layout_weight="1"
+            android:gravity="right|center_vertical"
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/textView_startDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="40dp"
+                android:gravity="right"
+                android:text="today"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textView_start"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:text="Start Time"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/imageView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            app:srcCompat="?android:attr/actionModeCloseDrawable" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView_endDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="today" />
+
+            <TextView
+                android:id="@+id/textView_end"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="End Time"
+                android:textSize="22sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/colorLightGray" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageView_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            app:srcCompat="@drawable/ic_date" />
+
+        <TextView
+            android:id="@+id/textView_date"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="8dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="Date"
+            android:textColor="@color/colorAppTheme"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageView_reminder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            app:srcCompat="@drawable/ic_notification" />
+
+        <TextView
+            android:id="@+id/textView_reminder"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="8dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="알림 없음"
+            android:textColor="@color/colorLightGray"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/button_addReminder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:text="추가"
+            android:textColor="@color/colorLightGray" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageView_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            app:srcCompat="@drawable/ic_location" />
+
+        <EditText
+            android:id="@+id/editText_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:hint="주소 없음"
+            android:inputType="textPersonName"
+            android:paddingLeft="8dp"
+            android:textColorHint="@color/colorLightGray" />
+
+        <Button
+            android:id="@+id/button_searchLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:text="탐색"
+            android:textColor="@color/colorLightGray" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView_setting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="상세 설정"
+        android:textColor="@color/colorAppTheme"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/layout_setting"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imageView_allDay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                app:srcCompat="@drawable/ic_all_day" />
+
+            <TextView
+                android:id="@+id/textView_allDay"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="8dp"
                 android:layout_weight="1"
-                android:text="Date"
+                android:gravity="center_vertical"
+                android:text="하루 종일"
                 android:textColor="@color/colorLightGray"
-                android:textSize="12sp" />
+                android:textSize="16sp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="16dp"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/imageView20"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    app:srcCompat="@drawable/ic_date" />
-
-                <TextView
-                    android:id="@+id/textView_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:text="Date"
-                    android:textColor="@color/colorActivation"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="40dp"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/textView11"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Start"
-                    android:textColor="@color/colorLightGray"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/textView10"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="End"
-                    android:textColor="@color/colorLightGray"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/imageView3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_clock" />
-
-                <TextView
-                    android:id="@+id/textView_start"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="8dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:text="Start Time"
-                    android:textColor="@color/colorActivation"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/textView_end"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:text="End Time"
-                    android:textColor="@color/colorActivation"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:layout_marginBottom="16dp"
-                android:layout_marginTop="16dp"
-                android:background="#ccc" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/imageView5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    app:srcCompat="@drawable/ic_location" />
-
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_weight="1">
-
-                    <EditText
-                        android:id="@+id/editText_address"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@android:color/transparent"
-                        android:hint="Address"
-                        android:singleLine="true" />
-
-                </android.support.design.widget.TextInputLayout>
-
-                <Button
-                    android:id="@+id/button_searchLocation"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:background="@android:color/transparent"
-                    android:text="지도"
-                    android:textColor="@color/colorLightGray"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/imageView4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    app:srcCompat="@drawable/ic_contacts" />
-
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginLeft="8dp">
-
-                    <EditText
-                        android:id="@+id/editText_contacts"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@android:color/transparent"
-                        android:hint="Contacts (optional)"
-                        android:singleLine="true" />
-                </android.support.design.widget.TextInputLayout>
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:layout_marginBottom="16dp"
-                android:layout_marginTop="16dp"
-                android:background="#ccc" />
-
-            <TextView
-                android:id="@+id/textView20"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="40dp"
-                android:layout_weight="1"
-                android:text="notification"
-                android:textColor="@color/colorLightGray"
-                android:textSize="12sp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/imageView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    app:srcCompat="@drawable/ic_notification" />
-
-                <ListView
-                    android:id="@+id/listView_reminderList"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1" />
-
-                <Button
-                    android:id="@+id/button_addReminder"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:background="@android:color/transparent"
-                    android:text="추가"
-                    android:textColor="@color/colorActivation"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:layout_marginBottom="16dp"
-                android:layout_marginTop="16dp"
-                android:background="#ccc" />
-
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="options"
-                android:textColor="@color/colorLightGray" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal">
-
-                <CheckBox
-                    android:id="@+id/checkBox_fakeCall"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="하루 종일" />
-
-                <CheckBox
-                    android:id="@+id/checkBox_allDay"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="전화 알림" />
-            </LinearLayout>
+            <CheckBox
+                android:id="@+id/checkBox_allDay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
 
-</android.support.design.widget.CoordinatorLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imageView_fakeCall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                app:srcCompat="@drawable/ic_fake_call" />
+
+            <TextView
+                android:id="@+id/textView_fakeCall"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="8dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="fake call 알림"
+                android:textColor="@color/colorLightGray"
+                android:textSize="16sp" />
+
+            <CheckBox
+                android:id="@+id/checkBox_fakeCall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imageView_memo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                app:srcCompat="@drawable/ic_title" />
+
+            <EditText
+                android:id="@+id/editText_desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="8dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:ems="10"
+                android:hint="메모"
+                android:inputType="textPersonName"
+                android:textColor="@color/colorLightGray"
+                android:textColorHint="@color/colorLightGray" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>

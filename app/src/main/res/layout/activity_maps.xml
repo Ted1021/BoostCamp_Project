@@ -38,7 +38,7 @@
                 android:textSize="@dimen/activityTitle_size" />
 
             <ImageButton
-                android:id="@+id/imageButton_save"
+                android:id="@+id/imageButton_moreInfo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"

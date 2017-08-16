@@ -60,7 +60,6 @@ public class ScheduleFragment extends Fragment {
     private static int TYPE_BUS = 2;
     private static int TYPE_WALK = 3;
 
-
     public ScheduleFragment() {
 
     }

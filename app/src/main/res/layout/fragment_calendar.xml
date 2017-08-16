@@ -5,25 +5,50 @@
     android:layout_height="match_parent"
     android:background="@color/colorCremeWhite"
     android:orientation="vertical"
-
     tools:context="com.tedkim.smartschedule.calendar.CalendarFragment">
 
-    <TextView
-        android:id="@+id/textView_monthTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        android:gravity="center_horizontal"
-        android:padding="8dp"
-        android:text="2017 년"
-        android:textColor="@color/colorAppTheme"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="8dp"
+            tools:context="com.tedkim.smartschedule.regist.RegistActivity">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="#ccc" />
+            <TextView
+                android:id="@+id/textView_monthTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:background="@android:color/white"
+                android:gravity="center_horizontal"
+                android:padding="8dp"
+                android:text="2017 년"
+                android:textColor="@color/colorAppTheme"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/imageButton_moreInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignTop="@+id/imageButton_back"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/toolBarItem_margin"
+                android:background="@android:color/transparent"
+                app:srcCompat="@drawable/ic_action_more_info" />
+
+            <ImageButton
+                android:id="@+id/imageButton_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="false"
+                android:layout_alignParentTop="false"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/toolBarItem_margin"
+                android:background="@android:color/transparent"
+                android:baselineAlignBottom="false"
+                app:srcCompat="@drawable/ic_action_calendar_option" />
+        </RelativeLayout>
 
     <com.github.sundeepk.compactcalendarview.CompactCalendarView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/calendarView_expCalendar"
@@ -59,8 +84,8 @@
 
         <ImageView
             android:id="@+id/imageView8"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|center_horizontal"
             android:scaleType="fitXY"
             app:srcCompat="@drawable/ic_calendar" />
@@ -72,7 +97,7 @@
             android:layout_marginTop="16dp"
             android:gravity="center_horizontal"
             android:text="No Schedule"
-            android:textColor="@color/lightGray"
+            android:textColor="@color/colorLightGray"
             android:textSize="20sp" />
 
     </LinearLayout>
