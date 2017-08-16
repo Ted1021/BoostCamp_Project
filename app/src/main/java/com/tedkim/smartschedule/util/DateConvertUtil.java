@@ -4,6 +4,7 @@ import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -46,6 +47,15 @@ public class DateConvertUtil {
 
     public static Date string2time(String target) {
         return null;
+    }
+
+    public static Date calDateMin(Date targetDate, int targetMin){
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(targetDate);
+        calendar.add(Calendar.MINUTE, -targetMin);
+
+        return calendar.getTime();
     }
 
 }

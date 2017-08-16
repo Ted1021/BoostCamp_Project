@@ -25,8 +25,6 @@ public class ScheduleData extends RealmObject {
 
     private String date;
     private Date startTime, endTime;
-    private Date departTime;
-    private int totalTime;
 
     private String address;
 
@@ -42,7 +40,7 @@ public class ScheduleData extends RealmObject {
     private boolean alldaySchedule;
     private boolean fakeCall;
 
-    private RealmList<RouteInfo> routeInfoList;
+    public RealmList<RouteInfo> routeInfoList;
 
     public long get_id() {
         return _id;
@@ -141,22 +139,6 @@ public class ScheduleData extends RealmObject {
         this.endTime = endTime;
     }
 
-    public Date getDepartTime() {
-        return departTime;
-    }
-
-    public void setDepartTime(Date departTime) {
-        this.departTime = departTime;
-    }
-
-    public int getTotalTime() {
-        return totalTime;
-    }
-
-    public void setTotalTime(int totalTime) {
-        this.totalTime = totalTime;
-    }
-
     public RealmList<ReminderData> getReminderList() {
         return reminderList;
     }
@@ -181,11 +163,4 @@ public class ScheduleData extends RealmObject {
         this.fakeCall = fakeCall;
     }
 
-    public RealmList<RouteInfo> getRouteInfoList() {
-        return routeInfoList;
-    }
-
-    public void setRouteInfoList(RealmList<RouteInfo> routeInfoList) {
-        this.routeInfoList = routeInfoList;
-    }
 }

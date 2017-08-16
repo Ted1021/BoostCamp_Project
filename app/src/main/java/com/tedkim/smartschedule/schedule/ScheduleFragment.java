@@ -21,6 +21,8 @@ import android.view.ViewGroup;
 
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.model.RouteData;
+import com.tedkim.smartschedule.model.RouteInfo;
+import com.tedkim.smartschedule.model.RouteSeqData;
 import com.tedkim.smartschedule.model.ScheduleData;
 import com.tedkim.smartschedule.util.AppController;
 import com.tedkim.smartschedule.util.DateConvertUtil;
@@ -52,6 +54,12 @@ public class ScheduleFragment extends Fragment {
     RecyclerView.LayoutManager mLayoutManager;
 
     Location mCurrentLocation;
+
+    private static int MAX_ROUTE_INFO = 3;
+    private static int TYPE_SUBWAY = 1;
+    private static int TYPE_BUS = 2;
+    private static int TYPE_WALK = 3;
+
 
     public ScheduleFragment() {
 
@@ -129,6 +137,7 @@ public class ScheduleFragment extends Fragment {
         });
     }
 
+    // TODO - 로직 전체로 봤을 때, 3중 For 문임 ... 굉장히 안좋음 - Realm 의 제한적 구조상 아마도 해결법은 서버단에서 데이터를 재가공해서 필요한 정보만 return 해주는 방법밖에 없음
     private void callRouteData(final ScheduleData data) {
 
         Log.d("CHECK_UPDATE_DATA", ">>>>>>>>>>>> "+data.get_id());
@@ -143,11 +152,43 @@ public class ScheduleFragment extends Fragment {
                 if (response.isSuccessful()) {
 
                     RouteData result = response.body();
-                    final int totalTime = result.getResult().getPath()[0].getInfo().getTotalTime();
 
                     mRealm.beginTransaction();
                     ScheduleData obj = mRealm.where(ScheduleData.class).equalTo("_id", data.get_id()).findFirst();
-                    obj.setTotalTime(totalTime);
+
+                    for(int i=0; i<MAX_ROUTE_INFO; i++){
+
+                        RouteData.Result.Path path = result.getResult().getPath()[i];
+
+                        RouteInfo routeInfo = mRealm.createObject(RouteInfo.class);
+
+                        routeInfo.setDepartTime(DateConvertUtil.calDateMin(obj.getStartTime(),path.getInfo().getTotalTime()));
+                        routeInfo.setArriveTime(obj.getEndTime());
+                        routeInfo.setTotalTime(path.getInfo().getTotalTime());
+                        routeInfo.setPayment(path.getInfo().getPayment());
+                        routeInfo.setBusStationCount(path.getInfo().getBusStationCount());
+                        routeInfo.setSubwayStationCount(path.getInfo().getSubwayStationCount());
+
+                        for(RouteData.Result.Path.SubPath subPath : path.getSubPath()){
+
+                            RouteSeqData seqData = mRealm.createObject(RouteSeqData.class);
+
+                            seqData.setTrafficType(subPath.getTrafficType());
+                            if(subPath != null){
+                                // subway
+                                if(seqData.getTrafficType() == TYPE_SUBWAY){
+
+                                    seqData.setBusName(subPath.getLane().getName());
+                                }
+                                // bus
+                                else if(seqData.getTrafficType() == TYPE_BUS){
+                                    seqData.setBusName(subPath.getLane().getBusNo());
+                                }
+                            }
+                            routeInfo.routeSequence.add(seqData);
+                        }
+                        obj.routeInfoList.add(routeInfo);
+                    }
                     mRealm.commitTransaction();
 
                 } else {
@@ -172,6 +213,7 @@ public class ScheduleFragment extends Fragment {
             LocationManager lm = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
             mCurrentLocation = location;
 
+            // 스케줄에 저장 된 최근 위치와 업데이트 된 현재 위치를 비교해 선별적으로 서버에 접근
             for (ScheduleData data : mDataset) {
 
                 Log.d("CHECK_COMPARE_LONGITUDE", data.getCurrentLongitude() + " / " + mCurrentLocation.getLongitude());

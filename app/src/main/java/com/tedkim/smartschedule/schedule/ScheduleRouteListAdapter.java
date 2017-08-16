@@ -45,8 +45,14 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        TextView title, start, end, address, memo, departInfo, totalTime, transport;
+        // route info
+        TextView departInfo, totalTime, transport;
         ImageButton moreInfo;
+
+        // route detail info
+
+        // schedule info
+        TextView title, start, end, address, memo;
         Button search;
 
         LinearLayout itemLayout, routeInfoLayout;
@@ -57,13 +63,15 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
             departInfo = (TextView) itemView.findViewById(R.id.textView_departInfo);
             totalTime = (TextView) itemView.findViewById(R.id.textView_totalTime);
             transport = (TextView) itemView.findViewById(R.id.textView_transport);
+            moreInfo = (ImageButton) itemView.findViewById(R.id.imageButton_moreInfo);
+
             title = (TextView) itemView.findViewById(R.id.textView_title);
             start = (TextView) itemView.findViewById(R.id.textView_start);
             end = (TextView) itemView.findViewById(R.id.textView_end);
             memo = (TextView) itemView.findViewById(R.id.textView_memo);
             address = (TextView) itemView.findViewById(R.id.textView_address);
-            moreInfo = (ImageButton) itemView.findViewById(R.id.imageButton_moreInfo);
             search = (Button) itemView.findViewById(R.id.button_search);
+
             itemLayout = (LinearLayout) itemView.findViewById(R.id.layout_scheduleItem);
             routeInfoLayout = (LinearLayout) itemView.findViewById(R.id.layout_routeInfo);
         }
@@ -98,13 +106,16 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
 
     private void bindData(ViewHolder holder, ScheduleData data){
 
-        if(data.getCurrentLatitude() != 0 || data.getCurrentLongitude() != 0){
+        Log.d("CHECK_INIT_SIZE", ">>>>>> route info size = "+data.routeInfoList.size());
+        // 한번이라도 경로를 호출 한 데이터 인 경우,
+        if(data.routeInfoList.size() != 0){
             Log.d("CHECK_INIT_LOCATION", ">>>> longitude : "+data.getCurrentLongitude()+" / latitude : "+data.getCurrentLatitude());
             holder.routeInfoLayout.setVisibility(View.VISIBLE);
+
+            holder.departInfo.setText(DateConvertUtil.time2string(data.routeInfoList.get(0).getDepartTime()));
+            holder.totalTime.setText(data.routeInfoList.get(0).getTotalTime()+"분");
         }
 
-        holder.departInfo.setText(DateConvertUtil.time2string(data.getDepartTime()));
-        holder.totalTime.setText(data.getTotalTime()+"분");
         holder.title.setText(data.getTitle());
         holder.start.setText(DateConvertUtil.time2string(data.getStartTime()));
         holder.end.setText(DateConvertUtil.time2string(data.getEndTime()));

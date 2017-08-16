@@ -121,7 +121,7 @@
                     android:layout_height="50dp"
                     android:layout_gravity="center_vertical"
                     android:background="@android:color/transparent"
-                    app:srcCompat="@drawable/ic_action_show_info" />
+                    app:srcCompat="@drawable/ic_action_drop_down" />
 
 
             </LinearLayout>

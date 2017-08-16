@@ -252,10 +252,6 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                 scheduleData.setStartTime(mStart);
                 scheduleData.setEndTime(mEnd);
 
-                // TODO - '입력' 이나 '수정' 과정에서 어떻게 대중교통데이터를 받아 올 지 고민해 볼 것
-                scheduleData.setDepartTime(mStart);
-                // TODO - 이제 totalTime 은 ScheduleData 에 속해있지 않음. 다르게 전달 해야 함
-                scheduleData.setTotalTime(0);
                 scheduleData.setAddress(mSelectedAddress);
                 scheduleData.setLatitude(mLatitude);
                 scheduleData.setLongitude(mLongitude);

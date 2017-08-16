@@ -12,10 +12,58 @@ import io.realm.RealmObject;
 public class RouteInfo extends RealmObject {
 
     private Date departTime, arriveTime;
-    private int totalTime;
 
-    private RealmList<RouteSeqData> routeSequence;
+    public RealmList<RouteSeqData> routeSequence;
+
+    private int totalTime;
+    private int payment;
     private int busStationCount, subwayStationCount;
 
-    private int payment;
+    public Date getDepartTime() {
+        return departTime;
+    }
+
+    public void setDepartTime(Date departTime) {
+        this.departTime = departTime;
+    }
+
+    public Date getArriveTime() {
+        return arriveTime;
+    }
+
+    public void setArriveTime(Date arriveTime) {
+        this.arriveTime = arriveTime;
+    }
+
+    public int getTotalTime() {
+        return totalTime;
+    }
+
+    public void setTotalTime(int totalTime) {
+        this.totalTime = totalTime;
+    }
+
+    public int getBusStationCount() {
+        return busStationCount;
+    }
+
+    public void setBusStationCount(int busStationCount) {
+        this.busStationCount = busStationCount;
+    }
+
+    public int getSubwayStationCount() {
+        return subwayStationCount;
+    }
+
+    public void setSubwayStationCount(int subwayStationCount) {
+        this.subwayStationCount = subwayStationCount;
+    }
+
+    public int getPayment() {
+        return payment;
+    }
+
+    public void setPayment(int payment) {
+        this.payment = payment;
+    }
 }
