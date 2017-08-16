@@ -127,6 +127,7 @@ public class CalendarFragment extends Fragment {
         Date date = new Date(now);
         checkExistSchedules(date);
         mDataset = mRealm.where(ScheduleData.class).equalTo("date", DateConvertUtil.date2string(date)).findAll();
+        mDataset = mDataset.sort("startTime");
         checkItemCount();
 
         mAdapter = new ScheduleListRealmAdapter(mDataset, true, getContext());
@@ -188,6 +189,8 @@ public class CalendarFragment extends Fragment {
 
         // 새로이 날짜를 클릭 했을 때,
         mDataset = mRealm.where(ScheduleData.class).equalTo("date", DateConvertUtil.date2string(date)).findAll();
+        mDataset = mDataset.sort("startTime");
+
         mAdapter = new ScheduleListRealmAdapter(mDataset, true, getContext());
         mScheduleList.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();

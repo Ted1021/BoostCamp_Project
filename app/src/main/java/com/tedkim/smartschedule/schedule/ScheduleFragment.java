@@ -87,6 +87,7 @@ public class ScheduleFragment extends Fragment {
         Date date = new Date(now);
 
         mDataset = mRealm.where(ScheduleData.class).equalTo("date", DateConvertUtil.date2string(date)).findAll();
+        mDataset = mDataset.sort("startTime");
 
         mAdapter = new ScheduleRouteListAdapter(mDataset, true, getContext());
         mScheduleList.setAdapter(mAdapter);
