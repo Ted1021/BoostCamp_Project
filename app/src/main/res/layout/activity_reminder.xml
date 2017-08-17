@@ -10,9 +10,9 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar_reminder"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:background="@android:color/white"
-        android:elevation="2dp"
+        android:elevation="1dp"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
         tools:layout_editor_absoluteX="8dp"
@@ -30,13 +30,14 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="false"
                 android:layout_alignParentTop="true"
-                android:layout_marginLeft="@dimen/activityTitle_margin"
+                android:layout_marginLeft="16dp"
                 android:layout_marginTop="4dp"
                 android:layout_toRightOf="@+id/imageButton_back"
                 android:text="@string/title_activity_reminder"
                 android:textAppearance="@style/TextAppearance.AppCompat"
                 android:textColor="@color/colorAppTheme"
-                android:textSize="@dimen/activityTitle_size" />
+                android:textSize="@dimen/activityTitle_size"
+                android:textStyle="bold" />
 
             <ImageButton
                 android:id="@+id/imageButton_moreInfo"

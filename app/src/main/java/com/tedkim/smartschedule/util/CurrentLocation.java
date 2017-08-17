@@ -20,27 +20,22 @@ import android.util.Log;
 public class CurrentLocation {
 
     private static Context mContext;
-    public static LocationManager mLocationManager;
+    //    public static LocationManager mLocationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
     private static Location mLocation;
 
     public static Location getLocation(Context context) {
 
         mContext = context;
-        mLocationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
-
-        // GPS 프로바이더 사용가능여부
-        boolean isGPSEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        // 네트워크 프로바이더 사용가능여부
-        boolean isNetworkEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-        Log.d("Main", "isGPSEnabled=" + isGPSEnabled);
-        Log.d("Main", "isNetworkEnabled=" + isNetworkEnabled);
+        final LocationManager mLocationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
 
         LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
+
                 mLocation = location;
-                Log.d("CHECK_GET_LOCATION", ">>>>>>>>>>>>> "+mLocation);
+                Log.d("CHECK_GET_LOCATION", ">>>>>>>>>>>>> " + mLocation.getLongitude() + " / " + mLocation.getLatitude());
+
+                mLocationManager.removeUpdates(this);
             }
 
             @Override
@@ -57,20 +52,17 @@ public class CurrentLocation {
             public void onProviderDisabled(String provider) {
 
             }
+
         };
 
-        Log.d("CHECK_PERMISSION", ">>>>>>>>> in current location "+ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION));
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
             return mLocation;
         }
-//        else{
-//
-//            mLocation = null;
-//            return mLocation;
-//        }
-        return mLocation;
+
+        return null;
     }
 
 //    @Nullable

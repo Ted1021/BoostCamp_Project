@@ -18,33 +18,26 @@ import io.realm.annotations.PrimaryKey;
 public class ScheduleData extends RealmObject {
 
     @PrimaryKey
-    private long _id;
-
+    private String _id;
     private String title;
     private String memo;
-
     private String date;
     private Date startTime, endTime;
-
     private String address;
-
     private double latitude, longitude;
     private double currentLatitude=0, currentLongitude=0;
-
     //    private ContactsContract.Contacts contacts;
-
     private RealmList<ReminderData> reminderList;
-
-    private boolean alldaySchedule;
+    private boolean allDaySchedule;
     private boolean fakeCall;
 
     public RealmList<RouteInfo> routeInfoList;
 
-    public long get_id() {
+    public String get_id() {
         return _id;
     }
 
-    public void set_id(long _id) {
+    public void set_id(String _id) {
         this._id = _id;
     }
 
@@ -145,12 +138,12 @@ public class ScheduleData extends RealmObject {
         this.reminderList = reminderList;
     }
 
-    public boolean isAlldaySchedule() {
-        return alldaySchedule;
+    public boolean isAllDaySchedule() {
+        return allDaySchedule;
     }
 
-    public void setAlldaySchedule(boolean alldaySchedule) {
-        this.alldaySchedule = alldaySchedule;
+    public void setAllDaySchedule(boolean allDaySchedule) {
+        this.allDaySchedule = allDaySchedule;
     }
 
     public boolean isFakeCall() {

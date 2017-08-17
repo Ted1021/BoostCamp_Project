@@ -17,12 +17,14 @@ import com.ms_square.etsyblur.BlurConfig;
 import com.ms_square.etsyblur.BlurDialogFragment;
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.model.RouteInfo;
+import com.tedkim.smartschedule.model.RouteSeqData;
 import com.tedkim.smartschedule.model.ScheduleData;
 import com.tedkim.smartschedule.regist.RegistActivity;
 import com.tedkim.smartschedule.util.AppController;
 import com.tedkim.smartschedule.util.DateConvertUtil;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -41,14 +43,14 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
     Realm mRealm;
     ScheduleData mResult;
 
-    static long mPosition = 0;
+    static String mID;
 
     public static final int ACTION_CORRECT = 1;
 
-    public static DetailFragment newInstance(long position) {
+    public static DetailFragment newInstance(String id) {
 
         DetailFragment fragment = new DetailFragment();
-        mPosition = position;
+        mID = id;
         fragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.EtsyBlurDialogTheme);
 
         return fragment;
@@ -98,9 +100,8 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
 
     private void setData() {
 
-        Log.e("CHECK_POSITION", mPosition + "");
-        mResult = mRealm.where(ScheduleData.class).equalTo("_id", mPosition).findFirst();
-        mRealm.beginTransaction();
+        Log.e("CHECK_ID", "+++++++++++ in Detail Fragment "+mID);
+        mResult = mRealm.where(ScheduleData.class).equalTo("_id", mID).findFirst();
 
         mTitle.setText(mResult.getTitle());
         mStart.setText(DateConvertUtil.time2string(mResult.getStartTime()));
@@ -110,13 +111,6 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
         mAddress.setText(mResult.getAddress());
         mMemo.setText(mResult.getMemo());
 
-        // 스케줄 데이터가 수정 되면 경로데이터 자체가 모두 초기화
-        for(RouteInfo route : mResult.routeInfoList){
-            route.routeSequence.deleteAllFromRealm();
-        }
-        mResult.routeInfoList.deleteAllFromRealm();
-
-        mRealm.commitTransaction();
     }
 
     @NonNull
@@ -134,10 +128,10 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
 
             case R.id.button_correct:
 
-                Log.d("CHECK_POSITION", "In Detail Fragment >>>>>>>>>>>> "+mPosition);
+                Log.d("CHECK_ID", "In Detail Fragment >>>>>>>>>>>> "+ mID);
 
                 Intent intent = new Intent(getContext(), RegistActivity.class);
-                intent.putExtra("POSITION", mPosition);
+                intent.putExtra("ID", mID);
                 intent.putExtra("DATE", mResult.getDate());
                 startActivityForResult(intent, AppController.REQ_CORRECT);
 
@@ -147,25 +141,33 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
 
             case R.id.button_delete:
 
-                mResult = mRealm.where(ScheduleData.class).equalTo("_id", mPosition).findFirst();
                 mRealm.executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
-                        // 가장 최 하위에 있는 객체부터 순차적으로 삭제
-                        for(RouteInfo route : mResult.routeInfoList){
-                            route.routeSequence.deleteAllFromRealm();
-                        }
-                        mResult.routeInfoList.deleteAllFromRealm();
+
+                        Log.e("CHECK_DELETE", "<<<<<<<<<< start deleting object "+mID);
+
+                        // 가장 최하위에 있는 객체부터 순차적으로 삭제
+                        RealmResults<RouteSeqData> routeSeqDatas = mRealm.where(RouteSeqData.class).equalTo("_id", mID).findAll();
+                        routeSeqDatas.deleteAllFromRealm();
+                        Log.e("CHECK_DELETE_SEQ", "<<<<<<<<<<<<<< size "+ routeSeqDatas.size());
+
+                        RealmResults<RouteInfo> routeInfos = mRealm.where(RouteInfo.class).equalTo("_id", mID).findAll();
+                        routeInfos.deleteAllFromRealm();
+                        Log.e("CHECK_DELETE_INFO", "<<<<<<<<<<<<<<size "+routeInfos.size());
+
+
+                        mResult = mRealm.where(ScheduleData.class).equalTo("_id", mID).findFirst();
                         mResult.deleteFromRealm();
+                        Log.e("CHECK_DELETE_OBJECT", "<<<<<<<<<<<<<< size ");
+
                         dismiss();
                     }
                 });
-
                 break;
         }
     }
 
-    // TODO - RequestCode Application 객체에 정리해 둘 것
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

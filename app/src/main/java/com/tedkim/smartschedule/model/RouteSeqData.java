@@ -8,9 +8,18 @@ import io.realm.RealmObject;
 
 public class RouteSeqData extends RealmObject {
 
+    private String _id;
     private String subwayName;
     private String busName;
     private int trafficType;
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
+    }
 
     public String getSubwayName() {
         return subwayName;

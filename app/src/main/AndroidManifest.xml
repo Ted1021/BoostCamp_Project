@@ -46,7 +46,9 @@
         <activity
             android:name=".regist.RegistActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".regist.ReminderActivity" />
+        <activity
+
+            android:name=".regist.ReminderActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -56,7 +58,8 @@
         <activity
             android:name=".regist.MapsActivity"
             android:screenOrientation="portrait"
-            android:label="@string/title_activity_maps">
+            android:label="@string/title_activity_maps"
+            android:windowSoftInputMode="stateAlwaysHidden">
 
         </activity>
     </application>

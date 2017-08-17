@@ -13,7 +13,8 @@ import java.util.Date;
 
 public class DateConvertUtil {
 
-    private static SimpleDateFormat timeFormat = new SimpleDateFormat("a h:mm");
+    private static SimpleDateFormat timeFormat = new SimpleDateFormat("a h시 mm분");
+    private static SimpleDateFormat minFormat = new SimpleDateFormat("mm분");
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-M-d");
     private static SimpleDateFormat monthTitleFormat = new SimpleDateFormat("yyyy년 M월");
     private static SimpleDateFormat yearMonthFormat = new SimpleDateFormat("yyyy-M");
@@ -21,6 +22,8 @@ public class DateConvertUtil {
     public static String time2string(Date date) {
         return timeFormat.format(date);
     }
+
+
 
     public static String date2string(Date date) {
         return dateFormat.format(date);

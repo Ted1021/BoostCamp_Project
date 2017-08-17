@@ -29,6 +29,8 @@ import com.tedkim.smartschedule.util.DateConvertUtil;
 
 import java.util.Date;
 
+import io.realm.OrderedCollectionChangeSet;
+import io.realm.OrderedRealmCollectionChangeListener;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import retrofit2.Call;
@@ -101,6 +103,19 @@ public class ScheduleFragment extends Fragment {
 
         mLayoutManager = new LinearLayoutManager(getContext());
         mScheduleList.setLayoutManager(mLayoutManager);
+
+        mDataset.addChangeListener(new OrderedRealmCollectionChangeListener<RealmResults<ScheduleData>>() {
+            @Override
+            public void onChange(RealmResults<ScheduleData> scheduleDatas, OrderedCollectionChangeSet changeSet) {
+                Log.d("CHECK_CHANGES", ">>>>>>>>> onChange "+ changeSet.getChanges().length);
+
+                // 데이터셋의 삽입이 발생한 schedule data 에 대해서만 경로 업데이트를 진행
+                for(int position : changeSet.getInsertions()){
+                    callRouteData(scheduleDatas.get(position));
+                    mRefreshLayout.setRefreshing(true);
+                }
+            }
+        });
     }
 
     private void setAction() {
@@ -136,6 +151,55 @@ public class ScheduleFragment extends Fragment {
         });
     }
 
+    LocationListener mLocationListener = new LocationListener() {
+
+        @Override
+        public void onLocationChanged(Location location) {
+
+            LocationManager lm = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+            // 현재 디바이스의 위치
+            mCurrentLocation = location;
+
+            // 스케줄에 저장 된 최근 위치와 업데이트 된 현재 위치를 비교해 선별적으로 서버에 접근
+            for (ScheduleData data : mDataset) {
+
+                Log.d("CHECK_COMPARE_LONGITUDE", data.getCurrentLongitude() + " / " + mCurrentLocation.getLongitude());
+                Log.d("CHECK_COMPARE_LATITUDE", data.getCurrentLatitude() + " / " + mCurrentLocation.getLatitude());
+
+                if(data.getCurrentLongitude() != mCurrentLocation.getLongitude() ||
+                        data.getCurrentLatitude() != mCurrentLocation.getLatitude()){
+
+                    // 디바이스의 위치를 스케줄의 위치로 변환
+                    mRealm.beginTransaction();
+                    data.setCurrentLongitude(mCurrentLocation.getLongitude());
+                    data.setCurrentLatitude(mCurrentLocation.getLatitude());
+                    mRealm.commitTransaction();
+
+                    // 변환 후 이동 정보 호출
+                    callRouteData(data);
+                }
+                else{
+                    Log.d("CHECK_LOCATION",">>>>>>> same!");
+                    mRefreshLayout.setRefreshing(false);
+                }
+            }
+            lm.removeUpdates(this);
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+
+    };
+
     // TODO - 로직 전체로 봤을 때, 3중 For 문임 ... 굉장히 안좋음 - Realm 의 제한적 구조상 아마도 해결법은 서버단에서 데이터를 재가공해서 필요한 정보만 return 해주는 방법밖에 없음
     private void callRouteData(final ScheduleData data) {
 
@@ -153,16 +217,17 @@ public class ScheduleFragment extends Fragment {
                     RouteData result = response.body();
                     Log.e("CHECK_RESULT", "++++++++++ "+ result.getResult().getPath().length);
 
-
                     mRealm.beginTransaction();
                     ScheduleData obj = mRealm.where(ScheduleData.class).equalTo("_id", data.get_id()).findFirst();
 
+                    // 최대 3개의 경로를 가져 옴
                     for(int i=0; i<MAX_ROUTE_INFO; i++){
-
                         RouteData.Result.Path path = result.getResult().getPath()[i];
 
                         RouteInfo routeInfo = mRealm.createObject(RouteInfo.class);
 
+                        routeInfo.set_id(data.get_id());
+                        Log.e("CHECK_ROUTE_INFO", "+++++++++++++++ "+i+") "+routeInfo.get_id());
                         routeInfo.setDepartTime(DateConvertUtil.calDateMin(obj.getStartTime(), path.getInfo().getTotalTime()));
                         routeInfo.setArriveTime(obj.getEndTime());
                         routeInfo.setTotalTime(path.getInfo().getTotalTime());
@@ -174,11 +239,12 @@ public class ScheduleFragment extends Fragment {
 
                             RouteSeqData seqData = mRealm.createObject(RouteSeqData.class);
 
+                            seqData.set_id(data.get_id());
+                            Log.e("CHECK_ROUTE_SEQ", "++++++++++ "+i+") "+seqData.get_id());
                             seqData.setTrafficType(subPath.getTrafficType());
                             if(subPath != null){
                                 // subway
                                 if(seqData.getTrafficType() == TYPE_SUBWAY){
-
                                     seqData.setBusName(subPath.getLane().getName());
                                 }
                                 // bus
@@ -191,60 +257,21 @@ public class ScheduleFragment extends Fragment {
                         obj.routeInfoList.add(routeInfo);
                     }
                     mRealm.commitTransaction();
-
                 } else {
+                    Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), R.string.error_message_fail_data, Snackbar.LENGTH_LONG).show();
                     Log.e("CHECK_FAIL_RETROFIT", "----------- fail to get data");
                 }
+                mRefreshLayout.setRefreshing(false);
             }
 
             @Override
             public void onFailure(Call<RouteData> call, Throwable t) {
 
                 t.printStackTrace();
+                Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), R.string.error_message_fail_server, Snackbar.LENGTH_LONG).show();
+                mRefreshLayout.setRefreshing(false);
                 Log.e("CHECK_FAIL_SERVER", "----------- server access failure");
             }
         });
     }
-
-    LocationListener mLocationListener = new LocationListener() {
-
-        @Override
-        public void onLocationChanged(Location location) {
-
-            LocationManager lm = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-            mCurrentLocation = location;
-
-            // 스케줄에 저장 된 최근 위치와 업데이트 된 현재 위치를 비교해 선별적으로 서버에 접근
-            for (ScheduleData data : mDataset) {
-
-                Log.d("CHECK_COMPARE_LONGITUDE", data.getCurrentLongitude() + " / " + mCurrentLocation.getLongitude());
-                Log.d("CHECK_COMPARE_LATITUDE", data.getCurrentLatitude() + " / " + mCurrentLocation.getLatitude());
-
-                if(data.getCurrentLongitude() != mCurrentLocation.getLongitude() || data.getCurrentLatitude() != mCurrentLocation.getLatitude()){
-
-                    mRealm.beginTransaction();
-                    data.setCurrentLongitude(mCurrentLocation.getLongitude());
-                    data.setCurrentLatitude(mCurrentLocation.getLatitude());
-                    mRealm.commitTransaction();
-
-                    callRouteData(data);
-                }
-            }
-            mRefreshLayout.setRefreshing(false);
-            lm.removeUpdates(this);
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-        }
-
-    };
 }

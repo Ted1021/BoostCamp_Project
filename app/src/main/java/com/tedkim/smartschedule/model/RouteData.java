@@ -24,21 +24,13 @@ public class RouteData {
     public class Result
     {
         private int endRadius;
-
         private int outTrafficCheck;
-
         private int startRadius;
-
         private int busCount;
-
         private Path[] path;
-
         private double pointDistance;
-
         private int searchType;
-
         private int subwayBusCount;
-
         private int subwayCount;
 
         public int getEndRadius() {
@@ -122,9 +114,7 @@ public class RouteData {
         public class Path {
 
             private SubPath[] subPath;
-
             private int pathType;
-
             private Info info;
 
             public SubPath[] getSubPath() {
@@ -160,15 +150,10 @@ public class RouteData {
             public class SubPath {
 
                 private int trafficType;
-
                 private double distance;
-
                 private String sectionTime;
-
                 private String stationCount;
-
                 private Lane lane;
-
                 private PassStopList passStopList;
 
                 public int getTrafficType() {
@@ -228,47 +213,26 @@ public class RouteData {
                 public class Lane {
 
                     private String name;
-
                     private String busNo;
-
                     private int type;
-
                     private int busID;
-
                     private int subwayCode;
-
                     private String startName;
-
                     private double startX;
-
                     private double startY;
-
                     private String endName;
-
                     private double endX;
-
                     private double endY;
-
                     private String way;
-
                     private int wayCode;
-
                     private String door;
-
                     private int startID;
-
                     private int endID;
-
                     private String startExitNo;
-
                     private double startExitX;
-
                     private double startExitY;
-
                     private String endExitNo;
-
                     private double endExitX;
-
                     private double endExitY;
 
                     public String getName() {
@@ -457,7 +421,6 @@ public class RouteData {
                 public class PassStopList {
 
                     private Stations[] stations;
-
                     public Stations[] getStations() {
                         return stations;
                     }
@@ -469,13 +432,9 @@ public class RouteData {
                     public class Stations {
 
                         private String index;
-
                         private int stationID;
-
                         private String stationName;
-
                         private String y;
-
                         private String x;
 
                         public String getIndex() {
@@ -536,31 +495,18 @@ public class RouteData {
             public class Info {
 
                 private int totalWalk;
-
                 private int totalTime;
-
                 private int payment;
-
                 private int totalStationCount;
-
                 private int busStationCount;
-
                 private int totalWalkTime;
-
                 private int busTransitCount;
-
                 private int subwayTransitCount;
-
                 private int subwayStationCount;
-
                 private double totalDistance;
-
                 private double trafficDistance;
-
                 private String mapObj;
-
                 private String firstStartStation;
-
                 private String lastEndStation;
 
                 public int getTotalWalk() {

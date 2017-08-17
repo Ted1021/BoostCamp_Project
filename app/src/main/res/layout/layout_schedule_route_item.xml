@@ -22,10 +22,10 @@
             <LinearLayout
                 android:id="@+id/layout_routeInfo"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="120dp"
                 android:background="@color/colorDarkNavy"
                 android:orientation="horizontal"
-                android:padding="8dp"
+                android:padding="16dp"
                 android:visibility="gone">
 
                 <LinearLayout
@@ -131,7 +131,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="8dp">
+                android:paddingBottom="8dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="16dp">
 
                 <TextView
                     android:id="@+id/textView_title"
@@ -194,14 +197,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:drawableLeft="@drawable/ic_location"
+                        android:gravity="center_vertical"
                         android:text="address" />
-
-                    <Button
-                        android:id="@+id/button_search"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
-                        android:text="탐색" />
 
                 </LinearLayout>
 

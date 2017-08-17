@@ -34,5 +34,7 @@
     <string name="error_message_reminder">알림 시점을 설정 해 주셔야 합니다</string>
 
     <string name="error_message_location">GPS 접근을 허용 해 주셔야 합니다</string>
+    <string name="error_message_fail_data">이동 정보를 저장하지 못했습니다</string>
+    <string name="error_message_fail_server">서버 접속이 원활하지 못합니다</string>
 
 </resources>

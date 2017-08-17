@@ -11,13 +11,20 @@ import io.realm.RealmObject;
 
 public class RouteInfo extends RealmObject {
 
+    private String _id;
     private Date departTime, arriveTime;
-
     public RealmList<RouteSeqData> routeSequence;
-
     private int totalTime;
     private int payment;
     private int busStationCount, subwayStationCount;
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
+    }
 
     public Date getDepartTime() {
         return departTime;

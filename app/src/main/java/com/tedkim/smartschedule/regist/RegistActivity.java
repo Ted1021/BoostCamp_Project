@@ -24,6 +24,8 @@ import android.widget.TimePicker;
 
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.model.ReminderData;
+import com.tedkim.smartschedule.model.RouteInfo;
+import com.tedkim.smartschedule.model.RouteSeqData;
 import com.tedkim.smartschedule.model.ScheduleData;
 import com.tedkim.smartschedule.util.AppController;
 import com.tedkim.smartschedule.util.DateConvertUtil;
@@ -31,12 +33,13 @@ import com.tedkim.smartschedule.util.DateConvertUtil;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 
 import static com.tedkim.smartschedule.R.id.imageView_reminder;
-import static com.tedkim.smartschedule.home.HomeActivity.ACTION_CREATE;
 
 public class RegistActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher {
 
@@ -53,7 +56,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     Realm mRealm;
 
     // date info from Home Activity
-    long mPosition;
+    String mID;
 
     // dataset from other activity or screen
     String mSelectedAddress;
@@ -67,6 +70,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     private static final int SET_END = 1;
 
     int mTimeset = SET_START;
+    int mReqCommand = AppController.REQ_CREATE;
 
     int mSelectedColor;
 
@@ -93,23 +97,26 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         mRealm = Realm.getDefaultInstance();
 
         if (getIntent() != null) {
-            mPosition = getIntent().getLongExtra("POSITION", ACTION_CREATE);
+            mID = getIntent().getStringExtra("ID");
             mDate = getIntent().getStringExtra("DATE");
         }
 
-        Log.d("CHECK_DATE", "In register >>>>>>>>>>>>>>>>" + mDate);
+        Log.d("CHECK_DATE", "In register >>>>>>>>>>>>>>>>" + mDate + " / " + mID);
 
         initView();
 
         // 수정 작업일 경우, 이전 내용을 binding 아니면 빈칸으로 Activity 를 시작
-        if (mPosition != ACTION_CREATE) {
+        if (!mID.equals("")) {
+            mReqCommand = AppController.REQ_CORRECT;
             setData();
+
+            Log.e("CHECK_COMMAND", "+++++++++++++ " + mReqCommand);
         }
     }
 
     public void initView() {
 
-        mSelectedColor =  ContextCompat.getColor(RegistActivity.this, R.color.colorActivation);
+        mSelectedColor = ContextCompat.getColor(RegistActivity.this, R.color.colorActivation);
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
@@ -172,8 +179,8 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
     private void setData() {
 
-        ScheduleData result = mRealm.where(ScheduleData.class).equalTo("_id", mPosition).findFirst();
-        Log.d("CORRECT", ">>>>>>>>>>>>>>>>> " + mPosition);
+        ScheduleData result = mRealm.where(ScheduleData.class).equalTo("_id", mID).findFirst();
+        Log.d("CORRECT", ">>>>>>>>>>>>>>>>> " + mID);
 
         mTitle.setText(result.getTitle());
         mMemo.setText(result.getMemo());
@@ -187,7 +194,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         mSelectedAddress = result.getAddress();
         mLatitude = result.getLatitude();
         mLongitude = result.getLongitude();
-        mAllDay.setChecked(result.isAlldaySchedule());
+        mAllDay.setChecked(result.isAllDaySchedule());
         mFakeCall.setChecked(result.isFakeCall());
 
         // TODO - 참여자 표현방법 구상 필요
@@ -246,13 +253,24 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
                 ScheduleData scheduleData;
 
-                // 새로운 데이터 생성인 경우
-                if (mPosition == ACTION_CREATE) {
-                    scheduleData = mRealm.createObject(ScheduleData.class, getNextKey());
-                }
+                Log.e("CHECK_COMMAND", "+++++++++++++ " + mReqCommand);
+
+                // 새로운 데이터의 생성인 경우
+                if (mReqCommand == AppController.REQ_CREATE) {
+                    scheduleData = mRealm.createObject(ScheduleData.class, UUID.randomUUID().toString());
                 // 기존 데이터의 수정인 경우
-                else {
-                    scheduleData = mRealm.where(ScheduleData.class).equalTo("_id", mPosition).findFirst();
+                } else {
+                    scheduleData = mRealm.where(ScheduleData.class).equalTo("_id", mID).findFirst();
+                    // 경로정보를 받아 온 이력이 있다면,
+                    if (scheduleData.routeInfoList.size() != 0) {
+
+                        // 가장 최하위에 있는 객체부터 순차적으로 삭제
+                        RealmResults<RouteSeqData> routeSeqDatas = mRealm.where(RouteSeqData.class).equalTo("_id", mID).findAll();
+                        routeSeqDatas.deleteAllFromRealm();
+
+                        RealmResults<RouteInfo> routeInfos = mRealm.where(RouteInfo.class).equalTo("_id", mID).findAll();
+                        routeInfos.deleteAllFromRealm();
+                    }
                 }
 
                 scheduleData.setTitle(mTitle.getText().toString());
@@ -267,11 +285,11 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                 scheduleData.setReminderList(mReminders);
 
                 if (mAllDay.isChecked()) {
-                    scheduleData.setAlldaySchedule(true);
+                    scheduleData.setAllDaySchedule(true);
                     mAllDayIcon.setColorFilter(mSelectedColor);
 
                 } else {
-                    scheduleData.setAlldaySchedule(false);
+                    scheduleData.setAllDaySchedule(false);
                 }
 
                 if (mFakeCall.isChecked()) {
@@ -282,7 +300,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                     scheduleData.setFakeCall(false);
                 }
 
-                Log.d("CHECK_DATE", "Regist Activity >>>>>>>>>>>> "+scheduleData.getDate());
+                Log.d("CHECK_DATE", "Regist Activity >>>>>>>>>>>> " + scheduleData.getDate());
                 setResult(RESULT_OK);
             }
         });
@@ -337,22 +355,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     private void addReminder() {
 
         Intent intent = new Intent(RegistActivity.this, ReminderActivity.class);
-        startActivityForResult(intent, 102);
-    }
-
-    // Realm Object Auto Increment
-    // 아직 Auto increment 를 정식지원 하지않음 (latest version : 3.5.0)
-    public int getNextKey() {
-        try {
-            Number number = mRealm.where(ScheduleData.class).max("_id");
-            if (number != null) {
-                return number.intValue() + 1;
-            } else {
-                return 0;
-            }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return 0;
-        }
+        startActivityForResult(intent, AppController.REQ_REMINDER);
     }
 
     @Override
@@ -364,7 +367,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
             if (resultCode == RESULT_OK) {
 
                 String result;
-                if(data.getStringExtra("REMINDER") != null) {
+                if (data.getStringExtra("REMINDER") != null) {
                     result = data.getStringExtra("REMINDER");
                     mStringList.add(result);
                     mReminderText.setText(result);
@@ -456,4 +459,20 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     public void afterTextChanged(Editable s) {
 
     }
+
+    //    // Realm Object Auto Increment
+//    // 아직 Auto increment 를 정식지원 하지않음 (latest version : 3.5.0)
+//    public int getNextKey() {
+//        try {
+//            Number number = mRealm.where(ScheduleData.class).max("_id");
+//            if (number != null) {
+//                return number.intValue() + 1;
+//            } else {
+//                return 0;
+//            }
+//        } catch (ArrayIndexOutOfBoundsException e) {
+//            return 0;
+//        }
+//    }
+
 }

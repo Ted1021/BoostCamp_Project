@@ -154,7 +154,7 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
                                 Log.d("CHECK_DATE", "Before Register >>>>>>>>>>>>>>>" + mDate);
 
                                 intent.putExtra("DATE", mDate);
-                                intent.putExtra("POSITION", ACTION_CREATE);
+                                intent.putExtra("ID", "");
                                 startActivityForResult(intent, AppController.REQ_CREATE);
                             }
                         });
