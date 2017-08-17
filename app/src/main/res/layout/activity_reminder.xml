@@ -11,8 +11,8 @@
         android:id="@+id/toolbar_reminder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorAppTheme"
-        android:elevation="8dp"
+        android:background="@android:color/white"
+        android:elevation="2dp"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
         tools:layout_editor_absoluteX="8dp"
@@ -35,7 +35,7 @@
                 android:layout_toRightOf="@+id/imageButton_back"
                 android:text="@string/title_activity_reminder"
                 android:textAppearance="@style/TextAppearance.AppCompat"
-                android:textColor="@android:color/white"
+                android:textColor="@color/colorAppTheme"
                 android:textSize="@dimen/activityTitle_size" />
 
             <ImageButton

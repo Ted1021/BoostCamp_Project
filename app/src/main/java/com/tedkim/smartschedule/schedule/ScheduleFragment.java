@@ -151,6 +151,8 @@ public class ScheduleFragment extends Fragment {
                 if (response.isSuccessful()) {
 
                     RouteData result = response.body();
+                    Log.e("CHECK_RESULT", "++++++++++ "+ result.getResult().getPath().length);
+
 
                     mRealm.beginTransaction();
                     ScheduleData obj = mRealm.where(ScheduleData.class).equalTo("_id", data.get_id()).findFirst();
@@ -161,7 +163,7 @@ public class ScheduleFragment extends Fragment {
 
                         RouteInfo routeInfo = mRealm.createObject(RouteInfo.class);
 
-                        routeInfo.setDepartTime(DateConvertUtil.calDateMin(obj.getStartTime(),path.getInfo().getTotalTime()));
+                        routeInfo.setDepartTime(DateConvertUtil.calDateMin(obj.getStartTime(), path.getInfo().getTotalTime()));
                         routeInfo.setArriveTime(obj.getEndTime());
                         routeInfo.setTotalTime(path.getInfo().getTotalTime());
                         routeInfo.setPayment(path.getInfo().getPayment());

@@ -17,6 +17,7 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -34,6 +35,7 @@ import java.util.Date;
 import io.realm.Realm;
 import io.realm.RealmList;
 
+import static com.tedkim.smartschedule.R.id.imageView_reminder;
 import static com.tedkim.smartschedule.home.HomeActivity.ACTION_CREATE;
 
 public class RegistActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher {
@@ -41,10 +43,11 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     // ui components
     ImageButton mBack, mSave;
     EditText mTitle, mMemo, mAddress;
-    TextView mDateText, mStartText, mEndText, mSetting, mStartDate, mEndDate;
+    TextView mDateText, mStartText, mEndText, mSetting, mStartDate, mEndDate, mReminderText;
     CheckBox mAllDay, mFakeCall;
     Button mAddReminder, mSearchLocation;
     LinearLayout mMoreSetting;
+    ImageView mReminderIcon, mAddressIcon, mAllDayIcon, mFakeCallIcon;
 
     // realm database instance
     Realm mRealm;
@@ -64,6 +67,8 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     private static final int SET_END = 1;
 
     int mTimeset = SET_START;
+
+    int mSelectedColor;
 
     @Override
     protected void onStop() {
@@ -104,6 +109,8 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
     public void initView() {
 
+        mSelectedColor =  ContextCompat.getColor(RegistActivity.this, R.color.colorActivation);
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
 
@@ -114,7 +121,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         mSave.setOnClickListener(this);
 
         mTitle = (EditText) findViewById(R.id.editText_title);
-        mMemo = (EditText) findViewById(R.id.editText_desc);
+        mMemo = (EditText) findViewById(R.id.editText_memo);
 
         mDateText = (TextView) findViewById(R.id.textView_date);
         mDateText.setText(mDate);
@@ -137,6 +144,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
         mAddress = (EditText) findViewById(R.id.editText_address);
         mAddress.addTextChangedListener(this);
+        mAddressIcon = (ImageView) findViewById(R.id.imageView_location);
 
         mAddReminder = (Button) findViewById(R.id.button_addReminder);
         mAddReminder.setOnClickListener(this);
@@ -154,6 +162,12 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
         mEndDate = (TextView) findViewById(R.id.textView_endDate);
         mEndDate.setText(mDate);
+
+        mReminderText = (TextView) findViewById(R.id.textView_reminder);
+        mReminderIcon = (ImageView) findViewById(imageView_reminder);
+
+        mAllDayIcon = (ImageView) findViewById(R.id.imageView_allDay);
+        mFakeCallIcon = (ImageView) findViewById(R.id.imageView_fakeCall);
     }
 
     private void setData() {
@@ -162,7 +176,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         Log.d("CORRECT", ">>>>>>>>>>>>>>>>> " + mPosition);
 
         mTitle.setText(result.getTitle());
-        mMemo.setText(result.getDesc());
+        mMemo.setText(result.getMemo());
         mDate = result.getDate();
         mDateText.setText(mDate);
         mStart = result.getStartTime();
@@ -242,7 +256,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                 }
 
                 scheduleData.setTitle(mTitle.getText().toString());
-                scheduleData.setDesc(mMemo.getText().toString());
+                scheduleData.setMemo(mMemo.getText().toString());
                 scheduleData.setDate(mDate);
                 scheduleData.setStartTime(mStart);
                 scheduleData.setEndTime(mEnd);
@@ -254,12 +268,16 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
                 if (mAllDay.isChecked()) {
                     scheduleData.setAlldaySchedule(true);
+                    mAllDayIcon.setColorFilter(mSelectedColor);
+
                 } else {
                     scheduleData.setAlldaySchedule(false);
                 }
 
                 if (mFakeCall.isChecked()) {
                     scheduleData.setFakeCall(true);
+                    mFakeCallIcon.setColorFilter(mSelectedColor);
+
                 } else {
                     scheduleData.setFakeCall(false);
                 }
@@ -345,8 +363,12 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         if (requestCode == AppController.REQ_REMINDER) {
             if (resultCode == RESULT_OK) {
 
+                String result;
                 if(data.getStringExtra("REMINDER") != null) {
-                    mStringList.add(data.getStringExtra("REMINDER"));
+                    result = data.getStringExtra("REMINDER");
+                    mStringList.add(result);
+                    mReminderText.setText(result);
+                    mReminderIcon.setColorFilter(mSelectedColor);
                 }
             }
         }
@@ -357,6 +379,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
                 mSelectedAddress = data.getStringExtra("ADDRESS");
                 mAddress.setText(mSelectedAddress);
+                mAddressIcon.setColorFilter(mSelectedColor);
 
                 mLatitude = data.getDoubleExtra("LATITUDE", 0);
                 mLongitude = data.getDoubleExtra("LONGITUDE", 0);

@@ -19,7 +19,7 @@
         app:backgroundTint="@color/colorAppTheme"
         app:elevation="6dp"
         app:fabSize="normal"
-        app:srcCompat="@drawable/ic_action_add"/>
+        app:srcCompat="@drawable/ic_action_add" />
 
     <view
         android:id="@+id/viewPager"
@@ -31,32 +31,41 @@
         android:layout_above="@+id/tabLayout"
         android:layout_alignParentStart="true" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_above="@+id/tabLayout"
+        android:background="@color/colorLightGray" />
+
     <android.support.design.widget.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
+        android:layout_height="55dp"
+
         android:background="@android:color/white"
 
-        android:elevation="4dp"
+        android:elevation="2dp"
+        android:paddingTop="2dp"
         app:tabBackground="@drawable/tab_item_click_effect"
-
         app:tabIndicatorColor="@android:color/transparent"
         app:tabSelectedTextColor="@color/colorActivation"
         app:tabTextColor="@color/colorLightGray"
         tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp">
+        tools:layout_editor_absoluteY="8dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true">
 
         <android.support.design.widget.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:icon="@drawable/ic_schedule_check" />
+            android:icon="@drawable/ic_schedule_check"
+            android:text="스케줄" />
 
         <android.support.design.widget.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:icon="@drawable/ic_calendar" />
+            android:icon="@drawable/ic_calendar"
+            android:text="캘린더" />
 
     </android.support.design.widget.TabLayout>
 

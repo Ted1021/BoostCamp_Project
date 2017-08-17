@@ -21,7 +21,7 @@ public class ScheduleData extends RealmObject {
     private long _id;
 
     private String title;
-    private String desc;
+    private String memo;
 
     private String date;
     private Date startTime, endTime;
@@ -33,8 +33,6 @@ public class ScheduleData extends RealmObject {
 
     //    private ContactsContract.Contacts contacts;
 
-    // TODO - 다중 알람기능 추가를 위한 data type 구상필요...
-    // 아니 이걸 이렇게 써야 하다니 ... 아직 한참 멀었구만 ...
     private RealmList<ReminderData> reminderList;
 
     private boolean alldaySchedule;
@@ -66,12 +64,12 @@ public class ScheduleData extends RealmObject {
         this.title = title;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getMemo() {
+        return memo;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setMemo(String memo) {
+        this.memo = memo;
     }
 
     public String getAddress() {

@@ -112,14 +112,16 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
             Log.d("CHECK_INIT_LOCATION", ">>>> longitude : "+data.getCurrentLongitude()+" / latitude : "+data.getCurrentLatitude());
             holder.routeInfoLayout.setVisibility(View.VISIBLE);
 
-            holder.departInfo.setText(DateConvertUtil.time2string(data.routeInfoList.get(0).getDepartTime()));
+            holder.departInfo.setText(DateConvertUtil.time2string(data.routeInfoList.get(0).getDepartTime())+"분");
             holder.totalTime.setText(data.routeInfoList.get(0).getTotalTime()+"분");
+
         }
 
         holder.title.setText(data.getTitle());
         holder.start.setText(DateConvertUtil.time2string(data.getStartTime()));
         holder.end.setText(DateConvertUtil.time2string(data.getEndTime()));
         holder.address.setText(data.getAddress());
+        holder.memo.setText(data.getMemo());
     }
 
     private void setItemAction(ViewHolder holder, final ScheduleData data){
