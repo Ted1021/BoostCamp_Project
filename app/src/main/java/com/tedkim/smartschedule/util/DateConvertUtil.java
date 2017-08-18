@@ -13,9 +13,12 @@ import java.util.Date;
 
 public class DateConvertUtil {
 
+    public static int TYPE_KOR = 1;
+
     private static SimpleDateFormat timeFormat = new SimpleDateFormat("a h시 mm분");
     private static SimpleDateFormat minFormat = new SimpleDateFormat("mm분");
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-M-d");
+    private static SimpleDateFormat dateFormatKor = new SimpleDateFormat("M월 d일");
     private static SimpleDateFormat monthTitleFormat = new SimpleDateFormat("yyyy년 M월");
     private static SimpleDateFormat yearMonthFormat = new SimpleDateFormat("yyyy-M");
 
@@ -23,11 +26,11 @@ public class DateConvertUtil {
         return timeFormat.format(date);
     }
 
-
-
     public static String date2string(Date date) {
         return dateFormat.format(date);
     }
+
+    public static String date2string(Date date, int type){ return dateFormatKor.format(date);}
 
     public static String month2string(Date date) {
         return monthTitleFormat.format(date);

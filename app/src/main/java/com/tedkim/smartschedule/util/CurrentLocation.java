@@ -4,11 +4,13 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+
+import java.util.List;
+
+import static android.content.Context.LOCATION_SERVICE;
 
 /**
  * @author 김태원
@@ -19,51 +21,77 @@ import android.util.Log;
 
 public class CurrentLocation {
 
-    private static Context mContext;
-    //    public static LocationManager mLocationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
-    private static Location mLocation;
-
     public static Location getLocation(Context context) {
 
-        mContext = context;
-        final LocationManager mLocationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
+        List<String> providers = locationManager.getProviders(true);
+        Location bestLocation = null;
 
-        LocationListener locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
+        for (String provider : providers) {
 
-                mLocation = location;
-                Log.d("CHECK_GET_LOCATION", ">>>>>>>>>>>>> " + mLocation.getLongitude() + " / " + mLocation.getLatitude());
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-                mLocationManager.removeUpdates(this);
+                Location location = locationManager.getLastKnownLocation(provider);
+                if (location == null) {continue;}
+
+                if (bestLocation == null || location.getAccuracy() < bestLocation.getAccuracy()) {
+                    bestLocation = location;
+                }
             }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-
-        };
-
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-            return mLocation;
         }
 
-        return null;
+        if(bestLocation == null){
+            // 판교 H스퀘어 좌표로 초기화
+            bestLocation.setLongitude(127.1089531);
+            bestLocation.setLatitude(37.4014619);
+            Log.e("CHECK_ENTER", ">>>>>>>>> Location " + bestLocation.getLongitude()+"/"+bestLocation.getLatitude());
+            return bestLocation;
+        }
+        Log.e("CHECK_ENTER", ">>>>>>>>> Location " + bestLocation.getLongitude()+"/"+bestLocation.getLatitude());
+        return bestLocation;
     }
+
+//    public static Location getLocation(Context context) {
+//
+//        mContext = context;
+//        mLocationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+//        mLocationListener = new LocationListener() {
+//            @Override
+//            public void onLocationChanged(Location location) {
+//
+//                mLocation = location;
+//                Log.d("CHECK_GET_LOCATION", "Current Location >>>>>>>>>>>>> " + mLocation.getLongitude() + " / " + mLocation.getLatitude());
+//                mLocationManager.removeUpdates(this);
+//            }
+//
+//            @Override
+//            public void onStatusChanged(String provider, int status, Bundle extras) {
+//
+//            }
+//
+//            @Override
+//            public void onProviderEnabled(String provider) {
+//
+//            }
+//
+//            @Override
+//            public void onProviderDisabled(String provider) {
+//
+//            }
+//        };
+//
+//        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+//                ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+//
+//            Log.d("CHECK_PERMISSION", ">>>>>>>>> in CurrentLocation : " + ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION));
+//            Log.d("CHECK_PERMISSION", ">>>>>>>>> in CurrentLocation : " + ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION));
+//
+//            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
+//            return mLocation;
+//        }
+//        return null;
+//    }
 
 //    @Nullable
 //    public static Location getLastKnownLocation() {

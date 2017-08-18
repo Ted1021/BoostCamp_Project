@@ -52,6 +52,45 @@
             app:srcCompat="@drawable/ic_action_calendar_option" />
     </RelativeLayout>
 
+    <TextView
+        android:id="@+id/textView_today"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Today"
+        android:textColor="@color/colorAppTheme"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/layout_no_schedule"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical|center_horizontal"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/imageView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/ic_no_schedule" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center_horizontal"
+            android:text="No Schedule"
+            android:textColor="@color/colorLightGray"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/refreshLayout"
         android:layout_width="match_parent"

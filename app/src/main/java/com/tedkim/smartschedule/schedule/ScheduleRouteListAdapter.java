@@ -114,10 +114,10 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
         Realm realm = Realm.getDefaultInstance();
 
         RealmResults<RouteInfo> routeInfos = realm.where(RouteInfo.class).equalTo("_id", data.get_id()).findAll();
-        Log.d("CHECK_INIT_SIZE", ">>>>>> route info size = " + routeInfos.size());
+        Log.d("CHECK_INIT_SIZE", "Schedule Adapter >>>>>> route info size = " + routeInfos.size());
         if (routeInfos.size() != 0) {
 
-            Log.d("CHECK_INIT_LOCATION", ">>>> longitude : " + data.getCurrentLongitude() + " / latitude : " + data.getCurrentLatitude());
+            Log.d("CHECK_INIT_LOCATION", "Schedule Adapter >>>> longitude : " + data.getCurrentLongitude() + " / latitude : " + data.getCurrentLatitude());
             holder.routeInfoLayout.setVisibility(View.VISIBLE);
             checkScheduleState(holder, routeInfos.first());
         }
@@ -181,7 +181,7 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
 
         long interval = routeInfo.getDepartTime().getTime() - System.currentTimeMillis();
         long result = TimeUnit.MILLISECONDS.toMinutes(interval);
-        Log.d("CHECK_INTERVAL", "----------- "+result);
+        Log.d("CHECK_INTERVAL", "schedule adapter ----------- "+result);
 
         if(result < 0){
             holder.routeInfoLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorShadow));
