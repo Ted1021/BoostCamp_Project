@@ -53,7 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="24dp"
                 android:background="@android:color/transparent"
                 android:ems="10"
                 android:gravity="center_horizontal"
@@ -174,12 +174,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:padding="0dp"
                     app:srcCompat="@drawable/ic_notification" />
 
                 <TextView
                     android:id="@+id/textView_reminder"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
@@ -215,13 +216,14 @@
                     android:id="@+id/editText_address"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
                     android:ems="10"
                     android:hint="주소 없음"
                     android:inputType="textPersonName"
-                    android:paddingLeft="8dp"
-                    android:textColorHint="@color/colorLightGray" />
+                    android:textColorHint="@color/colorLightGray"
+                    android:textSize="16sp" />
 
                 <Button
                     android:id="@+id/button_searchLocation"
@@ -259,7 +261,8 @@
                     android:ems="10"
                     android:hint="메모"
                     android:inputType="textPersonName"
-                    android:textColorHint="@color/colorLightGray" />
+                    android:textColorHint="@color/colorLightGray"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
@@ -282,9 +285,10 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginBottom="24dp"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
+                    android:layout_marginTop="8dp"
                     android:orientation="horizontal">
 
                     <ImageView
@@ -315,7 +319,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginBottom="20dp"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
                     android:orientation="horizontal">
@@ -358,12 +362,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        app:srcCompat="@drawable/ic_notification" />
+                        app:srcCompat="@drawable/ic_member" />
 
                     <TextView
                         android:id="@+id/textView_member"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginLeft="8dp"
                         android:layout_weight="1"
                         android:gravity="center_vertical"

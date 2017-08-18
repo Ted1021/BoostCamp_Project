@@ -99,8 +99,12 @@ public class CalendarFragment extends Fragment {
         // init Realm database
         mRealm = Realm.getDefaultInstance();
 
+        long now = System.currentTimeMillis();
+        Date date = new Date(now);
+        Log.d("CHECK_CURRENT_DATE", "Calendar Fragment >>> "+DateConvertUtil.date2string(date));
+
         initView(view);
-        setRecyclerView();
+        setRecyclerView(date);
         setCalendarAction();
 
         return view;
@@ -121,10 +125,8 @@ public class CalendarFragment extends Fragment {
         mScheduleList = (RecyclerView) view.findViewById(R.id.recyclerView_scheduleList);
     }
 
-    private void setRecyclerView() {
+    private void setRecyclerView(final Date date) {
 
-        long now = System.currentTimeMillis();
-        Date date = new Date(now);
         checkExistSchedules(date);
         mDataset = mRealm.where(ScheduleData.class).equalTo("date", DateConvertUtil.date2string(date)).findAll();
         mDataset = mDataset.sort("startTime");
@@ -132,6 +134,21 @@ public class CalendarFragment extends Fragment {
 
         mAdapter = new ScheduleListRealmAdapter(mDataset, true, getContext());
         mScheduleList.setAdapter(mAdapter);
+        mDataset.addChangeListener(new OrderedRealmCollectionChangeListener<RealmResults<ScheduleData>>() {
+            @Override
+            public void onChange(RealmResults<ScheduleData> scheduleDatas, OrderedCollectionChangeSet changeSet) {
+
+                if(changeSet.getInsertions().length != 0){
+                    mCalendarView.addEvent(new Event(ContextCompat.getColor(getContext(), R.color.colorActivation), date.getTime()), true);
+                }
+
+                if(changeSet.getDeletions().length != 0){
+                    mCalendarView.removeEvent(new Event(ContextCompat.getColor(getContext(), R.color.colorActivation), date.getTime()), true);
+                }
+                mAdapter.notifyDataSetChanged();
+                checkItemCount();
+            }
+        });
 
         mLayoutManager = new LinearLayoutManager(getContext());
         mScheduleList.setLayoutManager(mLayoutManager);
@@ -183,28 +200,30 @@ public class CalendarFragment extends Fragment {
     }
 
     // 특정 날짜가 선택 되었을 때, mDataset 을 update 시키는 method
-    private void updateScheduleList(Date date) {
-
-        Log.d("CHECK_UPDATE", "inside onclick " + DateConvertUtil.date2string(date));
+    private void updateScheduleList(final Date date) {
 
         // 새로이 날짜를 클릭 했을 때,
         mDataset = mRealm.where(ScheduleData.class).equalTo("date", DateConvertUtil.date2string(date)).findAll();
         mDataset = mDataset.sort("startTime");
-
-        mAdapter = new ScheduleListRealmAdapter(mDataset, true, getContext());
-        mScheduleList.setAdapter(mAdapter);
-        mAdapter.notifyDataSetChanged();
-
+        mAdapter.updateData(mDataset);
+        checkItemCount();
         // 클릭한 날짜 내에서 새로운 일정이 추가 되거나 기존의 일정이 변경 및 삭제 될 떄,
         mDataset.addChangeListener(new OrderedRealmCollectionChangeListener<RealmResults<ScheduleData>>() {
             @Override
             public void onChange(RealmResults<ScheduleData> collection, OrderedCollectionChangeSet changeSet) {
 
+                if(changeSet.getInsertions().length != 0){
+                    mCalendarView.addEvent(new Event(ContextCompat.getColor(getContext(), R.color.colorActivation), date.getTime()), true);
+                }
+
+                if(changeSet.getDeletions().length != 0){
+                    mCalendarView.removeEvent(new Event(ContextCompat.getColor(getContext(), R.color.colorActivation), date.getTime()), true);
+                }
+
                 mAdapter.notifyDataSetChanged();
                 checkItemCount();
             }
         });
-        checkItemCount();
     }
 
     // 등록 된 모든 스케줄들에 대해 Dot 마커를 찍는다

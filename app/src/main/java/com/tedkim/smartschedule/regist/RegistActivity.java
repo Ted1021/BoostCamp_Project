@@ -46,11 +46,11 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     // ui components
     ImageButton mBack, mSave;
     EditText mTitle, mMemo, mAddress;
-    TextView mDateText, mStartText, mEndText, mSetting, mStartDate, mEndDate, mReminderText;
+    TextView mDateText, mStartText, mEndText, mSetting, mStartDate, mEndDate, mReminderText, mMember;
     CheckBox mAllDay, mFakeCall;
     Button mAddReminder, mSearchLocation;
     LinearLayout mMoreSetting;
-    ImageView mReminderIcon, mAddressIcon, mAllDayIcon, mFakeCallIcon;
+    ImageView mReminderIcon, mAddressIcon, mAllDayIcon, mFakeCallIcon, mMemoIcon, mMemberIcon;
 
     // realm database instance
     Realm mRealm;
@@ -110,7 +110,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
             mReqCommand = AppController.REQ_CORRECT;
             setData();
 
-            Log.e("CHECK_COMMAND", "+++++++++++++ " + mReqCommand);
+            Log.e("CHECK_COMMAND", "regist Activity +++ " + mReqCommand);
         }
     }
 
@@ -128,7 +128,9 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         mSave.setOnClickListener(this);
 
         mTitle = (EditText) findViewById(R.id.editText_title);
+
         mMemo = (EditText) findViewById(R.id.editText_memo);
+        mMemoIcon = (ImageView) findViewById(R.id.imageView_memo);
 
         mDateText = (TextView) findViewById(R.id.textView_date);
         mDateText.setText(mDate);
@@ -157,7 +159,10 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         mAddReminder.setOnClickListener(this);
 
         mAllDay = (CheckBox) findViewById(R.id.checkBox_allDay);
+        mAllDayIcon = (ImageView) findViewById(R.id.imageView_allDay);
+
         mFakeCall = (CheckBox) findViewById(R.id.checkBox_fakeCall);
+        mFakeCallIcon = (ImageView) findViewById(R.id.imageView_fakeCall);
 
         mSetting = (TextView) findViewById(R.id.textView_setting);
         mSetting.setOnClickListener(this);
@@ -173,8 +178,8 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         mReminderText = (TextView) findViewById(R.id.textView_reminder);
         mReminderIcon = (ImageView) findViewById(imageView_reminder);
 
-        mAllDayIcon = (ImageView) findViewById(R.id.imageView_allDay);
-        mFakeCallIcon = (ImageView) findViewById(R.id.imageView_fakeCall);
+        mMember = (TextView) findViewById(R.id.textView_member);
+        mMemberIcon = (ImageView) findViewById(R.id.imageView_member);
     }
 
     private void setData() {
@@ -197,8 +202,9 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         mAllDay.setChecked(result.isAllDaySchedule());
         mFakeCall.setChecked(result.isFakeCall());
 
-        // TODO - 참여자 표현방법 구상 필요
-//        mContacts.setText(result.getContacts());
+        mReminderIcon.setColorFilter(mSelectedColor);
+        mAddressIcon.setColorFilter(mSelectedColor);
+        mMemoIcon.setColorFilter(mSelectedColor);
 
         for (ReminderData reminder : result.getReminderList()) {
             mStringList.add(reminder.getReminder());
@@ -300,7 +306,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                     scheduleData.setFakeCall(false);
                 }
 
-                Log.d("CHECK_DATE", "Regist Activity >>>>>>>>>>>> " + scheduleData.getDate());
+                Log.d("CHECK_DATE", "Regist Activity >>> " + scheduleData.getDate());
                 setResult(RESULT_OK);
             }
         });
@@ -393,9 +399,11 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
 
+        Date currentDate = DateConvertUtil.string2date(mDate);
+
         // TODO - 각각 현재 날짜와 시간 가져오는 방법을 알아 볼 것
-        DatePickerDialog dateDialog = new DatePickerDialog(this, mDateListener, 2017, 8 - 1, 7);
-        TimePickerDialog timeDialog = new TimePickerDialog(this, mTimeListener, 15, 24, false);
+        DatePickerDialog dateDialog = new DatePickerDialog(this, mDateListener, DateConvertUtil.yearFromDate(currentDate), DateConvertUtil.monthFromDate(currentDate), DateConvertUtil.dayFromDate(currentDate));
+        TimePickerDialog timeDialog = new TimePickerDialog(this, mTimeListener, DateConvertUtil.hourOfDayFromDate(mStart), DateConvertUtil.minutesFromDate(mStart), false);
 
         switch (v.getId()) {
 

@@ -45,10 +45,10 @@ public class CurrentLocation {
             // 판교 H스퀘어 좌표로 초기화
             bestLocation.setLongitude(127.1089531);
             bestLocation.setLatitude(37.4014619);
-            Log.e("CHECK_ENTER", ">>>>>>>>> Location " + bestLocation.getLongitude()+"/"+bestLocation.getLatitude());
+            Log.e("CHECK_ENTER", ">>>>>>>>> Location fail " + bestLocation.getLongitude()+"/"+bestLocation.getLatitude());
             return bestLocation;
         }
-        Log.e("CHECK_ENTER", ">>>>>>>>> Location " + bestLocation.getLongitude()+"/"+bestLocation.getLatitude());
+        Log.e("CHECK_ENTER", ">>>>>>>>> Location success " + bestLocation.getLongitude()+"/"+bestLocation.getLatitude());
         return bestLocation;
     }
 

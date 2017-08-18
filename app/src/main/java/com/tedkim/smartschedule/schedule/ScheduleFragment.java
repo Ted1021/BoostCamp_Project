@@ -160,6 +160,7 @@ public class ScheduleFragment extends Fragment {
                     // 스케줄에 저장 된 최근 위치와 업데이트 된 현재 위치를 비교해 선별적으로 서버에 접근
                     for (ScheduleData data : mDataset) {
 
+                        Log.e("CHECK_LOCATION", "schedule fragment >>>> "+data.getLongitude()+" / "+data.getLatitude());
                         if (data.getLongitude() != mCurrentLocation.getLongitude() || data.getLatitude() != mCurrentLocation.getLatitude()) {
                             // 디바이스의 위치를 스케줄의 위치로 변환
                             mRealm.beginTransaction();
@@ -167,6 +168,7 @@ public class ScheduleFragment extends Fragment {
                             data.setCurrentLatitude(mCurrentLocation.getLatitude());
                             mRealm.commitTransaction();
                         }
+
                         // 변환 후 이동 정보 호출
                         callRouteData(data);
                     }
@@ -237,7 +239,6 @@ public class ScheduleFragment extends Fragment {
                     Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), R.string.error_message_fail_data, Snackbar.LENGTH_LONG).show();
                     Log.e("CHECK_FAIL_RETROFIT", "schedule fragment ----------- fail to get data");
                 }
-
                 mRefreshLayout.setRefreshing(false);
             }
 

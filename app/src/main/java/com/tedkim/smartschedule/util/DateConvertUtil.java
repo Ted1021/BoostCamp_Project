@@ -64,4 +64,44 @@ public class DateConvertUtil {
         return calendar.getTime();
     }
 
+    public static int yearFromDate(Date targetDate){
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(targetDate);
+
+        return calendar.get(Calendar.YEAR);
+    }
+
+    public static int monthFromDate(Date targetDate){
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(targetDate);
+
+        return calendar.get(Calendar.MONTH);
+    }
+
+    public static int dayFromDate(Date targetDate){
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(targetDate);
+
+        return calendar.get(Calendar.DAY_OF_MONTH);
+    }
+
+    public static int hourOfDayFromDate(Date targetDate){
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(targetDate);
+
+        return calendar.get(Calendar.HOUR_OF_DAY);
+    }
+
+    public static int minutesFromDate(Date targetDate){
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(targetDate);
+
+        return calendar.get(Calendar.MINUTE);
+    }
+
 }
