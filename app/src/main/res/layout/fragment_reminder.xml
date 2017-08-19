@@ -1,0 +1,156 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context="com.tedkim.smartschedule.regist.ReminderFragment">
+
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cardView_reminder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView_timeList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="24dp"
+                android:drawableLeft="@drawable/ic_reminder"
+                android:drawablePadding="16dp"
+                android:gravity="center_vertical|center_horizontal"
+                android:text="알림"
+                android:textColor="@color/colorAppTheme"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@color/colorLightGray" />
+
+            <CheckedTextView
+                android:id="@+id/checkedTextView_onTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginTop="8dp"
+                android:checkMark="@drawable/ic_action_unchecked"
+                android:checked="false"
+                android:gravity="center_vertical"
+                android:text="정시"
+                android:textColor="@color/colorLightGray"
+                android:textStyle="bold" />
+
+            <CheckedTextView
+                android:id="@+id/checkedTextView_5min"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginTop="8dp"
+                android:checkMark="@drawable/ic_action_unchecked"
+                android:gravity="center_vertical"
+                android:text="5분 전"
+                android:textColor="@color/colorLightGray"
+                android:textStyle="bold" />
+
+            <CheckedTextView
+                android:id="@+id/checkedTextView_15min"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginTop="8dp"
+                android:checkMark="@drawable/ic_action_unchecked"
+                android:gravity="center_vertical"
+                android:text="15분 전"
+                android:textColor="@color/colorLightGray"
+                android:textStyle="bold" />
+
+            <CheckedTextView
+                android:id="@+id/checkedTextView_30min"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginTop="8dp"
+                android:checkMark="@drawable/ic_action_unchecked"
+                android:gravity="center_vertical"
+                android:text="30분 전"
+                android:textColor="@color/colorLightGray"
+                android:textStyle="bold" />
+
+            <CheckedTextView
+                android:id="@+id/checkedTextView_1hour"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginTop="8dp"
+                android:checkMark="@drawable/ic_action_unchecked"
+                android:gravity="center_vertical"
+                android:text="1시간 전"
+                android:textColor="@color/colorLightGray"
+                android:textStyle="bold" />
+
+            <CheckedTextView
+                android:id="@+id/checkedTextView_1day"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginTop="8dp"
+                android:checkMark="@drawable/ic_action_unchecked"
+                android:gravity="center_vertical"
+                android:text="1일 전"
+                android:textColor="@color/colorLightGray"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="24dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/button_cancel"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="취소"
+                    android:textColor="@color/colorShadow" />
+
+                <Button
+                    android:id="@+id/button_save"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="확인"
+                    android:textColor="@color/colorActivation"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+</LinearLayout>

@@ -27,7 +27,7 @@ public class ScheduleData extends RealmObject {
     private double latitude, longitude;
     private double currentLatitude=0, currentLongitude=0;
     //    private ContactsContract.Contacts contacts;
-    private RealmList<ReminderData> reminderList;
+    public RealmList<ReminderData> reminderList;
     private boolean allDaySchedule;
     private boolean fakeCall;
 
@@ -128,14 +128,6 @@ public class ScheduleData extends RealmObject {
 
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
-    }
-
-    public RealmList<ReminderData> getReminderList() {
-        return reminderList;
-    }
-
-    public void setReminderList(RealmList<ReminderData> reminderList) {
-        this.reminderList = reminderList;
     }
 
     public boolean isAllDaySchedule() {

@@ -5,6 +5,10 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -61,7 +65,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     // dataset from other activity or screen
     String mSelectedAddress;
     RealmList<ReminderData> mReminders;
-    ArrayList<String> mStringList = new ArrayList<>();
+    ArrayList<String> mReminderTextList = new ArrayList<>();
     double mLatitude, mLongitude;
     Date mStart, mEnd;
     String mDate;
@@ -206,8 +210,9 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         mAddressIcon.setColorFilter(mSelectedColor);
         mMemoIcon.setColorFilter(mSelectedColor);
 
-        for (ReminderData reminder : result.getReminderList()) {
-            mStringList.add(reminder.getReminder());
+        for (ReminderData reminder : result.reminderList) {
+
+            mReminderTextList.add(String.format("%d분",reminder.getReminder()));
         }
     }
 
@@ -252,7 +257,6 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
     private void insertSchedule() {
 
-        // Async database transaction
         mRealm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -264,8 +268,10 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                 // 새로운 데이터의 생성인 경우
                 if (mReqCommand == AppController.REQ_CREATE) {
                     scheduleData = mRealm.createObject(ScheduleData.class, UUID.randomUUID().toString());
+                }
+
                 // 기존 데이터의 수정인 경우
-                } else {
+                else {
                     scheduleData = mRealm.where(ScheduleData.class).equalTo("_id", mID).findFirst();
                     // 경로정보를 받아 온 이력이 있다면,
                     if (scheduleData.routeInfoList.size() != 0) {
@@ -284,11 +290,10 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                 scheduleData.setDate(mDate);
                 scheduleData.setStartTime(mStart);
                 scheduleData.setEndTime(mEnd);
-
                 scheduleData.setAddress(mSelectedAddress);
                 scheduleData.setLatitude(mLatitude);
                 scheduleData.setLongitude(mLongitude);
-                scheduleData.setReminderList(mReminders);
+//                scheduleData.setReminderList(mReminders);
 
                 if (mAllDay.isChecked()) {
                     scheduleData.setAllDaySchedule(true);
@@ -333,7 +338,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         }
 
         // Reminder Check
-        if (mStringList.isEmpty()) {
+        if (mReminderTextList.isEmpty()) {
             Snackbar.make(getWindow().getDecorView().getRootView(), R.string.error_message_reminder, Snackbar.LENGTH_LONG).show();
             return false;
         }
@@ -358,10 +363,26 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     // Call Reminder Activity
-    private void addReminder() {
+//    private void addReminder() {
+//
+//        Intent intent = new Intent(RegistActivity.this, ReminderActivity.class);
+//        startActivityForResult(intent, AppController.REQ_REMINDER);
+//    }
 
-        Intent intent = new Intent(RegistActivity.this, ReminderActivity.class);
-        startActivityForResult(intent, AppController.REQ_REMINDER);
+    private void addReminder(){
+
+        FragmentManager fragmentManager = RegistActivity.this.getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+        Fragment prev = fragmentManager.findFragmentByTag("reminder");
+        if(prev != null){
+            transaction.remove(prev);
+        }
+
+        ReminderFragment dialog = new ReminderFragment();
+        dialog.setStyle(DialogFragment.STYLE_NORMAL, R.style.EtsyBlurDialogTheme);
+//        DetailFragment dialog = DetailFragment.newInstance(id);
+        dialog.show(fragmentManager, "reminder");
     }
 
     @Override
@@ -375,7 +396,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                 String result;
                 if (data.getStringExtra("REMINDER") != null) {
                     result = data.getStringExtra("REMINDER");
-                    mStringList.add(result);
+                    mReminderTextList.add(result);
                     mReminderText.setText(result);
                     mReminderIcon.setColorFilter(mSelectedColor);
                 }

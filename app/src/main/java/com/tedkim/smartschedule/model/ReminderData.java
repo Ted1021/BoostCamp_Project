@@ -8,13 +8,22 @@ import io.realm.RealmObject;
 
 public class ReminderData extends RealmObject {
 
-    private String reminder;
+    private String _id;
+    private int reminder;
 
-    public String getReminder() {
+    public int getReminder() {
         return reminder;
     }
 
-    public void setReminder(String reminder) {
+    public void setReminder(int reminder) {
         this.reminder = reminder;
+    }
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
     }
 }
