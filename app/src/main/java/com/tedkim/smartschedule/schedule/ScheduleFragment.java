@@ -26,9 +26,11 @@ import com.tedkim.smartschedule.util.DateConvertUtil;
 
 import java.util.Date;
 
+import io.realm.ObjectChangeSet;
 import io.realm.OrderedCollectionChangeSet;
 import io.realm.OrderedRealmCollectionChangeListener;
 import io.realm.Realm;
+import io.realm.RealmObjectChangeListener;
 import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,20 +47,27 @@ import static com.tedkim.smartschedule.util.DateConvertUtil.TYPE_KOR;
 
 public class ScheduleFragment extends Fragment {
 
+    // fragment view components
     SwipeRefreshLayout mRefreshLayout;
     LinearLayout mNoSchedule;
     TextView mToday;
     Date mDate;
 
+    // realm components
     Realm mRealm;
+    RealmObjectChangeListener<ScheduleData> mRealmObjectListener;
+    OrderedRealmCollectionChangeListener<RealmResults<ScheduleData>> mRealmCollectionListener;
 
+    // recyclerView adapter components
     RealmResults<ScheduleData> mDataset;
     ScheduleRouteListAdapter mAdapter;
     RecyclerView mScheduleList;
     RecyclerView.LayoutManager mLayoutManager;
 
+    // check device location
     Location mCurrentLocation;
 
+    // traffic data type enum
     private static int MAX_ROUTE_INFO = 3;
     private static int TYPE_SUBWAY = 1;
     private static int TYPE_BUS = 2;
@@ -76,10 +85,8 @@ public class ScheduleFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_schedule, container, false);
 
-        // init Realm database
-        mRealm = Realm.getDefaultInstance();
-
         initView(view);
+        initRealm();
         setRecyclerView();
         setAction();
 
@@ -98,6 +105,58 @@ public class ScheduleFragment extends Fragment {
         mScheduleList = (RecyclerView) view.findViewById(R.id.recyclerView_scheduleList);
     }
 
+    private void initRealm() {
+
+        // init Realm database
+        mRealm = Realm.getDefaultInstance();
+
+        // init Realm managed object listener
+        mRealmObjectListener = new RealmObjectChangeListener<ScheduleData>() {
+            @Override
+            public void onChange(ScheduleData scheduleData, ObjectChangeSet changeSet) {
+
+                if (changeSet.isFieldChanged("startTime") || changeSet.isFieldChanged("address")) {
+
+                    Log.d("CHECK_SCHEDULE_DATA", "schedule fragment >>>>> " + scheduleData.get_id());
+                    callRouteData(scheduleData);
+                }
+            }
+        };
+
+        // init Realm data collection (=RealmResults) listener
+        mRealmCollectionListener = new OrderedRealmCollectionChangeListener<RealmResults<ScheduleData>>() {
+            @Override
+            public void onChange(RealmResults<ScheduleData> scheduleDatas, OrderedCollectionChangeSet changeSet) {
+
+                if (mDataset.isEmpty()) {
+                    mNoSchedule.setVisibility(View.VISIBLE);
+                } else {
+                    mNoSchedule.setVisibility(View.GONE);
+                }
+
+                // 데이터셋의 삽입이 발생한 schedule data에 대해 경로 업데이트를 진행
+                for (int position : changeSet.getInsertions()) {
+
+                    mRefreshLayout.setRefreshing(true);
+                    mCurrentLocation = CurrentLocation.getLocation(getContext());
+
+                    // 스케줄의 위치를 현재 '디바이스' 의 위치로 변환
+                    mRealm.beginTransaction();
+                    scheduleDatas.get(position).setCurrentLongitude(mCurrentLocation.getLongitude());
+                    scheduleDatas.get(position).setCurrentLatitude(mCurrentLocation.getLatitude());
+                    mRealm.commitTransaction();
+
+                    callRouteData(scheduleDatas.get(position));
+                }
+
+                for (int position : changeSet.getChanges()) {
+                    Log.d("CHECK_CHANGE_COLLECTION", "schedule fragment >>>>> in collection change listener");
+                    callRouteData(scheduleDatas.get(position));
+                }
+            }
+        };
+    }
+
     private void setRecyclerView() {
 
         mDataset = mRealm.where(ScheduleData.class).equalTo("date", DateConvertUtil.date2string(mDate)).findAll();
@@ -109,43 +168,18 @@ public class ScheduleFragment extends Fragment {
         mLayoutManager = new LinearLayoutManager(getContext());
         mScheduleList.setLayoutManager(mLayoutManager);
 
-        if(mDataset.isEmpty()){
+        if (mDataset.isEmpty()) {
             mNoSchedule.setVisibility(View.VISIBLE);
-        } else{
+        } else {
             mNoSchedule.setVisibility(View.GONE);
         }
 
-        mDataset.addChangeListener(new OrderedRealmCollectionChangeListener<RealmResults<ScheduleData>>() {
-            @Override
-            public void onChange(RealmResults<ScheduleData> scheduleDatas, OrderedCollectionChangeSet changeSet) {
-
-                if(mDataset.isEmpty()){
-                    mNoSchedule.setVisibility(View.VISIBLE);
-                } else{
-                    mNoSchedule.setVisibility(View.GONE);
-                }
-
-                // 데이터셋의 삽입이 발생한 schedule data에 대해 경로 업데이트를 진행
-                for (int position : changeSet.getInsertions()) {
-
-                    mRefreshLayout.setRefreshing(true);
-                    mCurrentLocation = CurrentLocation.getLocation(getContext());
-
-                    // 스케줄의 위치를 디바이스의 위치로 변환
-                    mRealm.beginTransaction();
-                    scheduleDatas.get(position).setCurrentLongitude(mCurrentLocation.getLongitude());
-                    scheduleDatas.get(position).setCurrentLatitude(mCurrentLocation.getLatitude());
-                    mRealm.commitTransaction();
-
-                    callRouteData(scheduleDatas.get(position));
-                }
-            }
-        });
+        mDataset.addChangeListener(mRealmCollectionListener);
     }
 
     private void setAction() {
 
-        // 모든 오늘자 스케줄에 대한 업데이트 진행
+        // 오늘자 '모든' 스케줄에 대한 업데이트 진행
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -157,7 +191,7 @@ public class ScheduleFragment extends Fragment {
                     // 스케줄에 저장 된 최근 위치와 업데이트 된 현재 위치를 비교해 선별적으로 서버에 접근
                     for (ScheduleData data : mDataset) {
 
-                        Log.e("CHECK_LOCATION", "schedule fragment >>>> "+data.getLongitude()+" / "+data.getLatitude());
+                        Log.e("CHECK_LOCATION", "schedule fragment >>>> " + data.getLongitude() + " / " + data.getLatitude());
                         if (data.getLongitude() != mCurrentLocation.getLongitude() || data.getLatitude() != mCurrentLocation.getLatitude()) {
                             // 디바이스의 위치를 스케줄의 위치로 변환
                             mRealm.beginTransaction();

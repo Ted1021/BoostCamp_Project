@@ -36,7 +36,7 @@ import io.realm.RealmResults;
  * @date 2017.08.08
  */
 
-public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleData, ScheduleRouteListAdapter.ViewHolder> {
+public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleData, ScheduleRouteListAdapter.ViewHolder> implements View.OnClickListener {
 
     Context mContext;
     LayoutInflater mInflater;
@@ -198,8 +198,10 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
             holder.departInfo.setText(DateConvertUtil.time2string(routeInfo.getDepartTime()));
             holder.totalTime.setText(String.format("%d 분", routeInfo.getTotalTime()));
         }
+    }
 
-
+    @Override
+    public void onClick(View v) {
 
     }
 }

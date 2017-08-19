@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +41,7 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
 
     TextView mTitle, mStart, mStartDate, mEnd, mEndDate, mAddress, mMemo, mReminder;
     Button mCorrect, mDelete;
+    CardView mScheduleDetail;
 
     Realm mRealm;
     ScheduleData mResult;
@@ -98,6 +100,9 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
         mCorrect.setOnClickListener(this);
         mDelete = (Button) view.findViewById(R.id.button_delete);
         mDelete.setOnClickListener(this);
+
+        mScheduleDetail = (CardView) view.findViewById(R.id.cardView_scheduleDetail);
+        mScheduleDetail.setOnClickListener(this);
     }
 
     private void setData() {
@@ -172,6 +177,10 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
                         dismiss();
                     }
                 });
+                break;
+
+            case R.id.cardView_scheduleDetail:
+
                 break;
         }
     }

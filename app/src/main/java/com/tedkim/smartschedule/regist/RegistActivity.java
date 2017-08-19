@@ -41,6 +41,7 @@ import java.util.TreeMap;
 import java.util.UUID;
 
 import io.realm.Realm;
+import io.realm.RealmObjectChangeListener;
 import io.realm.RealmResults;
 
 import static com.tedkim.smartschedule.R.id.imageView_reminder;
@@ -79,6 +80,8 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
     int mSelectedColor, mUnSelectedColor;
 
+    RealmObjectChangeListener<ScheduleData> mRealmObjectListener;
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -98,16 +101,9 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_regist);
 
-        // init Realm database
-        mRealm = Realm.getDefaultInstance();
-
-        if (getIntent() != null) {
-            mID = getIntent().getStringExtra("ID");
-            mDate = getIntent().getStringExtra("DATE");
-        }
-
         Log.d("CHECK_DATE", "In register >>>>>>>>>>>>>>>>" + mDate + " / " + mID);
 
+        initRealm();
         initView();
 
         // 수정 작업일 경우, 이전 내용을 binding 아니면 빈칸으로 Activity 를 시작
@@ -116,6 +112,16 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
             setData();
 
             Log.e("CHECK_COMMAND", "regist Activity +++ " + mReqCommand);
+        }
+    }
+
+    private void initRealm(){
+        // init Realm database
+        mRealm = Realm.getDefaultInstance();
+
+        if (getIntent() != null) {
+            mID = getIntent().getStringExtra("ID");
+            mDate = getIntent().getStringExtra("DATE");
         }
     }
 
