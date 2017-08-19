@@ -9,14 +9,15 @@ import io.realm.RealmObject;
 public class ReminderData extends RealmObject {
 
     private String _id;
-    private int reminder;
+    private int time;
+    private boolean checked;
 
-    public int getReminder() {
-        return reminder;
+    public int getTime() {
+        return time;
     }
 
-    public void setReminder(int reminder) {
-        this.reminder = reminder;
+    public void setTime(int time) {
+        this.time = time;
     }
 
     public String get_id() {
@@ -26,4 +27,13 @@ public class ReminderData extends RealmObject {
     public void set_id(String _id) {
         this._id = _id;
     }
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
 }
+

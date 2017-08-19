@@ -38,7 +38,9 @@
     <string name="error_message_fail_server">서버 접속이 원활하지 못합니다</string>
     <string name="error_message_no_data">경로를 확인 할 스케줄이 없습니다</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="reminder_type_onTime">정시</string>
+    <string name="reminder_type_1hour">1시간전  </string>
+    <string name="reminder_type_1day">1일전  </string>
+    <string name="reminder_type_noItem">알림 없음</string>
 
 </resources>

@@ -44,7 +44,8 @@
                     android:layout_weight="1"
                     android:text="Schedule Title"
                     android:textAppearance="@style/TextAppearance.AppCompat"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -56,8 +57,7 @@
                         android:id="@+id/textView_calendarStartTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Start"
-                        android:textColor="@color/colorLightGray" />
+                        android:text="Start" />
 
                     <TextView
                         android:id="@+id/textView15"
@@ -65,22 +65,19 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/calendarScheduleList_item_margin"
                         android:layout_marginRight="@dimen/calendarScheduleList_item_margin"
-                        android:text="~"
-                        android:textColor="@color/colorLightGray" />
+                        android:text="~" />
 
                     <TextView
                         android:id="@+id/textView_calendarEndTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="End"
-                        android:textColor="@color/colorLightGray" />
+                        android:text="End" />
                 </LinearLayout>
 
                 <TextView
                     android:id="@+id/textView_calendarAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/calendarScheduleList_item_margin"
                     android:layout_weight="1"
                     android:text="Address"
                     android:textColor="@color/colorLightGray" />

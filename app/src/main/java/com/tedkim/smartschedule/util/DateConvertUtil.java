@@ -1,6 +1,9 @@
 package com.tedkim.smartschedule.util;
 
+import android.content.Context;
 import android.util.Log;
+
+import com.tedkim.smartschedule.R;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,6 +25,24 @@ public class DateConvertUtil {
     private static SimpleDateFormat monthTitleFormat = new SimpleDateFormat("yyyy년 M월");
     private static SimpleDateFormat yearMonthFormat = new SimpleDateFormat("yyyy-M");
 
+
+    public static String minutes2string(Context context, int minutes) {
+
+        switch (minutes) {
+            case 0:
+                return context.getResources().getString(R.string.reminder_type_onTime) + " ";
+
+            case 60:
+                return context.getResources().getString(R.string.reminder_type_1hour)+ " ";
+
+            case 1440:
+                return context.getResources().getString(R.string.reminder_type_1day)+ " ";
+
+            default:
+                return String.format("%d분전  ", minutes);
+        }
+    }
+
     public static String time2string(Date date) {
         return timeFormat.format(date);
     }
@@ -30,7 +51,9 @@ public class DateConvertUtil {
         return dateFormat.format(date);
     }
 
-    public static String date2string(Date date, int type){ return dateFormatKor.format(date);}
+    public static String date2string(Date date, int type) {
+        return dateFormatKor.format(date);
+    }
 
     public static String month2string(Date date) {
         return monthTitleFormat.format(date);
@@ -55,7 +78,7 @@ public class DateConvertUtil {
         return null;
     }
 
-    public static Date calDateMin(Date targetDate, int targetMin){
+    public static Date calDateMin(Date targetDate, int targetMin) {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(targetDate);
@@ -64,7 +87,7 @@ public class DateConvertUtil {
         return calendar.getTime();
     }
 
-    public static int yearFromDate(Date targetDate){
+    public static int yearFromDate(Date targetDate) {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(targetDate);
@@ -72,7 +95,7 @@ public class DateConvertUtil {
         return calendar.get(Calendar.YEAR);
     }
 
-    public static int monthFromDate(Date targetDate){
+    public static int monthFromDate(Date targetDate) {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(targetDate);
@@ -80,7 +103,7 @@ public class DateConvertUtil {
         return calendar.get(Calendar.MONTH);
     }
 
-    public static int dayFromDate(Date targetDate){
+    public static int dayFromDate(Date targetDate) {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(targetDate);
@@ -88,7 +111,7 @@ public class DateConvertUtil {
         return calendar.get(Calendar.DAY_OF_MONTH);
     }
 
-    public static int hourOfDayFromDate(Date targetDate){
+    public static int hourOfDayFromDate(Date targetDate) {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(targetDate);
@@ -96,7 +119,7 @@ public class DateConvertUtil {
         return calendar.get(Calendar.HOUR_OF_DAY);
     }
 
-    public static int minutesFromDate(Date targetDate){
+    public static int minutesFromDate(Date targetDate) {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(targetDate);

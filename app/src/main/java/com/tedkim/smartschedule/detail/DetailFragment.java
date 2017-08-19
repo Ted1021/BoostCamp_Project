@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.ms_square.etsyblur.BlurConfig;
 import com.ms_square.etsyblur.BlurDialogFragment;
 import com.tedkim.smartschedule.R;
+import com.tedkim.smartschedule.model.ReminderData;
 import com.tedkim.smartschedule.model.RouteInfo;
 import com.tedkim.smartschedule.model.RouteSeqData;
 import com.tedkim.smartschedule.model.ScheduleData;
@@ -44,6 +45,7 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
     ScheduleData mResult;
 
     static String mID;
+    StringBuilder mReminderTextList = new StringBuilder();
 
     public static final int ACTION_CORRECT = 1;
 
@@ -100,7 +102,7 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
 
     private void setData() {
 
-        Log.e("CHECK_ID", "+++++++++++ in Detail Fragment "+mID);
+        Log.e("CHECK_ID", "+++++++++++ in Detail Fragment " + mID);
         mResult = mRealm.where(ScheduleData.class).equalTo("_id", mID).findFirst();
 
         mTitle.setText(mResult.getTitle());
@@ -111,6 +113,12 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
         mAddress.setText(mResult.getAddress());
         mMemo.setText(mResult.getMemo());
 
+        for (ReminderData reminder : mResult.reminderList) {
+
+            // reminder text 표기
+            mReminderTextList.append(DateConvertUtil.minutes2string(getContext(), reminder.getTime()));
+        }
+        mReminder.setText(mReminderTextList);
     }
 
     @NonNull
@@ -124,11 +132,11 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
     @Override
     public void onClick(View v) {
 
-        switch(v.getId()){
+        switch (v.getId()) {
 
             case R.id.button_correct:
 
-                Log.d("CHECK_ID", "In Detail Fragment >>>>>>>>>>>> "+ mID);
+                Log.d("CHECK_ID", "In Detail Fragment >>>>>>>>>>>> " + mID);
 
                 Intent intent = new Intent(getContext(), RegistActivity.class);
                 intent.putExtra("ID", mID);
@@ -145,16 +153,16 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
                     @Override
                     public void execute(Realm realm) {
 
-                        Log.e("CHECK_DELETE", "<<<<<<<<<< start deleting object "+mID);
+                        Log.e("CHECK_DELETE", "<<<<<<<<<< start deleting object " + mID);
 
                         // 가장 최하위에 있는 객체부터 순차적으로 삭제
                         RealmResults<RouteSeqData> routeSeqDatas = mRealm.where(RouteSeqData.class).equalTo("_id", mID).findAll();
                         routeSeqDatas.deleteAllFromRealm();
-                        Log.e("CHECK_DELETE_SEQ", "<<<<<<<<<<<<<< size "+ routeSeqDatas.size());
+                        Log.e("CHECK_DELETE_SEQ", "<<<<<<<<<<<<<< size " + routeSeqDatas.size());
 
                         RealmResults<RouteInfo> routeInfos = mRealm.where(RouteInfo.class).equalTo("_id", mID).findAll();
                         routeInfos.deleteAllFromRealm();
-                        Log.e("CHECK_DELETE_INFO", "<<<<<<<<<<<<<<size "+routeInfos.size());
+                        Log.e("CHECK_DELETE_INFO", "<<<<<<<<<<<<<<size " + routeInfos.size());
 
 
                         mResult = mRealm.where(ScheduleData.class).equalTo("_id", mID).findFirst();
@@ -172,8 +180,8 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == AppController.REQ_CORRECT){
-            if(resultCode == RESULT_OK){
+        if (requestCode == AppController.REQ_CORRECT) {
+            if (resultCode == RESULT_OK) {
                 setData();
             }
         }
