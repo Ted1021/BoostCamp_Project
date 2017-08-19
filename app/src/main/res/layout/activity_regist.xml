@@ -48,7 +48,7 @@
             android:focusable="true"
             android:focusableInTouchMode="true">
 
-            <EditText
+            <com.tedkim.smartschedule.util.ClearEditText
                 android:id="@+id/editText_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -212,7 +212,7 @@
                     android:layout_gravity="center_vertical"
                     app:srcCompat="@drawable/ic_location" />
 
-                <EditText
+                <com.tedkim.smartschedule.util.ClearEditText
                     android:id="@+id/editText_address"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -250,7 +250,7 @@
                     android:layout_gravity="center_vertical"
                     app:srcCompat="@drawable/ic_title" />
 
-                <EditText
+                <com.tedkim.smartschedule.util.ClearEditText
                     android:id="@+id/editText_memo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

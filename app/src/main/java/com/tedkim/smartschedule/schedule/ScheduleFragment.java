@@ -125,14 +125,11 @@ public class ScheduleFragment extends Fragment {
                     mNoSchedule.setVisibility(View.GONE);
                 }
 
-                Log.d("CHECK_CHANGES", ">>>>>>>>> onChange " + changeSet.getChanges().length);
-
                 // 데이터셋의 삽입이 발생한 schedule data에 대해 경로 업데이트를 진행
                 for (int position : changeSet.getInsertions()) {
 
                     mRefreshLayout.setRefreshing(true);
                     mCurrentLocation = CurrentLocation.getLocation(getContext());
-                    Log.e("CHECK_ENTER", ">>>>>>>>> Location " + mCurrentLocation);
 
                     // 스케줄의 위치를 디바이스의 위치로 변환
                     mRealm.beginTransaction();

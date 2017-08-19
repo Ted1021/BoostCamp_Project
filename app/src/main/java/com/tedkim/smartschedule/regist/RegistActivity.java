@@ -259,7 +259,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
                 ScheduleData scheduleData;
 
-                Log.e("CHECK_COMMAND", "+++++++++++++ " + mReqCommand);
+                Log.e("CHECK_COMMAND", "Register Activity +++++ " + mReqCommand);
 
                 // 새로운 데이터의 생성인 경우
                 if (mReqCommand == AppController.REQ_CREATE) {
@@ -401,7 +401,6 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
         Date currentDate = DateConvertUtil.string2date(mDate);
 
-        // TODO - 각각 현재 날짜와 시간 가져오는 방법을 알아 볼 것
         DatePickerDialog dateDialog = new DatePickerDialog(this, mDateListener, DateConvertUtil.yearFromDate(currentDate), DateConvertUtil.monthFromDate(currentDate), DateConvertUtil.dayFromDate(currentDate));
         TimePickerDialog timeDialog = new TimePickerDialog(this, mTimeListener, DateConvertUtil.hourOfDayFromDate(mStart), DateConvertUtil.minutesFromDate(mStart), false);
 
@@ -467,20 +466,5 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     public void afterTextChanged(Editable s) {
 
     }
-
-    //    // Realm Object Auto Increment
-//    // 아직 Auto increment 를 정식지원 하지않음 (latest version : 3.5.0)
-//    public int getNextKey() {
-//        try {
-//            Number number = mRealm.where(ScheduleData.class).max("_id");
-//            if (number != null) {
-//                return number.intValue() + 1;
-//            } else {
-//                return 0;
-//            }
-//        } catch (ArrayIndexOutOfBoundsException e) {
-//            return 0;
-//        }
-//    }
 
 }
