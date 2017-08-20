@@ -7,11 +7,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -40,6 +42,7 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
 
     Context mContext;
     LayoutInflater mInflater;
+    boolean isExpanded = false;
 
     public ScheduleRouteListAdapter(@Nullable OrderedRealmCollection<ScheduleData> data, boolean autoUpdate, Context context) {
         super(data, autoUpdate);
@@ -55,6 +58,7 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
         ImageButton moreInfo;
 
         // route detail info
+        RecyclerView trafficInfoList;
 
         // schedule info
         TextView title, start, end, address, memo;
@@ -68,6 +72,8 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
             totalTime = (TextView) itemView.findViewById(R.id.textView_totalTime);
             transport = (TextView) itemView.findViewById(R.id.textView_transport);
             moreInfo = (ImageButton) itemView.findViewById(R.id.imageButton_moreInfo);
+
+            trafficInfoList = (RecyclerView) itemView.findViewById(R.id.recyclerView_trafficInfoList);
 
             title = (TextView) itemView.findViewById(R.id.textView_title);
             start = (TextView) itemView.findViewById(R.id.textView_start);
@@ -115,9 +121,15 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
 
         RealmResults<RouteInfo> routeInfos = realm.where(RouteInfo.class).equalTo("_id", data.get_id()).findAll();
         Log.d("CHECK_INIT_SIZE", "Schedule Adapter >>>>>> route info size = " + routeInfos.size());
+
+        // binding traffic info list here
+        setRecyclerView(holder, routeInfos);
+
         if (routeInfos.size() != 0) {
 
             Log.d("CHECK_INIT_LOCATION", "Schedule Adapter >>>> longitude : " + data.getCurrentLongitude() + " / latitude : " + data.getCurrentLatitude());
+
+            // 최단 시간 기준으로 첫번째 (가장 짦은 시간) 아이템을 보여준다
             holder.routeInfoLayout.setVisibility(View.VISIBLE);
             checkScheduleState(holder, routeInfos.first());
         }
@@ -134,13 +146,31 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
         realm.close();
     }
 
-    private void setItemAction(ViewHolder holder, final ScheduleData data) {
+    private void setRecyclerView(ViewHolder holder, RealmResults<RouteInfo> routeInfos){
+
+        TrafficInfoListAdapter adapter = new TrafficInfoListAdapter(routeInfos, true, mContext);
+        holder.trafficInfoList.setAdapter(adapter);
+
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext);
+        holder.trafficInfoList.setLayoutManager(layoutManager);
+    }
+
+    private void setItemAction(final ViewHolder holder, final ScheduleData data) {
 
         // show more transport information
         holder.moreInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if(isExpanded){
+                    holder.moreInfo.setImageResource(R.drawable.ic_action_drop_down);
+                    holder.moreInfo.setAnimation(AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in));
+                    holder.trafficInfoList.setVisibility(View.GONE);
+                }else{
+                    holder.moreInfo.setImageResource(R.drawable.ic_action_collapse);
+                    holder.moreInfo.setAnimation(AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in));
+                    holder.trafficInfoList.setVisibility(View.VISIBLE);
+                }
+                isExpanded = !isExpanded;
             }
         });
 
@@ -176,7 +206,6 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
         dialog.show(fragmentManager, "dialog");
     }
 
-    // TODO - String Formatter 설정하기
     private void checkScheduleState(ViewHolder holder, RouteInfo routeInfo){
 
         long interval = routeInfo.getDepartTime().getTime() - System.currentTimeMillis();

@@ -127,6 +127,12 @@
 
             </LinearLayout>
 
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerView_trafficInfoList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
             <LinearLayout
                 android:id="@+id/layout_scheduleItem"
                 android:layout_width="match_parent"
