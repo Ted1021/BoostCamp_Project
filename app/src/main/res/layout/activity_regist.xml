@@ -44,9 +44,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:focusable="true"
-            android:focusableInTouchMode="true">
+            android:focusableInTouchMode="true"
+            android:orientation="vertical">
 
             <com.tedkim.smartschedule.util.ClearEditText
                 android:id="@+id/editText_title"
@@ -193,7 +193,8 @@
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
                     android:text="추가"
-                    android:textColor="@color/colorActivation" />
+                    android:textColor="@color/colorActivation"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -212,17 +213,14 @@
                     android:layout_gravity="center_vertical"
                     app:srcCompat="@drawable/ic_location" />
 
-                <com.tedkim.smartschedule.util.ClearEditText
-                    android:id="@+id/editText_address"
+                <TextView
+                    android:id="@+id/textView_address"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginLeft="8dp"
                     android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    android:ems="10"
-                    android:hint="주소 없음"
-                    android:inputType="textPersonName"
-                    android:textColorHint="@color/colorLightGray"
+                    android:gravity="center_vertical"
+                    android:text="주소 없음"
                     android:textSize="16sp" />
 
                 <Button
@@ -230,8 +228,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
+                    android:enabled="true"
                     android:text="탐색"
-                    android:textColor="@color/colorLightGray" />
+                    android:textColor="@color/colorActivation"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -248,7 +248,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    app:srcCompat="@drawable/ic_title" />
+                    app:srcCompat="@drawable/ic_memo" />
 
                 <com.tedkim.smartschedule.util.ClearEditText
                     android:id="@+id/editText_memo"

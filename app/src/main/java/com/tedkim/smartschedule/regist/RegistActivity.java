@@ -14,7 +14,6 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -51,12 +50,12 @@ import io.realm.RealmResults;
 import static com.tedkim.smartschedule.R.id.imageView_reminder;
 import static com.tedkim.smartschedule.util.AppController.REQ_GOOGLE_PLACES;
 
-public class RegistActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher, OnReminderListSaveListener, EditText.OnTouchListener {
+public class RegistActivity extends AppCompatActivity implements View.OnClickListener, OnReminderListSaveListener, TextWatcher {
 
     // ui components
     ImageButton mBack, mSave;
-    EditText mTitle, mMemo, mAddress;
-    TextView mDateText, mStartText, mEndText, mSetting, mStartDate, mEndDate, mReminderText, mMember;
+    EditText mTitle, mMemo;
+    TextView mDateText, mStartText, mEndText, mSetting, mStartDate, mEndDate, mReminderText, mMember, mAddress;
     CheckBox mAllDay, mFakeCall;
     Button mAddReminder, mSearchLocation;
     LinearLayout mMoreSetting;
@@ -156,8 +155,11 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         mSave.setOnClickListener(this);
 
         mTitle = (EditText) findViewById(R.id.editText_title);
+        mTitle.setSelection(mTitle.getText().length());
 
         mMemo = (EditText) findViewById(R.id.editText_memo);
+        mMemo.addTextChangedListener(this);
+        mMemo.setSelection(mMemo.getText().length());
         mMemoIcon = (ImageView) findViewById(R.id.imageView_memo);
 
         mDateText = (TextView) findViewById(R.id.textView_date);
@@ -177,11 +179,9 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
         mSearchLocation = (Button) findViewById(R.id.button_searchLocation);
         mSearchLocation.setOnClickListener(this);
-        mSearchLocation.setEnabled(false);
 
-        mAddress = (EditText) findViewById(R.id.editText_address);
-        mAddress.addTextChangedListener(this);
-        mAddress.setOnTouchListener(this);
+        mAddress = (TextView) findViewById(R.id.textView_address);
+        mAddress.setOnClickListener(this);
         mAddressIcon = (ImageView) findViewById(R.id.imageView_location);
 
         mAddReminder = (Button) findViewById(R.id.button_addReminder);
@@ -374,8 +374,10 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
     private boolean checkDataValid() {
 
+        boolean checkNotiList = false;
+
         // EditText Check
-        if (isEmptyEditors(mTitle) || isEmptyEditors(mAddress)) {
+        if (isEmptyEditors(mTitle)) {
             Snackbar.make(getWindow().getDecorView().getRootView(), R.string.error_message_editText, Snackbar.LENGTH_LONG).show();
             return false;
         }
@@ -393,10 +395,19 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         }
 
         // Reminder Check
-        if (mNotificationList.size() == 0) {
+        // 리마인더 hashMap 이 모두 false 이면 ....
+        TreeMap<Integer, Boolean> valueSet = new TreeMap<>(mNotificationList);
+        for(Boolean check :valueSet.values()){
+
+            if(check){
+                checkNotiList = true;
+            }
+        }
+        if (!checkNotiList) {
             Snackbar.make(getWindow().getDecorView().getRootView(), R.string.error_message_reminder, Snackbar.LENGTH_LONG).show();
             return false;
         }
+
         return true;
     }
 
@@ -412,9 +423,17 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
     // Call Maps Activity
     private void addAddress() {
-        Intent intent = new Intent(RegistActivity.this, MapsActivity.class);
-        intent.putExtra("ADDRESS", mAddress.getText().toString());
-        startActivityForResult(intent, AppController.REQ_GOOGLE_MAP);
+
+        String address = mAddress.getText().toString();
+
+        if(address.equals("") || address.isEmpty() || address.equals("주소 없음")){
+            Snackbar.make(getWindow().getDecorView().getRootView(), R.string.error_message_no_address, Snackbar.LENGTH_LONG).show();
+        }
+        else{
+            Intent intent = new Intent(RegistActivity.this, MapsActivity.class);
+            intent.putExtra("ADDRESS", mAddress.getText().toString());
+            startActivityForResult(intent, AppController.REQ_GOOGLE_MAP);
+        }
     }
 
     private void addReminder() {
@@ -471,7 +490,6 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                 break;
 
             case R.id.button_addReminder:
-//                mNotificationList.clear();
                 addReminder();
                 break;
 
@@ -479,6 +497,21 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                 mSetting.setVisibility(View.GONE);
                 mMoreSetting.setVisibility(View.VISIBLE);
                 break;
+
+            case R.id.textView_address:
+
+                Intent intent = null;
+                try {
+                    intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY).build(RegistActivity.this);
+                } catch (GooglePlayServicesRepairableException e) {
+                    e.printStackTrace();
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    e.printStackTrace();
+                }
+                startActivityForResult(intent, REQ_GOOGLE_PLACES);
+
+                break;
+
         }
     }
 
@@ -509,44 +542,6 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-        if (s.toString().length() < 2) {
-            mSearchLocation.setEnabled(false);
-            mSearchLocation.setTextColor(ContextCompat.getColor(RegistActivity.this, R.color.colorLightGray));
-        } else {
-            mSearchLocation.setEnabled(true);
-            mSearchLocation.setTextColor(ContextCompat.getColor(RegistActivity.this, R.color.colorActivation));
-        }
-    }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            Intent intent = null;
-            try {
-                intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY).build(RegistActivity.this);
-            } catch (GooglePlayServicesRepairableException e) {
-                e.printStackTrace();
-            } catch (GooglePlayServicesNotAvailableException e) {
-                e.printStackTrace();
-            }
-            startActivityForResult(intent, REQ_GOOGLE_PLACES);
-        }
-        return true;
-    }
-
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-    }
-
-    @Override
-    public void afterTextChanged(Editable s) {
-
-    }
-
-    @Override
     public void onReminderListChangedListener(HashMap<Integer, Boolean> notificationList) {
 
         // 기존 데이터 초기화
@@ -563,10 +558,6 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
             }
         }
 
-//        for (int key : keySort.keySet()) {
-//            mReminderTextList.append(DateConvertUtil.minutes2string(RegistActivity.this, key));
-//        }
-
         // 데이터 최종 출력
         if (mNotificationList.size() != 0) {
             mReminderText.setText(mReminderTextList);
@@ -577,5 +568,22 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        if (s.toString().length() < 2) {
+            mMemoIcon.setColorFilter(ContextCompat.getColor(RegistActivity.this, R.color.colorLightGray));
+        } else {
+            mMemoIcon.setColorFilter(ContextCompat.getColor(RegistActivity.this, R.color.colorActivation));
+        }
+    }
 
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
+    }
 }

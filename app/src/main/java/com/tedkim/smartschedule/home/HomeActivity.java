@@ -68,12 +68,14 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
 
     private void initView() {
 
-        mTabLayout = (TabLayout) findViewById(R.id.tabLayout);
-        mViewPager = (ViewPager) findViewById(R.id.viewPager);
-        mFloatingButton = (FloatingActionButton) findViewById(R.id.floatingActionButton);
-
         mSelectedColor = ContextCompat.getColor(HomeActivity.this, R.color.colorActivation);
         mUnSelectedColor = ContextCompat.getColor(HomeActivity.this, R.color.colorLightGray);
+
+        mTabLayout = (TabLayout) findViewById(R.id.tabLayout);
+        mTabLayout.getTabAt(0).getIcon().setColorFilter(mSelectedColor, PorterDuff.Mode.SRC_IN);
+
+        mViewPager = (ViewPager) findViewById(R.id.viewPager);
+        mFloatingButton = (FloatingActionButton) findViewById(R.id.floatingActionButton);
     }
 
     private void setAction() {

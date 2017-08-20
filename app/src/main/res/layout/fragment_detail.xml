@@ -176,7 +176,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    app:srcCompat="@drawable/ic_title" />
+                    app:srcCompat="@drawable/ic_memo" />
 
 
                 <TextView

@@ -3,6 +3,7 @@ package com.tedkim.smartschedule.regist;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -121,6 +122,7 @@ public class ReminderFragment extends BlurDialogFragment implements View.OnClick
         if(mNotificationList.get(min)){
             view.setCheckMarkDrawable(R.drawable.ic_action_checked);
             view.setTextColor(ContextCompat.getColor(getContext(), R.color.colorActivation));
+            view.setTypeface(Typeface.DEFAULT_BOLD);
             view.setChecked(true);
         }
     }
@@ -182,12 +184,14 @@ public class ReminderFragment extends BlurDialogFragment implements View.OnClick
             // button image activate
             view.setCheckMarkDrawable(R.drawable.ic_action_checked);
             view.setTextColor(ContextCompat.getColor(getContext(), R.color.colorActivation));
+            view.setTypeface(Typeface.DEFAULT_BOLD);
             mNotificationList.put(min, true);
             view.setChecked(true);
         } else {
             // button image de-activate
             view.setCheckMarkDrawable(R.drawable.ic_action_unchecked);
             view.setTextColor(ContextCompat.getColor(getContext(), R.color.colorShadow));
+            view.setTypeface(Typeface.DEFAULT);
             mNotificationList.put(min, false);
             view.setChecked(false);
         }
