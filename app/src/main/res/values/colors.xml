@@ -12,7 +12,7 @@
     <color name="colorShadow">#757575</color>
     <color name="lightGray">#d3a6a6a6</color>
     <color name="colorDarkNavy">#455a64</color>
-    <color name="colorDelete">#FC716A</color>
-    <color name="colorCorrect">#6C7B99</color>
+    <color name="colorDelete">#fc716a</color>
+    <color name="colorCorrect">#6c7b99</color>
     <color name="colorStable">#0d47a1</color>
 </resources>

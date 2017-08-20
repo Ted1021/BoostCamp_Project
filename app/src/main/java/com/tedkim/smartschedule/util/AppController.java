@@ -24,7 +24,8 @@ public class AppController extends Application {
     public static int REQ_CREATE = 101;
 
     public static int REQ_REMINDER = 102;
-    public static int REQ_GOOGLEMAP = 103;
+    public static int REQ_GOOGLE_MAP = 103;
+    public static int REQ_GOOGLE_PLACES = 104;
 
     @Override
     public void onCreate() {

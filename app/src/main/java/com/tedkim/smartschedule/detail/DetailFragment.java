@@ -121,7 +121,9 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
         for (ReminderData reminder : mResult.reminderList) {
 
             // reminder text 표기
-            mReminderTextList.append(DateConvertUtil.minutes2string(getContext(), reminder.getTime()));
+            if(reminder.isChecked()) {
+                mReminderTextList.append(DateConvertUtil.minutes2string(getContext(), reminder.getTime()));
+            }
         }
         mReminder.setText(mReminderTextList);
     }

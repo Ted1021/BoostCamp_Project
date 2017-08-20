@@ -14,6 +14,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -25,6 +26,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.model.ReminderData;
 import com.tedkim.smartschedule.model.RouteInfo;
@@ -41,12 +46,12 @@ import java.util.TreeMap;
 import java.util.UUID;
 
 import io.realm.Realm;
-import io.realm.RealmObjectChangeListener;
 import io.realm.RealmResults;
 
 import static com.tedkim.smartschedule.R.id.imageView_reminder;
+import static com.tedkim.smartschedule.util.AppController.REQ_GOOGLE_PLACES;
 
-public class RegistActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher, OnReminderListSaveListener {
+public class RegistActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher, OnReminderListSaveListener, EditText.OnTouchListener {
 
     // ui components
     ImageButton mBack, mSave;
@@ -66,21 +71,25 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     // dataset from other activity or screen
     String mSelectedAddress;
     StringBuilder mReminderTextList = new StringBuilder();
-    HashMap<Integer, Boolean> mNotificationList = new HashMap<>();
+    HashMap<Integer, Boolean> mNotificationList;
 
     double mLatitude, mLongitude;
     Date mStart, mEnd;
     String mDate;
 
+    private int REQ_PLACE_PICKER = 1;
     private static final int SET_START = 0;
     private static final int SET_END = 1;
 
     int mTimeset = SET_START;
     int mReqCommand = AppController.REQ_CREATE;
-
     int mSelectedColor, mUnSelectedColor;
 
-    RealmObjectChangeListener<ScheduleData> mRealmObjectListener;
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        mRealm = Realm.getDefaultInstance();
+    }
 
     @Override
     protected void onStop() {
@@ -91,19 +100,13 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     @Override
-    protected void onRestart() {
-        super.onRestart();
-        mRealm = Realm.getDefaultInstance();
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_regist);
 
         Log.d("CHECK_DATE", "In register >>>>>>>>>>>>>>>>" + mDate + " / " + mID);
 
-        initRealm();
+        initData();
         initView();
 
         // 수정 작업일 경우, 이전 내용을 binding 아니면 빈칸으로 Activity 를 시작
@@ -115,7 +118,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    private void initRealm(){
+    private void initData() {
         // init Realm database
         mRealm = Realm.getDefaultInstance();
 
@@ -123,6 +126,19 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
             mID = getIntent().getStringExtra("ID");
             mDate = getIntent().getStringExtra("DATE");
         }
+
+        // TODO - add Realm Listeners here (for Collections, Objects)
+
+        mNotificationList = new HashMap<Integer, Boolean>() {{
+
+            put(0, false);
+            put(5, false);
+            put(15, false);
+            put(30, false);
+            put(60, false);
+            put(60 * 24, false);
+        }};
+
     }
 
     public void initView() {
@@ -165,6 +181,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
         mAddress = (EditText) findViewById(R.id.editText_address);
         mAddress.addTextChangedListener(this);
+        mAddress.setOnTouchListener(this);
         mAddressIcon = (ImageView) findViewById(R.id.imageView_location);
 
         mAddReminder = (Button) findViewById(R.id.button_addReminder);
@@ -192,6 +209,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
         mMember = (TextView) findViewById(R.id.textView_member);
         mMemberIcon = (ImageView) findViewById(R.id.imageView_member);
+
     }
 
     private void setData() {
@@ -212,11 +230,11 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         mLatitude = result.getLatitude();
         mLongitude = result.getLongitude();
         mAllDay.setChecked(result.isAllDaySchedule());
-        if(result.isAllDaySchedule()){
+        if (result.isAllDaySchedule()) {
             mAllDayIcon.setColorFilter(mSelectedColor);
         }
         mFakeCall.setChecked(result.isFakeCall());
-        if(result.isFakeCall()){
+        if (result.isFakeCall()) {
             mFakeCallIcon.setColorFilter(mSelectedColor);
         }
 
@@ -230,7 +248,9 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
             mNotificationList.put(reminder.getTime(), reminder.isChecked());
 
             // reminder text 표기
-            mReminderTextList.append(DateConvertUtil.minutes2string(RegistActivity.this, reminder.getTime()));
+            if (reminder.isChecked()) {
+                mReminderTextList.append(DateConvertUtil.minutes2string(RegistActivity.this, reminder.getTime()));
+            }
         }
         mReminderText.setText(mReminderTextList);
     }
@@ -394,7 +414,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     private void addAddress() {
         Intent intent = new Intent(RegistActivity.this, MapsActivity.class);
         intent.putExtra("ADDRESS", mAddress.getText().toString());
-        startActivityForResult(intent, AppController.REQ_GOOGLEMAP);
+        startActivityForResult(intent, AppController.REQ_GOOGLE_MAP);
     }
 
     private void addReminder() {
@@ -409,24 +429,6 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
         ReminderFragment dialog = ReminderFragment.newInstance(mNotificationList);
         dialog.show(fragmentManager, "reminder");
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // search location
-        if (requestCode == AppController.REQ_GOOGLEMAP) {
-            if (resultCode == RESULT_OK) {
-
-                mSelectedAddress = data.getStringExtra("ADDRESS");
-                mAddress.setText(mSelectedAddress);
-                mAddressIcon.setColorFilter(mSelectedColor);
-
-                mLatitude = data.getDoubleExtra("LATITUDE", 0);
-                mLongitude = data.getDoubleExtra("LONGITUDE", 0);
-            }
-        }
     }
 
     @Override
@@ -469,7 +471,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                 break;
 
             case R.id.button_addReminder:
-                mNotificationList.clear();
+//                mNotificationList.clear();
                 addReminder();
                 break;
 
@@ -477,6 +479,32 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                 mSetting.setVisibility(View.GONE);
                 mMoreSetting.setVisibility(View.VISIBLE);
                 break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // search location
+        if (requestCode == AppController.REQ_GOOGLE_MAP) {
+            if (resultCode == RESULT_OK) {
+
+                mSelectedAddress = data.getStringExtra("ADDRESS");
+                mAddress.setText(mSelectedAddress);
+                mAddressIcon.setColorFilter(mSelectedColor);
+
+                mLatitude = data.getDoubleExtra("LATITUDE", 0);
+                mLongitude = data.getDoubleExtra("LONGITUDE", 0);
+            }
+        }
+
+        // places api
+        if (requestCode == REQ_GOOGLE_PLACES) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(RegistActivity.this, data);
+                mAddress.setText(place.getAddress());
+            }
         }
     }
 
@@ -489,6 +517,23 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
             mSearchLocation.setEnabled(true);
             mSearchLocation.setTextColor(ContextCompat.getColor(RegistActivity.this, R.color.colorActivation));
         }
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            Intent intent = null;
+            try {
+                intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY).build(RegistActivity.this);
+            } catch (GooglePlayServicesRepairableException e) {
+                e.printStackTrace();
+            } catch (GooglePlayServicesNotAvailableException e) {
+                e.printStackTrace();
+            }
+            startActivityForResult(intent, REQ_GOOGLE_PLACES);
+        }
+        return true;
     }
 
     @Override
@@ -510,9 +555,18 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         // 변경 된 데이터 삽입
         mNotificationList.putAll(notificationList);
         Map<Integer, Boolean> keySort = new TreeMap<>(mNotificationList);
-        for (int key : keySort.keySet()) {
-            mReminderTextList.append(DateConvertUtil.minutes2string(RegistActivity.this, key));
+
+        for (Map.Entry<Integer, Boolean> map : keySort.entrySet()) {
+
+            if (map.getValue()) {
+                mReminderTextList.append(DateConvertUtil.minutes2string(RegistActivity.this, map.getKey()));
+            }
         }
+
+//        for (int key : keySort.keySet()) {
+//            mReminderTextList.append(DateConvertUtil.minutes2string(RegistActivity.this, key));
+//        }
+
         // 데이터 최종 출력
         if (mNotificationList.size() != 0) {
             mReminderText.setText(mReminderTextList);
@@ -522,4 +576,6 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
             mReminderIcon.setColorFilter(mUnSelectedColor);
         }
     }
+
+
 }

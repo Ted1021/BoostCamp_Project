@@ -197,6 +197,16 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:id="@+id/button_delete"
+                    style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/colorDelete"
+                    android:text="삭제"
+                    android:textColor="@android:color/white" />
+
+                <Button
                     android:id="@+id/button_correct"
                     style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
                     android:layout_width="wrap_content"
@@ -206,15 +216,6 @@
                     android:text="수정"
                     android:textColor="@android:color/white" />
 
-                <Button
-                    android:id="@+id/button_delete"
-                    style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@color/colorDelete"
-                    android:text="삭제"
-                    android:textColor="@android:color/white" />
             </LinearLayout>
 
 

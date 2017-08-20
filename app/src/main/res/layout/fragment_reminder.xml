@@ -53,8 +53,7 @@
                 android:checked="false"
                 android:gravity="center_vertical"
                 android:text="정시"
-                android:textColor="@color/colorLightGray"
-                android:textStyle="bold" />
+                android:textColor="@color/colorShadow" />
 
             <CheckedTextView
                 android:id="@+id/checkedTextView_5min"
@@ -67,8 +66,7 @@
                 android:checkMark="@drawable/ic_action_unchecked"
                 android:gravity="center_vertical"
                 android:text="5분 전"
-                android:textColor="@color/colorLightGray"
-                android:textStyle="bold" />
+                android:textColor="@color/colorShadow" />
 
             <CheckedTextView
                 android:id="@+id/checkedTextView_15min"
@@ -81,8 +79,7 @@
                 android:checkMark="@drawable/ic_action_unchecked"
                 android:gravity="center_vertical"
                 android:text="15분 전"
-                android:textColor="@color/colorLightGray"
-                android:textStyle="bold" />
+                android:textColor="@color/colorShadow" />
 
             <CheckedTextView
                 android:id="@+id/checkedTextView_30min"
@@ -95,8 +92,7 @@
                 android:checkMark="@drawable/ic_action_unchecked"
                 android:gravity="center_vertical"
                 android:text="30분 전"
-                android:textColor="@color/colorLightGray"
-                android:textStyle="bold" />
+                android:textColor="@color/colorShadow" />
 
             <CheckedTextView
                 android:id="@+id/checkedTextView_1hour"
@@ -109,8 +105,7 @@
                 android:checkMark="@drawable/ic_action_unchecked"
                 android:gravity="center_vertical"
                 android:text="1시간 전"
-                android:textColor="@color/colorLightGray"
-                android:textStyle="bold" />
+                android:textColor="@color/colorShadow" />
 
             <CheckedTextView
                 android:id="@+id/checkedTextView_1day"
@@ -123,8 +118,7 @@
                 android:checkMark="@drawable/ic_action_unchecked"
                 android:gravity="center_vertical"
                 android:text="1일 전"
-                android:textColor="@color/colorLightGray"
-                android:textStyle="bold" />
+                android:textColor="@color/colorShadow" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -138,8 +132,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:background="@color/colorDelete"
                     android:text="취소"
-                    android:textColor="@color/colorShadow" />
+                    android:textColor="@android:color/white" />
 
                 <Button
                     android:id="@+id/button_save"
@@ -147,9 +142,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:background="@color/colorCorrect"
                     android:text="확인"
-                    android:textColor="@color/colorActivation"
-                    android:textStyle="bold" />
+                    android:textColor="@android:color/white" />
+
             </LinearLayout>
         </LinearLayout>
     </android.support.v7.widget.CardView>

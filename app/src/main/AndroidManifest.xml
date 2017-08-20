@@ -26,8 +26,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:icon"
-        android:windowSoftInputMode="adjustNothing"
-        >
+        android:windowSoftInputMode="adjustNothing">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:screenOrientation="portrait"
+            android:value="@string/google_maps_key" />
 
         <activity
             android:name=".splash.SplashActivity"
@@ -46,14 +50,8 @@
         <activity
             android:name=".regist.RegistActivity"
             android:screenOrientation="portrait" />
-        <activity
 
-            android:name=".regist.ReminderActivity" />
-
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:screenOrientation="portrait"
-            android:value="@string/google_maps_key" />
+        <activity android:name=".regist.ReminderActivity" />
 
         <activity
             android:name=".regist.MapsActivity"

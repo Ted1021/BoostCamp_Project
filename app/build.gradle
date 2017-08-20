@@ -14,7 +14,6 @@ android {
 
         renderscriptTargetApi 25
         renderscriptSupportModeEnabled true
-
     }
     buildTypes {
         release {
@@ -42,6 +41,7 @@ dependencies {
 
     compile 'com.google.android.gms:play-services-maps:10.0.1'
     compile 'com.google.android.gms:play-services-location:10.0.1'
+    compile 'com.google.android.gms:play-services-places:10.0.1'
     compile 'io.realm:android-adapters:2.0.0'
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'

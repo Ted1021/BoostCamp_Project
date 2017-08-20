@@ -148,11 +148,6 @@ public class ScheduleFragment extends Fragment {
 
                     callRouteData(scheduleDatas.get(position));
                 }
-
-                for (int position : changeSet.getChanges()) {
-                    Log.d("CHECK_CHANGE_COLLECTION", "schedule fragment >>>>> in collection change listener");
-                    callRouteData(scheduleDatas.get(position));
-                }
             }
         };
     }

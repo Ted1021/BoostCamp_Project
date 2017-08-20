@@ -38,13 +38,12 @@ public class ReminderFragment extends BlurDialogFragment implements View.OnClick
     CheckedTextView mOnTime, mMin5, mMin15, mMin30, mHour1, mDay1;
     Button mCancel, mSave;
 
-    //    ArrayList<Integer> mTimeList;
     static HashMap<Integer, Boolean> mNotificationList = new HashMap<>();
 
     public static ReminderFragment newInstance(HashMap<Integer, Boolean> notificationList) {
 
         ReminderFragment fragment = new ReminderFragment();
-        mNotificationList = notificationList;
+        mNotificationList.putAll(notificationList);
         fragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.EtsyBlurDialogTheme);
 
         return fragment;
@@ -86,29 +85,45 @@ public class ReminderFragment extends BlurDialogFragment implements View.OnClick
 
         mOnTime = (CheckedTextView) view.findViewById(R.id.checkedTextView_onTime);
         mOnTime.setOnClickListener(this);
+        setData(mOnTime, 0);
 
         mMin5 = (CheckedTextView) view.findViewById(R.id.checkedTextView_5min);
         mMin5.setOnClickListener(this);
+        setData(mMin5, 5);
 
         mMin15 = (CheckedTextView) view.findViewById(R.id.checkedTextView_15min);
         mMin15.setOnClickListener(this);
+        setData(mMin15, 15);
 
         mMin30 = (CheckedTextView) view.findViewById(R.id.checkedTextView_30min);
         mMin30.setOnClickListener(this);
+        setData(mMin30, 30);
 
         mHour1 = (CheckedTextView) view.findViewById(R.id.checkedTextView_1hour);
         mHour1.setOnClickListener(this);
+        setData(mHour1, 60);
 
         mDay1 = (CheckedTextView) view.findViewById(R.id.checkedTextView_1day);
         mDay1.setOnClickListener(this);
+        setData(mDay1, 60*24);
 
         mCancel = (Button) view.findViewById(R.id.button_cancel);
         mCancel.setOnClickListener(this);
+        setData(mOnTime, 0);
 
         mSave = (Button) view.findViewById(R.id.button_save);
         mSave.setOnClickListener(this);
+        setData(mOnTime, 0);
     }
 
+    private void setData(CheckedTextView view, int min){
+
+        if(mNotificationList.get(min)){
+            view.setCheckMarkDrawable(R.drawable.ic_action_checked);
+            view.setTextColor(ContextCompat.getColor(getContext(), R.color.colorActivation));
+            view.setChecked(true);
+        }
+    }
     @NonNull
     protected BlurConfig blurConfig() {
         return new BlurConfig.Builder()
@@ -172,8 +187,8 @@ public class ReminderFragment extends BlurDialogFragment implements View.OnClick
         } else {
             // button image de-activate
             view.setCheckMarkDrawable(R.drawable.ic_action_unchecked);
-            view.setTextColor(ContextCompat.getColor(getContext(), R.color.colorLightGray));
-            mNotificationList.remove(min);
+            view.setTextColor(ContextCompat.getColor(getContext(), R.color.colorShadow));
+            mNotificationList.put(min, false);
             view.setChecked(false);
         }
     }
