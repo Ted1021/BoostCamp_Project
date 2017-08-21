@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <array name="subwayType">
+        <item>@color/subway_line_1</item>
+        <item>@color/subway_line_2</item>
+        <item>@color/subway_line_3</item>
+        <item>@color/subway_line_4</item>
+        <item>@color/subway_line_5</item>
+        <item>@color/subway_line_6</item>
+        <item>@color/subway_line_7</item>
+        <item>@color/subway_line_8</item>
+        <item>@color/subway_line_9</item>
+        
+    </array>
+
+    <array name="busType">
+
+
+    </array>
+
+</resources>

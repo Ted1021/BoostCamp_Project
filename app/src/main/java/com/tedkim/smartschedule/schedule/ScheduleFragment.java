@@ -188,10 +188,20 @@ public class ScheduleFragment extends Fragment {
 
                         Log.e("CHECK_LOCATION", "schedule fragment >>>> " + data.getLongitude() + " / " + data.getLatitude());
                         if (data.getLongitude() != mCurrentLocation.getLongitude() || data.getLatitude() != mCurrentLocation.getLatitude()) {
+
                             // 디바이스의 위치를 스케줄의 위치로 변환
                             mRealm.beginTransaction();
                             data.setCurrentLongitude(mCurrentLocation.getLongitude());
                             data.setCurrentLatitude(mCurrentLocation.getLatitude());
+                            if (data.routeInfoList.size() != 0) {
+
+                                // 가장 최하위에 있는 객체부터 순차적으로 삭제
+                                RealmResults<RouteSeqData> routeSeqDatas = mRealm.where(RouteSeqData.class).equalTo("_id", data.get_id()).findAll();
+                                routeSeqDatas.deleteAllFromRealm();
+
+                                RealmResults<RouteInfo> routeInfos = mRealm.where(RouteInfo.class).equalTo("_id", data.get_id()).findAll();
+                                routeInfos.deleteAllFromRealm();
+                            }
                             mRealm.commitTransaction();
                         }
 
@@ -226,34 +236,39 @@ public class ScheduleFragment extends Fragment {
                     mRealm.beginTransaction();
                     ScheduleData obj = mRealm.where(ScheduleData.class).equalTo("_id", data.get_id()).findFirst();
 
+                    obj.setBusCount(result.getResult().getBusCount());
+                    obj.setSubwayCount(result.getResult().getSubwayCount());
+                    obj.setSubwayBusCount(result.getResult().getSubwayBusCount());
+
                     // 최대 3개의 경로를 가져 옴
                     for (int i = 0; i < MAX_ROUTE_INFO; i++) {
                         RouteData.Result.Path path = result.getResult().getPath()[i];
 
                         RouteInfo routeInfo = mRealm.createObject(RouteInfo.class);
                         routeInfo.set_id(data.get_id());
-                        Log.e("CHECK_ROUTE_INFO", "+++++++++++++++ " + i + ") " + routeInfo.get_id());
                         routeInfo.setDepartTime(DateConvertUtil.calDateMin(obj.getStartTime(), path.getInfo().getTotalTime()));
                         routeInfo.setArriveTime(obj.getEndTime());
                         routeInfo.setTotalTime(path.getInfo().getTotalTime());
                         routeInfo.setPayment(path.getInfo().getPayment());
-                        routeInfo.setBusStationCount(path.getInfo().getBusStationCount());
-                        routeInfo.setSubwayStationCount(path.getInfo().getSubwayStationCount());
+                        routeInfo.setBusTransitCount(path.getInfo().getBusTransitCount());
+                        routeInfo.setSubwayTransitCount(path.getInfo().getSubwayTransitCount());
 
                         for (RouteData.Result.Path.SubPath subPath : path.getSubPath()) {
 
                             RouteSeqData seqData = mRealm.createObject(RouteSeqData.class);
                             seqData.set_id(data.get_id());
-                            Log.e("CHECK_ROUTE_SEQ", "++++++++++ " + i + ") " + seqData.get_id());
                             seqData.setTrafficType(subPath.getTrafficType());
+
                             if (subPath != null) {
                                 // subway
                                 if (seqData.getTrafficType() == TYPE_SUBWAY) {
-                                    seqData.setBusName(subPath.getLane().getName());
+                                    seqData.setSubwayName(subPath.getLane().getName());
+                                    seqData.setSubwayType(subPath.getLane().getSubwayCode());
                                 }
                                 // bus
                                 else if (seqData.getTrafficType() == TYPE_BUS) {
                                     seqData.setBusName(subPath.getLane().getBusNo());
+                                    seqData.setBusType(subPath.getLane().getType());
                                 }
                             }
                             routeInfo.routeSequence.add(seqData);

@@ -16,7 +16,7 @@ public class RouteInfo extends RealmObject {
     public RealmList<RouteSeqData> routeSequence;
     private int totalTime;
     private int payment;
-    private int busStationCount, subwayStationCount;
+    private int busTransitCount, subwayTransitCount;
 
     public String get_id() {
         return _id;
@@ -50,20 +50,20 @@ public class RouteInfo extends RealmObject {
         this.totalTime = totalTime;
     }
 
-    public int getBusStationCount() {
-        return busStationCount;
+    public int getBusTransitCount() {
+        return busTransitCount;
     }
 
-    public void setBusStationCount(int busStationCount) {
-        this.busStationCount = busStationCount;
+    public void setBusTransitCount(int busTransitCount) {
+        this.busTransitCount = busTransitCount;
     }
 
-    public int getSubwayStationCount() {
-        return subwayStationCount;
+    public int getSubwayTransitCount() {
+        return subwayTransitCount;
     }
 
-    public void setSubwayStationCount(int subwayStationCount) {
-        this.subwayStationCount = subwayStationCount;
+    public void setSubwayTransitCount(int subwayTransitCount) {
+        this.subwayTransitCount = subwayTransitCount;
     }
 
     public int getPayment() {
@@ -72,5 +72,13 @@ public class RouteInfo extends RealmObject {
 
     public void setPayment(int payment) {
         this.payment = payment;
+    }
+
+    public RealmList<RouteSeqData> getRouteSequence() {
+        return routeSequence;
+    }
+
+    public void setRouteSequence(RealmList<RouteSeqData> routeSequence) {
+        this.routeSequence = routeSequence;
     }
 }

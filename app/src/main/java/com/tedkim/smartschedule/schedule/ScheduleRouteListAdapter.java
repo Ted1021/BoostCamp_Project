@@ -132,8 +132,7 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
             // 최단 시간 기준으로 첫번째 (가장 짦은 시간) 아이템을 보여준다
             holder.routeInfoLayout.setVisibility(View.VISIBLE);
             checkScheduleState(holder, routeInfos.first());
-        }
-        else{
+        } else {
             holder.routeInfoLayout.setVisibility(View.GONE);
         }
 
@@ -146,10 +145,12 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
         realm.close();
     }
 
-    private void setRecyclerView(ViewHolder holder, RealmResults<RouteInfo> routeInfos){
+    private void setRecyclerView(ViewHolder holder, RealmResults<RouteInfo> routeInfos) {
 
         TrafficInfoListAdapter adapter = new TrafficInfoListAdapter(routeInfos, true, mContext);
         holder.trafficInfoList.setAdapter(adapter);
+        Log.d("CHECK_ROUTE_SIZE", "route adapter >>>> " + routeInfos.size());
+        adapter.updateData(routeInfos);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext);
         holder.trafficInfoList.setLayoutManager(layoutManager);
@@ -161,14 +162,36 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
         holder.moreInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isExpanded){
+
+                if (isExpanded) {
+                    holder.moreInfo.setAnimation(AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in));
                     holder.moreInfo.setImageResource(R.drawable.ic_action_drop_down);
-                    holder.moreInfo.setAnimation(AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in));
+
+                    holder.trafficInfoList.setAnimation(AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in));
                     holder.trafficInfoList.setVisibility(View.GONE);
-                }else{
-                    holder.moreInfo.setImageResource(R.drawable.ic_action_collapse);
+//                    holder.trafficInfoList.animate()
+//                            .translationY(0)
+//                            .alpha(0.0f)
+//                            .setListener(new AnimatorListenerAdapter() {
+//                                @Override
+//                                public void onAnimationEnd(Animator animation) {
+//                                    super.onAnimationEnd(animation);
+//                                    holder.trafficInfoList.setVisibility(View.GONE);
+//                                }
+//                            });
+                } else {
                     holder.moreInfo.setAnimation(AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in));
+                    holder.moreInfo.setImageResource(R.drawable.ic_action_collapse);
+
                     holder.trafficInfoList.setVisibility(View.VISIBLE);
+                    holder.trafficInfoList.setAnimation(AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in));
+
+//                    holder.trafficInfoList.setAlpha(0.0f);
+//
+//                    holder.trafficInfoList.animate()
+//                            .translationY(holder.trafficInfoList.getHeight())
+//                            .alpha(1.0f)
+//                            .setListener(null);
                 }
                 isExpanded = !isExpanded;
             }
@@ -206,23 +229,21 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
         dialog.show(fragmentManager, "dialog");
     }
 
-    private void checkScheduleState(ViewHolder holder, RouteInfo routeInfo){
+    private void checkScheduleState(ViewHolder holder, RouteInfo routeInfo) {
 
         long interval = routeInfo.getDepartTime().getTime() - System.currentTimeMillis();
         long result = TimeUnit.MILLISECONDS.toMinutes(interval);
-        Log.d("CHECK_INTERVAL", "schedule adapter ----------- "+result);
+        Log.d("CHECK_INTERVAL", "schedule adapter ----------- " + result);
 
-        if(result < 0){
+        if (result < 0) {
             holder.routeInfoLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorShadow));
             holder.departInfo.setText(DateConvertUtil.time2string(routeInfo.getDepartTime()));
             holder.totalTime.setText(String.format("%d 분", routeInfo.getTotalTime()));
-        }
-        else if(result >= 0 && result <= 10){
+        } else if (result >= 0 && result <= 10) {
             holder.routeInfoLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorAlert));
             holder.departInfo.setText(String.format("%d 분 안", result));
             holder.totalTime.setText(String.format("%d 분", routeInfo.getTotalTime()));
-        }
-        else{
+        } else {
             holder.routeInfoLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorDarkNavy));
             holder.departInfo.setText(DateConvertUtil.time2string(routeInfo.getDepartTime()));
             holder.totalTime.setText(String.format("%d 분", routeInfo.getTotalTime()));

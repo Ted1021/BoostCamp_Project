@@ -15,4 +15,16 @@
     <color name="colorDelete">#fc716a</color>
     <color name="colorCorrect">#6c7b99</color>
     <color name="colorStable">#0d47a1</color>
+
+    <color name="subway_line_1">#0d3692</color>
+    <color name="subway_line_3">#fe5d10</color>
+    <color name="subway_line_2">#33a23d</color>
+    <color name="subway_line_4">#00a2d1</color>
+    <color name="subway_line_5">#8b50a4</color>
+    <color name="subway_line_6">#c55c1d</color>
+    <color name="subway_line_7">#54640d</color>
+    <color name="subway_line_8">#f14c82</color>
+    <color name="subway_line_9">#aa9872</color>
+
+
 </resources>

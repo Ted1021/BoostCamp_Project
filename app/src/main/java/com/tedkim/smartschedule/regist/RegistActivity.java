@@ -445,9 +445,12 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         if (prev != null) {
             transaction.remove(prev);
         }
+        transaction.commit();
 
         ReminderFragment dialog = ReminderFragment.newInstance(mNotificationList);
         dialog.show(fragmentManager, "reminder");
+
+
     }
 
     @Override

@@ -13,11 +13,12 @@
         android:layout_marginRight="16dp"
         android:layout_marginTop="8dp"
         app:cardCornerRadius="3dp"
-        app:cardElevation="2dp">
+        app:cardElevation="3dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/colorCremeWhite"
             android:orientation="vertical">
 
             <LinearLayout
@@ -25,6 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
                 android:background="@color/colorDarkNavy"
+                android:elevation="3dp"
                 android:orientation="horizontal"
                 android:padding="16dp"
                 android:visibility="gone">
@@ -131,12 +133,16 @@
                 android:id="@+id/recyclerView_trafficInfoList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:background="@color/colorCremeWhite"
                 android:visibility="gone" />
 
             <LinearLayout
                 android:id="@+id/layout_scheduleItem"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:elevation="2dp"
                 android:orientation="vertical"
                 android:paddingBottom="8dp"
                 android:paddingLeft="16dp"
