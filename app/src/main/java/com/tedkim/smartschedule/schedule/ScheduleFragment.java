@@ -67,7 +67,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
     Location mCurrentLocation;
 
     // traffic data type enum
-    private static int MAX_ROUTE_INFO = 10;
+    private static int MAX_ROUTE_PATH = 6;
     private static int TYPE_SUBWAY = 1;
     private static int TYPE_BUS = 2;
     private static int TYPE_WALK = 3;
@@ -142,8 +142,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
 
     private void setRecyclerView() {
 
-        mDataset = mRealm.where(ScheduleData.class).equalTo("date", DateConvertUtil.date2string(mDate)).findAll();
-        mDataset = mDataset.sort("startTime");
+        mDataset = mRealm.where(ScheduleData.class).equalTo("date", DateConvertUtil.date2string(mDate)).findAll().sort("startTime");
 
         mAdapter = new ScheduleRouteListAdapter(mDataset, true, getContext());
         mScheduleList.setAdapter(mAdapter);
@@ -236,8 +235,8 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
 
                 if (response.isSuccessful()) {
 
+                    int maxPath = MAX_ROUTE_PATH;
                     RouteData result = response.body();
-                    Log.e("CHECK_RESULT", "schedule fragment ++++++++++ " + result.getResult().getPath().length);
 
                     mRealm.beginTransaction();
                     ScheduleData obj = mRealm.where(ScheduleData.class).equalTo("_id", data.get_id()).findFirst();
@@ -246,7 +245,12 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
                     obj.setSubwayCount(result.getResult().getSubwayCount());
                     obj.setSubwayBusCount(result.getResult().getSubwayBusCount());
 
-                    for (RouteData.Result.Path path : result.getResult().getPath()) {
+                    if(result.getResult().getPath().length < maxPath){
+                        maxPath = result.getResult().getPath().length;
+                    }
+                    for(int i=0; i<maxPath; i++){
+
+                        RouteData.Result.Path path = result.getResult().getPath()[i];
 
                         RouteInfo routeInfo = mRealm.createObject(RouteInfo.class);
                         routeInfo.set_id(data.get_id());
@@ -256,6 +260,8 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
                         routeInfo.setPayment(path.getInfo().getPayment());
                         routeInfo.setBusTransitCount(path.getInfo().getBusTransitCount());
                         routeInfo.setSubwayTransitCount(path.getInfo().getSubwayTransitCount());
+                        routeInfo.setTotalDistance(path.getInfo().getTotalDistance());
+                        routeInfo.setTotalTransitCount(path.getInfo().getBusTransitCount()+path.getInfo().getSubwayTransitCount());
 
                         for (RouteData.Result.Path.SubPath subPath : path.getSubPath()) {
 

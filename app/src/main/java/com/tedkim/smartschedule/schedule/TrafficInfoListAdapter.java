@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.tedkim.smartschedule.R;
@@ -29,9 +28,6 @@ public class TrafficInfoListAdapter extends RealmRecyclerViewAdapter<RouteInfo, 
     Context mContext;
     LayoutInflater mInflater;
 
-    private static final int TYPE_HEADER = 0;
-    private static final int TYPE_BODY = 1;
-
     public TrafficInfoListAdapter(@Nullable OrderedRealmCollection<RouteInfo> data, boolean autoUpdate, Context context) {
         super(data, autoUpdate);
 
@@ -42,34 +38,12 @@ public class TrafficInfoListAdapter extends RealmRecyclerViewAdapter<RouteInfo, 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        // view type
-        int mViewType;
-
-        // header view
-        Spinner mTrafficType, mSetDepartTime;
-
-        // body view
         TextView mTotalTime, mTransportCount, mPayment;
         LinearLayout mSubPathLayout;
 
-        public ViewHolder(View itemView, int viewType) {
+        public ViewHolder(View itemView) {
             super(itemView);
 
-            mViewType = viewType;
-            if (TYPE_HEADER == mViewType) {
-                initHeaderView(itemView);
-            } else {
-                initBodyView(itemView);
-            }
-        }
-
-        // TODO - 여기에서 Spinner 동작 정의 할 것
-        private void initHeaderView(View itemView) {
-            mTrafficType = (Spinner) itemView.findViewById(R.id.spinner_trafficType);
-            mSetDepartTime = (Spinner) itemView.findViewById(R.id.spinner_setDepartTime);
-        }
-
-        private void initBodyView(View itemView) {
             mTotalTime = (TextView) itemView.findViewById(R.id.textView_totalTime);
             mTransportCount = (TextView) itemView.findViewById(R.id.textView_transportCount);
             mPayment = (TextView) itemView.findViewById(R.id.textView_payment);
@@ -77,45 +51,21 @@ public class TrafficInfoListAdapter extends RealmRecyclerViewAdapter<RouteInfo, 
         }
     }
 
-    private boolean isPositionHeader(int position) {
-        return position == 0;
-    }
-
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        if (viewType == TYPE_HEADER) {
-            View headerView = mInflater.inflate(R.layout.layout_traffic_info_header, parent, false);
-            return new ViewHolder(headerView, viewType);
-        } else {
-            View bodyView = mInflater.inflate(R.layout.layout_traffic_info_item, parent, false);
-            return new ViewHolder(bodyView, viewType);
-        }
+        View itemView = mInflater.inflate(R.layout.layout_traffic_info_item, parent, false);
+        return new ViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
-        if (holder.mViewType == TYPE_HEADER) {
-            bindHeaderItem(holder);
-        } else {
-            bindBodyItem(holder, position - 1);
-        }
-    }
-
-    // Header 에 바인딩 될 아이템 ??? - 세팅 파라미터 정도 될 듯
-    private void bindHeaderItem(ViewHolder holder) {
-
-    }
-
-    private void bindBodyItem(ViewHolder holder, int position) {
-
-        // RealmResults<RouteInfo> routeInfos = realm.where(RouteInfo.class).equalTo("_id", data.get_id()).findAll();
-
         RouteInfo data = getItem(position);
         holder.mTotalTime.setText(String.format("%d분", data.getTotalTime()));
         holder.mPayment.setText(String.format("%d원", data.getPayment()));
         holder.mTransportCount.setText(getTransitCount(data));
+        holder.mSubPathLayout.removeAllViews();
         getSubPath(holder, data, position);
     }
 
@@ -136,7 +86,7 @@ public class TrafficInfoListAdapter extends RealmRecyclerViewAdapter<RouteInfo, 
     private void getSubPath(ViewHolder holder, RouteInfo data, int position) {
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        params.setMargins(0,0,0,0);
+        params.setMargins(0, 0, 0, 0);
 
         for (int i = 0; i < data.routeSequence.size(); i++) {
 
@@ -152,7 +102,7 @@ public class TrafficInfoListAdapter extends RealmRecyclerViewAdapter<RouteInfo, 
 
             RouteSeqData subPath = data.routeSequence.get(i);
 
-            switch(subPath.getTrafficType()){
+            switch (subPath.getTrafficType()) {
 
                 case 1:
 
@@ -162,7 +112,7 @@ public class TrafficInfoListAdapter extends RealmRecyclerViewAdapter<RouteInfo, 
                     subPathText.setText(subPath.getSubwayName());
                     holder.mSubPathLayout.addView(subPathText);
 
-                    Log.d("SubPath_Check", "path ("+position+") >>> "+i+" 번째 subPath <<< 지하철 >>> 호선 : "+subPath.getSubwayType()+" / 호선명 : "+subPath.getSubwayName());
+                    Log.d("SubPath_Check", "path (" + position + ") >>> " + i + " 번째 subPath <<< 지하철 >>> 호선 : " + subPath.getSubwayType() + " / 호선명 : " + subPath.getSubwayName());
 
                     break;
 
@@ -173,19 +123,22 @@ public class TrafficInfoListAdapter extends RealmRecyclerViewAdapter<RouteInfo, 
                     subPathText.setText(subPath.getBusName());
                     holder.mSubPathLayout.addView(subPathText);
 
-                    Log.d("SubPath_Check", "path ("+position+") >>> "+i+" 번째 subPath <<< 버스 >>> 버스타입 : "+subPath.getBusType()+" / 버스명 : "+subPath.getBusName());
+                    Log.d("SubPath_Check", "path (" + position + ") >>> " + i + " 번째 subPath <<< 버스 >>> 버스타입 : " + subPath.getBusType() + " / 버스명 : " + subPath.getBusName());
                     break;
 
                 case 3:
 
-                    subPathIcon.setImageResource(R.drawable.ic_walk);
-                    holder.mSubPathLayout.addView(subPathIcon);
-
-                    Log.d("SubPath_Check", "path ("+position+") >>> "+i+" 번째 subPath <<< 도보 >>");
+                    if (i == 0 || i == data.routeSequence.size() - 1) {
+                        subPathIcon.setImageResource(R.drawable.ic_walk);
+                        holder.mSubPathLayout.addView(subPathIcon);
+                        Log.d("SubPath_Check", "path (" + position + ") >>> " + i + " 번째 subPath <<< 도보 >>");
+                    } else {
+                        continue;
+                    }
                     break;
             }
 
-            if(i<data.routeSequence.size()-1){
+            if (i < data.routeSequence.size() - 1) {
 
                 subPathNext.setImageResource(R.drawable.ic_next);
                 holder.mSubPathLayout.addView(subPathNext);
@@ -196,16 +149,6 @@ public class TrafficInfoListAdapter extends RealmRecyclerViewAdapter<RouteInfo, 
 
     @Override
     public int getItemCount() {
-        return super.getItemCount() + 1;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-
-        if (isPositionHeader(position)) {
-            return TYPE_HEADER;
-        } else {
-            return TYPE_BODY;
-        }
+        return super.getItemCount();
     }
 }
