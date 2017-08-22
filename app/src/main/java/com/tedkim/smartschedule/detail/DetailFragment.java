@@ -125,6 +125,7 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
                 mReminderTextList.append(DateConvertUtil.minutes2string(getContext(), reminder.getTime()));
             }
         }
+        mReminder.setText("");
         mReminder.setText(mReminderTextList);
     }
 

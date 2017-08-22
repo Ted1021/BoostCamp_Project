@@ -44,10 +44,13 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import io.realm.ObjectChangeSet;
 import io.realm.Realm;
+import io.realm.RealmObjectChangeListener;
 import io.realm.RealmResults;
 
 import static com.tedkim.smartschedule.R.id.imageView_reminder;
+import static com.tedkim.smartschedule.util.AppController.REQ_CORRECT;
 import static com.tedkim.smartschedule.util.AppController.REQ_GOOGLE_PLACES;
 
 public class RegistActivity extends AppCompatActivity implements View.OnClickListener, OnReminderListSaveListener, TextWatcher {
@@ -63,6 +66,10 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
     // realm database instance
     Realm mRealm;
+    RealmObjectChangeListener<ScheduleData> mObjectTimeListener;
+    RealmObjectChangeListener<ScheduleData> mObjectLocationListener;
+    ScheduleData mScheduleData;
+    boolean isChanged = false;
 
     // date info from Home Activity
     String mID;
@@ -98,14 +105,14 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         mRealm.close();
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_regist);
 
-        Log.d("CHECK_DATE", "In register >>>>>>>>>>>>>>>>" + mDate + " / " + mID);
-
         initData();
+        Log.d("CHECK_DATE", "In register >>>>>>>>>>>>>>>>" + mDate + " / " + mID);
         initView();
 
         // 수정 작업일 경우, 이전 내용을 binding 아니면 빈칸으로 Activity 를 시작
@@ -126,7 +133,27 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
             mDate = getIntent().getStringExtra("DATE");
         }
 
-        // TODO - add Realm Listeners here (for Collections, Objects)
+        // init Realm managed object listener
+        mObjectTimeListener = new RealmObjectChangeListener<ScheduleData>() {
+            @Override
+            public void onChange(ScheduleData scheduleData, ObjectChangeSet changeSet) {
+
+                if (changeSet.isFieldChanged("startTime")) {
+
+                    Log.d("CHECK_SCHEDULE_DATA", "Regist Activity >>>>> 시간 변경" + scheduleData.get_id());
+//                    mCallback.onObjectFieldChangeListener(scheduleData.get_id());
+                }
+            }
+        };
+
+        mObjectLocationListener = new RealmObjectChangeListener<ScheduleData>() {
+            @Override
+            public void onChange(ScheduleData scheduleData, ObjectChangeSet changeSet) {
+                if (changeSet.isFieldChanged("address")) {
+                    Log.d("CHECK_SCHEDULE_DATA", "Regist Activity >>>>> 스케줄 변경" + scheduleData.get_id());
+                }
+            }
+        };
 
         mNotificationList = new HashMap<Integer, Boolean>() {{
 
@@ -300,20 +327,18 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void execute(Realm realm) {
 
-                ScheduleData scheduleData;
-
                 Log.e("CHECK_COMMAND", "Register Activity +++++ " + mReqCommand);
 
                 // 새로운 데이터의 생성인 경우
                 if (mReqCommand == AppController.REQ_CREATE) {
-                    scheduleData = mRealm.createObject(ScheduleData.class, UUID.randomUUID().toString());
+                    mScheduleData = mRealm.createObject(ScheduleData.class, UUID.randomUUID().toString());
                 }
 
                 // 기존 데이터의 수정인 경우
                 else {
-                    scheduleData = mRealm.where(ScheduleData.class).equalTo("_id", mID).findFirst();
+                    mScheduleData = mRealm.where(ScheduleData.class).equalTo("_id", mID).findFirst();
                     // 경로정보를 받아 온 이력이 있다면,
-                    if (scheduleData.routeInfoList.size() != 0) {
+                    if (mScheduleData.routeInfoList.size() != 0) {
 
                         // 가장 최하위에 있는 객체부터 순차적으로 삭제
                         RealmResults<RouteSeqData> routeSeqDatas = mRealm.where(RouteSeqData.class).equalTo("_id", mID).findAll();
@@ -323,51 +348,56 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                         routeInfos.deleteAllFromRealm();
                     }
 
-                    if (scheduleData.reminderList.size() != 0) {
+                    if (mScheduleData.reminderList.size() != 0) {
                         RealmResults<ReminderData> reminderDatas = mRealm.where(ReminderData.class).equalTo("_id", mID).findAll();
                         reminderDatas.deleteAllFromRealm();
                     }
                 }
 
-                scheduleData.setTitle(mTitle.getText().toString());
-                scheduleData.setMemo(mMemo.getText().toString());
-                scheduleData.setDate(mDate);
-                scheduleData.setStartTime(mStart);
-                scheduleData.setEndTime(mEnd);
-                scheduleData.setAddress(mSelectedAddress);
-                scheduleData.setLatitude(mLatitude);
-                scheduleData.setLongitude(mLongitude);
+                mScheduleData.setTitle(mTitle.getText().toString());
+                mScheduleData.setMemo(mMemo.getText().toString());
+                mScheduleData.setDate(mDate);
+
+                if (mReqCommand == REQ_CORRECT && mScheduleData.getStartTime() != mStart) {
+                    isChanged = true;
+                }
+                mScheduleData.setStartTime(mStart);
+                mScheduleData.setEndTime(mEnd);
+
+                if (mReqCommand == REQ_CORRECT && mScheduleData.getAddress() != mSelectedAddress) {
+                    isChanged = true;
+                }
+                mScheduleData.setAddress(mSelectedAddress);
+                mScheduleData.setLatitude(mLatitude);
+                mScheduleData.setLongitude(mLongitude);
 
                 Map<Integer, Boolean> keySort = new TreeMap<>(mNotificationList);
                 for (Map.Entry<Integer, Boolean> data : keySort.entrySet()) {
 
                     ReminderData reminderData = mRealm.createObject(ReminderData.class);
 
-                    reminderData.set_id(scheduleData.get_id());
+                    reminderData.set_id(mScheduleData.get_id());
                     reminderData.setTime(data.getKey());
                     reminderData.setChecked(data.getValue());
 
-                    scheduleData.reminderList.add(reminderData);
+                    mScheduleData.reminderList.add(reminderData);
                 }
 
                 if (mAllDay.isChecked()) {
-                    scheduleData.setAllDaySchedule(true);
+                    mScheduleData.setAllDaySchedule(true);
                     mAllDayIcon.setColorFilter(mSelectedColor);
 
                 } else {
-                    scheduleData.setAllDaySchedule(false);
+                    mScheduleData.setAllDaySchedule(false);
                 }
 
                 if (mFakeCall.isChecked()) {
-                    scheduleData.setFakeCall(true);
+                    mScheduleData.setFakeCall(true);
                     mFakeCallIcon.setColorFilter(mSelectedColor);
 
                 } else {
-                    scheduleData.setFakeCall(false);
+                    mScheduleData.setFakeCall(false);
                 }
-
-                Log.d("CHECK_DATE", "Regist Activity >>> " + scheduleData.getDate());
-                setResult(RESULT_OK);
             }
         });
     }
@@ -397,9 +427,9 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         // Reminder Check
         // 리마인더 hashMap 이 모두 false 이면 ....
         TreeMap<Integer, Boolean> valueSet = new TreeMap<>(mNotificationList);
-        for(Boolean check :valueSet.values()){
+        for (Boolean check : valueSet.values()) {
 
-            if(check){
+            if (check) {
                 checkNotiList = true;
             }
         }
@@ -426,10 +456,9 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
         String address = mAddress.getText().toString();
 
-        if(address.equals("") || address.isEmpty() || address.equals("주소 없음")){
+        if (address.equals("") || address.isEmpty() || address.equals("주소 없음")) {
             Snackbar.make(getWindow().getDecorView().getRootView(), R.string.error_message_no_address, Snackbar.LENGTH_LONG).show();
-        }
-        else{
+        } else {
             Intent intent = new Intent(RegistActivity.this, MapsActivity.class);
             intent.putExtra("ADDRESS", mAddress.getText().toString());
             startActivityForResult(intent, AppController.REQ_GOOGLE_MAP);

@@ -25,7 +25,7 @@ public class ScheduleData extends RealmObject {
     private Date startTime, endTime;
     private String address;
     private double latitude, longitude;
-    private double currentLatitude=0, currentLongitude=0;
+    private double currentLatitude, currentLongitude;
     //    private ContactsContract.Contacts contacts;
     public RealmList<ReminderData> reminderList;
     private boolean allDaySchedule;

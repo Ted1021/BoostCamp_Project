@@ -27,11 +27,9 @@ import com.tedkim.smartschedule.util.DateConvertUtil;
 
 import java.util.Date;
 
-import io.realm.ObjectChangeSet;
 import io.realm.OrderedCollectionChangeSet;
 import io.realm.OrderedRealmCollectionChangeListener;
 import io.realm.Realm;
-import io.realm.RealmObjectChangeListener;
 import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -57,7 +55,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
 
     // realm components
     Realm mRealm;
-    RealmObjectChangeListener<ScheduleData> mRealmObjectListener;
     OrderedRealmCollectionChangeListener<RealmResults<ScheduleData>> mRealmCollectionListener;
 
     // recyclerView adapter components
@@ -114,19 +111,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
         // init Realm database
         mRealm = Realm.getDefaultInstance();
 
-        // init Realm managed object listener
-        mRealmObjectListener = new RealmObjectChangeListener<ScheduleData>() {
-            @Override
-            public void onChange(ScheduleData scheduleData, ObjectChangeSet changeSet) {
-
-                if (changeSet.isFieldChanged("startTime") || changeSet.isFieldChanged("address")) {
-
-                    Log.d("CHECK_SCHEDULE_DATA", "schedule fragment >>>>> " + scheduleData.get_id());
-                    callRouteData(scheduleData);
-                }
-            }
-        };
-
         // init Realm data collection (=RealmResults) listener
         mRealmCollectionListener = new OrderedRealmCollectionChangeListener<RealmResults<ScheduleData>>() {
             @Override
@@ -141,7 +125,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
                 // 데이터셋의 삽입이 발생한 schedule data에 대해 경로 업데이트를 진행
                 for (int position : changeSet.getInsertions()) {
 
-//                    mRefreshLayout.setRefreshing(true);
+                    mRefreshLayout.setRefreshing(true);
                     mCurrentLocation = CurrentLocation.getLocation(getContext());
 
                     // 스케줄의 위치를 현재 '디바이스' 의 위치로 변환
@@ -183,19 +167,29 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onRefresh() {
 
+                // 모든 정보가 업데이트 상태인지를 판단하는 flag
+                Boolean isUpdated = true;
+
+                // 오늘자 스케줄이 하나라도 있다면,
                 if (mDataset.size() != 0) {
+
                     // 현재 좌표 호출
                     mCurrentLocation = CurrentLocation.getLocation(getContext());
 
                     // 스케줄에 저장 된 최근 위치와 업데이트 된 현재 위치를 비교해 선별적으로 서버에 접근
                     for (ScheduleData data : mDataset) {
+                        Log.e("CHECK_LOCATION", "schedule fragment >>>> Longitude : " +mCurrentLocation.getLongitude()+"/"+data.getCurrentLongitude()+ " / latitude : " + (data.getCurrentLatitude()+"/"+mCurrentLocation.getLatitude()));
+                        if (data.getCurrentLongitude() != mCurrentLocation.getLongitude() || data.getCurrentLatitude() != mCurrentLocation.getLatitude()
+                                || data.routeInfoList.size() == 0) {
 
-                        Log.e("CHECK_LOCATION", "schedule fragment >>>> " + data.getLongitude() + " / " + data.getLatitude());
-                        if (data.getLongitude() != mCurrentLocation.getLongitude() || data.getLatitude() != mCurrentLocation.getLatitude()) {
+                            isUpdated = false;
+
                             // 디바이스의 위치를 스케줄의 위치로 변환
                             mRealm.beginTransaction();
+
                             data.setCurrentLongitude(mCurrentLocation.getLongitude());
                             data.setCurrentLatitude(mCurrentLocation.getLatitude());
+
                             if (data.routeInfoList.size() != 0) {
 
                                 // 가장 최하위에 있는 객체부터 순차적으로 삭제
@@ -206,12 +200,21 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
                                 routeInfos.deleteAllFromRealm();
                             }
                             mRealm.commitTransaction();
-                        }
 
-                        // 변환 후 이동 정보 호출
-                        callRouteData(data);
+                            // 변환 후 이동 정보 호출
+                            callRouteData(data);
+                        }
                     }
-                } else {
+
+                    // 모든 정보가 최신상태라면 refresh 비활성화
+                    if(isUpdated){
+                        Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), R.string.message_is_updated, Snackbar.LENGTH_LONG).show();
+                        mRefreshLayout.setRefreshing(false);
+                    }
+                }
+
+                // 스케줄 데이터가 없는 경우
+                else {
                     Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), R.string.error_message_no_data, Snackbar.LENGTH_LONG).show();
                     mRefreshLayout.setRefreshing(false);
                 }

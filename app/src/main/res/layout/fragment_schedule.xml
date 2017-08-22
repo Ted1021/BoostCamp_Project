@@ -45,10 +45,10 @@
             android:id="@+id/imageButton_refresh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            app:srcCompat="@drawable/ic_action_refresh"
             android:layout_alignTop="@+id/imageButton_moreInfo"
-            android:layout_toStartOf="@+id/imageButton_moreInfo" />
+            android:layout_toStartOf="@+id/imageButton_moreInfo"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/ic_action_refresh" />
 
         <ImageButton
             android:id="@+id/imageButton_back"
@@ -72,6 +72,7 @@
         android:text="Today"
         android:textColor="@color/colorAppTheme"
         android:textStyle="bold" />
+
 
     <LinearLayout
         android:id="@+id/layout_no_schedule"
@@ -105,12 +106,14 @@
         android:id="@+id/refreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="16dp">
+        android:layout_marginTop="16dp"
+        android:background="@android:color/transparent">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView_scheduleList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:visibility="visible" />
 
     </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>

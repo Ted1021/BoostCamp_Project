@@ -38,6 +38,7 @@
     <string name="error_message_fail_server">서버 접속이 원활하지 못합니다</string>
     <string name="error_message_no_data">경로를 확인 할 스케줄이 없습니다</string>
     <string name="error_message_no_address">주소를 입력 해 주셔야 합니다 </string>
+    <string name="message_is_updated">모두 최신 정보 입니다</string>
 
     <string name="reminder_type_onTime">정시</string>
     <string name="reminder_type_1hour">1시간전  </string>
