@@ -169,29 +169,12 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
 
                     holder.trafficInfoList.setAnimation(AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in));
                     holder.trafficInfoList.setVisibility(View.GONE);
-//                    holder.trafficInfoList.animate()
-//                            .translationY(0)
-//                            .alpha(0.0f)
-//                            .setListener(new AnimatorListenerAdapter() {
-//                                @Override
-//                                public void onAnimationEnd(Animator animation) {
-//                                    super.onAnimationEnd(animation);
-//                                    holder.trafficInfoList.setVisibility(View.GONE);
-//                                }
-//                            });
                 } else {
                     holder.moreInfo.setAnimation(AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in));
                     holder.moreInfo.setImageResource(R.drawable.ic_action_collapse);
 
                     holder.trafficInfoList.setVisibility(View.VISIBLE);
                     holder.trafficInfoList.setAnimation(AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in));
-
-//                    holder.trafficInfoList.setAlpha(0.0f);
-//
-//                    holder.trafficInfoList.animate()
-//                            .translationY(holder.trafficInfoList.getHeight())
-//                            .alpha(1.0f)
-//                            .setListener(null);
                 }
                 isExpanded = !isExpanded;
             }

@@ -36,9 +36,19 @@
             android:layout_centerHorizontal="false"
             android:layout_centerInParent="false"
             android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/toolBarItem_margin"
             android:layout_marginRight="@dimen/toolBarItem_margin"
             android:background="@android:color/transparent"
             app:srcCompat="@drawable/ic_action_more_info" />
+
+        <ImageButton
+            android:id="@+id/imageButton_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/ic_action_refresh"
+            android:layout_alignTop="@+id/imageButton_moreInfo"
+            android:layout_toStartOf="@+id/imageButton_moreInfo" />
 
         <ImageButton
             android:id="@+id/imageButton_back"

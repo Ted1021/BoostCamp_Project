@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <array name="subwayType">
+    <array name="subway_type">
         <item>@color/subway_line_1</item>
         <item>@color/subway_line_2</item>
         <item>@color/subway_line_3</item>
@@ -11,12 +11,30 @@
         <item>@color/subway_line_7</item>
         <item>@color/subway_line_8</item>
         <item>@color/subway_line_9</item>
-        
     </array>
 
-    <array name="busType">
+    <array name="bus_type">
 
 
     </array>
+
+    <string-array name="sub_path_sorting">
+        <item>최단거리</item>
+        <item>최단시간</item>
+        <item>최소환승</item>
+    </string-array>
+
+    <string-array name="arrive_time_list">
+        <item>정시</item>
+        <item>15분 전</item>
+        <item>30분 전</item>
+        <item>한시간 전</item>
+    </string-array>
+
+    <string-array name="schedule_sorting">
+        <item>일정 순</item>
+        <item>출발시간 순</item>
+        <item>거리 순</item>
+    </string-array>
 
 </resources>

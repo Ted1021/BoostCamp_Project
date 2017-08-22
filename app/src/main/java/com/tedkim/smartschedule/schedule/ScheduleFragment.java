@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -45,10 +46,11 @@ import static com.tedkim.smartschedule.util.DateConvertUtil.TYPE_KOR;
  * @date 2017.07.31
  */
 
-public class ScheduleFragment extends Fragment {
+public class ScheduleFragment extends Fragment implements View.OnClickListener {
 
     // fragment view components
     SwipeRefreshLayout mRefreshLayout;
+    ImageButton mRefresh;
     LinearLayout mNoSchedule;
     TextView mToday;
     Date mDate;
@@ -68,7 +70,7 @@ public class ScheduleFragment extends Fragment {
     Location mCurrentLocation;
 
     // traffic data type enum
-    private static int MAX_ROUTE_INFO = 3;
+    private static int MAX_ROUTE_INFO = 10;
     private static int TYPE_SUBWAY = 1;
     private static int TYPE_BUS = 2;
     private static int TYPE_WALK = 3;
@@ -103,6 +105,8 @@ public class ScheduleFragment extends Fragment {
         mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refreshLayout);
         mNoSchedule = (LinearLayout) view.findViewById(R.id.layout_no_schedule);
         mScheduleList = (RecyclerView) view.findViewById(R.id.recyclerView_scheduleList);
+        mRefresh = (ImageButton) view.findViewById(R.id.imageButton_refresh);
+        mRefresh.setOnClickListener(this);
     }
 
     private void initRealm() {
@@ -137,7 +141,7 @@ public class ScheduleFragment extends Fragment {
                 // 데이터셋의 삽입이 발생한 schedule data에 대해 경로 업데이트를 진행
                 for (int position : changeSet.getInsertions()) {
 
-                    mRefreshLayout.setRefreshing(true);
+//                    mRefreshLayout.setRefreshing(true);
                     mCurrentLocation = CurrentLocation.getLocation(getContext());
 
                     // 스케줄의 위치를 현재 '디바이스' 의 위치로 변환
@@ -188,7 +192,6 @@ public class ScheduleFragment extends Fragment {
 
                         Log.e("CHECK_LOCATION", "schedule fragment >>>> " + data.getLongitude() + " / " + data.getLatitude());
                         if (data.getLongitude() != mCurrentLocation.getLongitude() || data.getLatitude() != mCurrentLocation.getLatitude()) {
-
                             // 디바이스의 위치를 스케줄의 위치로 변환
                             mRealm.beginTransaction();
                             data.setCurrentLongitude(mCurrentLocation.getLongitude());
@@ -214,9 +217,9 @@ public class ScheduleFragment extends Fragment {
                 }
             }
         });
+
     }
 
-    // TODO - 로직 전체로 봤을 때, 3중 For 문임 ... 굉장히 안좋음 - Realm 의 제한적 구조상 아마도 해결법은 서버단에서 데이터를 재가공해서 필요한 정보만 return 해주는 방법밖에 없음
     private void callRouteData(final ScheduleData data) {
 
         Log.d("CHECK_UPDATE_DATA", "schedule fragment >>>>>>>>>>>> " + data.get_id());
@@ -240,9 +243,7 @@ public class ScheduleFragment extends Fragment {
                     obj.setSubwayCount(result.getResult().getSubwayCount());
                     obj.setSubwayBusCount(result.getResult().getSubwayBusCount());
 
-                    // 최대 3개의 경로를 가져 옴
-                    for (int i = 0; i < MAX_ROUTE_INFO; i++) {
-                        RouteData.Result.Path path = result.getResult().getPath()[i];
+                    for (RouteData.Result.Path path : result.getResult().getPath()) {
 
                         RouteInfo routeInfo = mRealm.createObject(RouteInfo.class);
                         routeInfo.set_id(data.get_id());
@@ -276,6 +277,7 @@ public class ScheduleFragment extends Fragment {
                         obj.routeInfoList.add(routeInfo);
                     }
                     mRealm.commitTransaction();
+
                 } else {
                     Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), R.string.error_message_fail_data, Snackbar.LENGTH_LONG).show();
                     Log.e("CHECK_FAIL_RETROFIT", "schedule fragment ----------- fail to get data");
@@ -292,5 +294,17 @@ public class ScheduleFragment extends Fragment {
                 Log.e("CHECK_FAIL_SERVER", "schedule fragment ----------- server access failure");
             }
         });
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+
+            case R.id.imageButton_refresh:
+
+                break;
+
+        }
     }
 }
