@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
+import io.realm.RealmAsyncTask;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 
@@ -40,20 +41,23 @@ import io.realm.RealmResults;
  * @date 2017.08.08
  */
 
-public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleData, ScheduleRouteListAdapter.ViewHolder> implements View.OnClickListener{
+public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleData, ScheduleRouteListAdapter.ViewHolder> implements View.OnClickListener, OnTrafficInfoListener {
 
     Context mContext;
     LayoutInflater mInflater;
     boolean isExpanded = false;
 
-    RealmResults<RouteInfo> mTrafficDataset;
-    TrafficInfoListAdapter mAdapter;
-
     Realm mRealm;
+
 
     private static final int SORT_DIST = 0;
     private static final int SORT_TIME = 1;
     private static final int SORT_TRANSIT = 2;
+
+    private static final int SET_ON_TIME = 0;
+    private static final int SET_15_MIN = 1;
+    private static final int SET_30_MIN = 2;
+    private static final int SET_60_MIN = 3;
 
     public ScheduleRouteListAdapter(@Nullable OrderedRealmCollection<ScheduleData> data, boolean autoUpdate, Context context) {
         super(data, autoUpdate);
@@ -85,7 +89,7 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
             transport = (TextView) itemView.findViewById(R.id.textView_transport);
             moreInfo = (ImageButton) itemView.findViewById(R.id.imageButton_moreInfo);
             sortType = (Spinner) itemView.findViewById(R.id.spinner_trafficType);
-            setDepartTime = (Spinner) itemView.findViewById(R.id.spinner_trafficType);
+            setDepartTime = (Spinner) itemView.findViewById(R.id.spinner_setDepartTime);
 
             trafficInfoList = (RecyclerView) itemView.findViewById(R.id.recyclerView_trafficInfoList);
 
@@ -113,41 +117,36 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
     public void onBindViewHolder(ViewHolder holder, int position) {
 
         mRealm = Realm.getDefaultInstance();
-
         ScheduleData data = getItem(position);
 
+        // set SubPath Info RecyclerView
+        RealmResults<RouteInfo> routeInfos = mRealm.where(RouteInfo.class).equalTo("_id", data.get_id()).findAll().sort("totalDistance");
+        TrafficInfoListAdapter mAdapter = new TrafficInfoListAdapter(routeInfos, true, mContext, holder);
+        mAdapter.setOnTrafficInfoListener(this);
+        holder.trafficInfoList.setAdapter(mAdapter);
+
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext);
+        holder.trafficInfoList.setLayoutManager(layoutManager);
+
         bindData(holder, data);
-        setItemAction(holder, data);
+        setItemAction(holder, data, mAdapter);
 
         mRealm.close();
     }
 
-    @Override
-    public long getItemId(int index) {
-        return super.getItemId(index);
-    }
-
-    @Override
-    public int getItemCount() {
-        return super.getItemCount();
-    }
 
     private void bindData(ViewHolder holder, ScheduleData data) {
 
-        mTrafficDataset = mRealm.where(RouteInfo.class).equalTo("_id", data.get_id()).findAll();
-        // binding traffic info list here
-        setRecyclerView(holder, mTrafficDataset);
-
         // 한번이라도 경로를 호출 한 데이터 인 경우,
-        if (mTrafficDataset.size() != 0) {
+        if (data.routeInfoList.size() != 0) {
             holder.routeInfoLayout.setVisibility(View.VISIBLE);
-            checkScheduleState(holder, mTrafficDataset.first());
+            checkScheduleState(holder, data.routeInfoList.first());
         } else {
             holder.routeInfoLayout.setVisibility(View.GONE);
         }
 
         // TODO - 선택 된 Route Info Item 으로 정보를 변경 해 줄 것
-        // 최단 시간 기준으로 첫번째 (가장 짦은 시간) 아이템을 보여준다
+        // 최단 시간 기준으로 첫번째 (가장 짦은 거리) 아이템을 보여준다
         holder.title.setText(data.getTitle());
         holder.start.setText(DateConvertUtil.time2string(data.getStartTime()));
         holder.end.setText(DateConvertUtil.time2string(data.getEndTime()));
@@ -155,17 +154,11 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
         holder.memo.setText(data.getMemo());
     }
 
-    private void setRecyclerView(ViewHolder holder, RealmResults<RouteInfo> routeInfos) {
+    private void setRecyclerView(ViewHolder holder, final ScheduleData data) {
 
-        mAdapter = new TrafficInfoListAdapter(routeInfos, true, mContext);
-        holder.trafficInfoList.setAdapter(mAdapter);
-        mAdapter.updateData(routeInfos);
-
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext);
-        holder.trafficInfoList.setLayoutManager(layoutManager);
     }
 
-    private void setItemAction(final ViewHolder holder, final ScheduleData data) {
+    private void setItemAction(final ViewHolder holder, final ScheduleData data, final TrafficInfoListAdapter adapter) {
 
         // show more transport information
         holder.moreInfo.setOnClickListener(new View.OnClickListener() {
@@ -211,6 +204,22 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
+                RealmResults<RouteInfo> routeInfos = mRealm.where(RouteInfo.class).equalTo("_id", data.get_id()).findAll().sort("totalDistance");
+                switch (position) {
+                    case SORT_DIST:
+                        routeInfos = mRealm.where(RouteInfo.class).equalTo("_id", data.get_id()).findAll().sort("totalDistance");
+                        break;
+
+                    case SORT_TIME:
+                        routeInfos = mRealm.where(RouteInfo.class).equalTo("_id", data.get_id()).findAll().sort("totalTime");
+                        break;
+
+                    case SORT_TRANSIT:
+                        routeInfos = mRealm.where(RouteInfo.class).equalTo("_id", data.get_id()).findAll().sort("totalTransitCount");
+
+                        break;
+                }
+                adapter.updateData(routeInfos);
             }
 
             @Override
@@ -224,26 +233,41 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                switch(position){
-                    case SORT_DIST:
-                        mTrafficDataset = mTrafficDataset.sort("totalDistance");
+                int beforeTime = 0;
+
+                switch (position) {
+
+                    case SET_ON_TIME:
+                        beforeTime = 0;
                         break;
 
-                    case SORT_TIME:
-                        mTrafficDataset = mTrafficDataset.sort("totalTime");
+                    case SET_15_MIN:
+                        beforeTime = 15;
                         break;
 
-                    case SORT_TRANSIT:
-                        mTrafficDataset = mTrafficDataset.sort("totalTransitCount");
+                    case SET_30_MIN:
+                        beforeTime = 30;
+                        break;
+
+                    case SET_60_MIN:
+                        beforeTime = 60;
                         break;
                 }
-                mAdapter.updateData(mTrafficDataset);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                mTrafficDataset = mTrafficDataset.sort("totalDistance");
-                mAdapter.updateData(mTrafficDataset);
+
+            }
+        });
+    }
+
+    private void controlBeforTime(final ScheduleData data, final int beforeTime){
+
+        RealmAsyncTask transaction = mRealm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+
             }
         });
     }
@@ -287,4 +311,21 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
     public void onClick(View v) {
 
     }
+
+    @Override
+    public long getItemId(int index) {
+        return super.getItemId(index);
+    }
+
+    @Override
+    public int getItemCount() {
+        return super.getItemCount();
+    }
+
+    @Override
+    public void onTrafficInfoClickListener(ViewHolder viewHolder ,RouteInfo routeInfo) {
+        checkScheduleState(viewHolder,routeInfo);
+    }
+
+
 }

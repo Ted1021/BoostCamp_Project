@@ -67,7 +67,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
     Location mCurrentLocation;
 
     // traffic data type enum
-    private static int MAX_ROUTE_PATH = 6;
+    private static int MAX_ROUTE_PATH = 5;
     private static int TYPE_SUBWAY = 1;
     private static int TYPE_BUS = 2;
     private static int TYPE_WALK = 3;
@@ -241,9 +241,9 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
                     mRealm.beginTransaction();
                     ScheduleData obj = mRealm.where(ScheduleData.class).equalTo("_id", data.get_id()).findFirst();
 
-                    obj.setBusCount(result.getResult().getBusCount());
-                    obj.setSubwayCount(result.getResult().getSubwayCount());
-                    obj.setSubwayBusCount(result.getResult().getSubwayBusCount());
+//                    obj.setBusCount(result.getResult().getBusCount());
+//                    obj.setSubwayCount(result.getResult().getSubwayCount());
+//                    obj.setSubwayBusCount(result.getResult().getSubwayBusCount());
 
                     if(result.getResult().getPath().length < maxPath){
                         maxPath = result.getResult().getPath().length;

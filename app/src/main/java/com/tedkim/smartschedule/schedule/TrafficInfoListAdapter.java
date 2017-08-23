@@ -2,6 +2,7 @@ package com.tedkim.smartschedule.schedule;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
@@ -27,19 +28,26 @@ public class TrafficInfoListAdapter extends RealmRecyclerViewAdapter<RouteInfo, 
 
     Context mContext;
     LayoutInflater mInflater;
+    OnTrafficInfoListener mCallback;
+    ScheduleRouteListAdapter.ViewHolder mViewHolder;
 
-    public TrafficInfoListAdapter(@Nullable OrderedRealmCollection<RouteInfo> data, boolean autoUpdate, Context context) {
+    public TrafficInfoListAdapter(@Nullable OrderedRealmCollection<RouteInfo> data, boolean autoUpdate, Context context,  ScheduleRouteListAdapter.ViewHolder viewHolder) {
         super(data, autoUpdate);
 
+        mViewHolder = viewHolder;
         mContext = context;
         mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
+    public void setOnTrafficInfoListener(OnTrafficInfoListener callback){
+        this.mCallback = callback;
+    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView mTotalTime, mTransportCount, mPayment;
         LinearLayout mSubPathLayout;
+        CardView mSubPathItem;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -48,6 +56,7 @@ public class TrafficInfoListAdapter extends RealmRecyclerViewAdapter<RouteInfo, 
             mTransportCount = (TextView) itemView.findViewById(R.id.textView_transportCount);
             mPayment = (TextView) itemView.findViewById(R.id.textView_payment);
             mSubPathLayout = (LinearLayout) itemView.findViewById(R.id.layout_subPath);
+            mSubPathItem = (CardView) itemView.findViewById(R.id.cardView_subPath);
         }
     }
 
@@ -59,14 +68,29 @@ public class TrafficInfoListAdapter extends RealmRecyclerViewAdapter<RouteInfo, 
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
 
-        RouteInfo data = getItem(position);
+        final RouteInfo data = getItem(position);
         holder.mTotalTime.setText(String.format("%d분", data.getTotalTime()));
         holder.mPayment.setText(String.format("%d원", data.getPayment()));
         holder.mTransportCount.setText(getTransitCount(data));
         holder.mSubPathLayout.removeAllViews();
         getSubPath(holder, data, position);
+
+        holder.mSubPathItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCallback.onTrafficInfoClickListener(mViewHolder ,data);
+            }
+        });
+
+//        holder.mSubPathItem.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                holder.mSubPathItem.setBackgroundColor(ContextCompat.getColor(mContext, android.R.color.white));
+//                holder.mSubPathItem.setCardElevation(16.0f);
+//            }
+//        });
     }
 
     private String getTransitCount(RouteInfo data) {
@@ -85,13 +109,10 @@ public class TrafficInfoListAdapter extends RealmRecyclerViewAdapter<RouteInfo, 
 
     private void getSubPath(ViewHolder holder, RouteInfo data, int position) {
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        params.setMargins(0, 0, 0, 0);
-
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         for (int i = 0; i < data.routeSequence.size(); i++) {
 
             TextView subPathText = new TextView(mContext);
-            subPathText.setLayoutParams(params);
             subPathText.setGravity(Gravity.CENTER_VERTICAL);
 
             ImageView subPathIcon = new ImageView(mContext);
@@ -140,7 +161,7 @@ public class TrafficInfoListAdapter extends RealmRecyclerViewAdapter<RouteInfo, 
 
             if (i < data.routeSequence.size() - 1) {
 
-                subPathNext.setImageResource(R.drawable.ic_next);
+                subPathNext.setImageResource(R.drawable.ic_next_small);
                 holder.mSubPathLayout.addView(subPathNext);
             }
         }
@@ -151,4 +172,7 @@ public class TrafficInfoListAdapter extends RealmRecyclerViewAdapter<RouteInfo, 
     public int getItemCount() {
         return super.getItemCount();
     }
+
+
+
 }

@@ -31,6 +31,7 @@ public class ScheduleData extends RealmObject {
     private boolean allDaySchedule;
     private boolean fakeCall;
     private int busCount, subwayCount, subwayBusCount;
+    private int beforeTime=0;
 
     public RealmList<RouteInfo> routeInfoList;
 
@@ -169,5 +170,13 @@ public class ScheduleData extends RealmObject {
 
     public void setSubwayBusCount(int subwayBusCount) {
         this.subwayBusCount = subwayBusCount;
+    }
+
+    public int getBeforeTime() {
+        return beforeTime;
+    }
+
+    public void setBeforeTime(int beforeTime) {
+        this.beforeTime = beforeTime;
     }
 }

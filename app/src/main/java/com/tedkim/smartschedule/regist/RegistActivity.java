@@ -332,6 +332,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                 // 새로운 데이터의 생성인 경우
                 if (mReqCommand == AppController.REQ_CREATE) {
                     mScheduleData = mRealm.createObject(ScheduleData.class, UUID.randomUUID().toString());
+                    mScheduleData.setBeforeTime(0);
                 }
 
                 // 기존 데이터의 수정인 경우

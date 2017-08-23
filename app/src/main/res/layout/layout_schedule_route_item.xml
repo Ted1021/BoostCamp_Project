@@ -196,6 +196,15 @@
 
                 </LinearLayout>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/colorLightGray" />
+
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recyclerView_trafficInfoList"
                     android:layout_width="match_parent"
