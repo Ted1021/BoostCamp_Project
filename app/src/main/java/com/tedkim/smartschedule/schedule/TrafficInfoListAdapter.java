@@ -2,6 +2,7 @@ package com.tedkim.smartschedule.schedule;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,6 +19,7 @@ import com.tedkim.smartschedule.model.RouteInfo;
 import com.tedkim.smartschedule.model.RouteSeqData;
 
 import io.realm.OrderedRealmCollection;
+import io.realm.Realm;
 import io.realm.RealmRecyclerViewAdapter;
 
 /**
@@ -29,12 +31,14 @@ public class TrafficInfoListAdapter extends RealmRecyclerViewAdapter<RouteInfo, 
     Context mContext;
     LayoutInflater mInflater;
     OnTrafficInfoListener mCallback;
-    ScheduleRouteListAdapter.ViewHolder mViewHolder;
+    ScheduleRouteListAdapter.ViewHolder mScheduleRouteViewHolder;
+
+    Realm mRealm;
 
     public TrafficInfoListAdapter(@Nullable OrderedRealmCollection<RouteInfo> data, boolean autoUpdate, Context context,  ScheduleRouteListAdapter.ViewHolder viewHolder) {
         super(data, autoUpdate);
 
-        mViewHolder = viewHolder;
+        mScheduleRouteViewHolder = viewHolder;
         mContext = context;
         mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -70,27 +74,29 @@ public class TrafficInfoListAdapter extends RealmRecyclerViewAdapter<RouteInfo, 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
 
+        mRealm = Realm.getDefaultInstance();
+
         final RouteInfo data = getItem(position);
+
         holder.mTotalTime.setText(String.format("%d분", data.getTotalTime()));
         holder.mPayment.setText(String.format("%d원", data.getPayment()));
         holder.mTransportCount.setText(getTransitCount(data));
         holder.mSubPathLayout.removeAllViews();
-        getSubPath(holder, data, position);
 
+        if(data.isSelected()){
+            holder.mSubPathItem.setBackgroundColor(ContextCompat.getColor(mContext, android.R.color.white));
+            holder.mSubPathItem.setCardElevation(8.0f);
+        }
+
+        getSubPath(holder, data, position);
         holder.mSubPathItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCallback.onTrafficInfoClickListener(mViewHolder ,data);
+                mCallback.onTrafficInfoClickListener(mScheduleRouteViewHolder,data);
             }
         });
 
-//        holder.mSubPathItem.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                holder.mSubPathItem.setBackgroundColor(ContextCompat.getColor(mContext, android.R.color.white));
-//                holder.mSubPathItem.setCardElevation(16.0f);
-//            }
-//        });
+        mRealm.close();
     }
 
     private String getTransitCount(RouteInfo data) {
@@ -172,7 +178,5 @@ public class TrafficInfoListAdapter extends RealmRecyclerViewAdapter<RouteInfo, 
     public int getItemCount() {
         return super.getItemCount();
     }
-
-
 
 }

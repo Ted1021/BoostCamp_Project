@@ -28,7 +28,7 @@
             android:textStyle="bold" />
 
         <ImageButton
-            android:id="@+id/imageButton_moreInfo"
+            android:id="@+id/imageButton_scheduleSetting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -40,15 +40,6 @@
             android:layout_marginRight="@dimen/toolBarItem_margin"
             android:background="@android:color/transparent"
             app:srcCompat="@drawable/ic_action_more_info" />
-
-        <ImageButton
-            android:id="@+id/imageButton_refresh"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/imageButton_moreInfo"
-            android:layout_toStartOf="@+id/imageButton_moreInfo"
-            android:background="@android:color/transparent"
-            app:srcCompat="@drawable/ic_action_refresh" />
 
         <ImageButton
             android:id="@+id/imageButton_back"

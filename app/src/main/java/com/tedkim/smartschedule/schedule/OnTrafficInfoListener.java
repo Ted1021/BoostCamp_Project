@@ -9,4 +9,5 @@ import com.tedkim.smartschedule.model.RouteInfo;
 public interface OnTrafficInfoListener {
 
     void onTrafficInfoClickListener(ScheduleRouteListAdapter.ViewHolder viewHolder, RouteInfo routeInfo);
+    void onBeforeTimeChangeListener(int beforeTime);
 }

@@ -1,6 +1,7 @@
 package com.tedkim.smartschedule.schedule;
 
 import android.content.Context;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -30,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
-import io.realm.RealmAsyncTask;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 
@@ -48,7 +48,6 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
     boolean isExpanded = false;
 
     Realm mRealm;
-
 
     private static final int SORT_DIST = 0;
     private static final int SORT_TIME = 1;
@@ -154,10 +153,6 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
         holder.memo.setText(data.getMemo());
     }
 
-    private void setRecyclerView(ViewHolder holder, final ScheduleData data) {
-
-    }
-
     private void setItemAction(final ViewHolder holder, final ScheduleData data, final TrafficInfoListAdapter adapter) {
 
         // show more transport information
@@ -253,6 +248,7 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
                         beforeTime = 60;
                         break;
                 }
+                
             }
 
             @Override
@@ -262,14 +258,38 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
         });
     }
 
-    private void controlBeforTime(final ScheduleData data, final int beforeTime){
+    private void controlBeforeTime(final String id, final int beforeTime) {
 
-        RealmAsyncTask transaction = mRealm.executeTransactionAsync(new Realm.Transaction() {
+
+        new Thread() {
             @Override
-            public void execute(Realm realm) {
+            public void run() {
+                super.run();
 
+                Looper.prepare();
+                Realm backgroundRealm = Realm.getDefaultInstance();
+                backgroundRealm.executeTransactionAsync(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        ScheduleData obj = realm.where(ScheduleData.class).equalTo("_id", id).findFirst();
+                        obj.setBeforeTime(beforeTime);
+                    }
+                }, new Realm.Transaction.OnSuccess() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d("REALM", "All done updating.");
+                    }
+                }, new Realm.Transaction.OnError() {
+                    @Override
+                    public void onError(Throwable error) {
+                        error.printStackTrace();
+                        // 트랜잭션이 자동으로 롤백되고 여기에서 정리 작업을 합니다
+                    }
+                });
+                Looper.loop();
+                backgroundRealm.close();
             }
-        });
+        }.start();
     }
 
     private void setFragmentDialog(String id) {
@@ -323,9 +343,12 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
     }
 
     @Override
-    public void onTrafficInfoClickListener(ViewHolder viewHolder ,RouteInfo routeInfo) {
-        checkScheduleState(viewHolder,routeInfo);
+    public void onTrafficInfoClickListener(ViewHolder viewHolder, RouteInfo routeInfo) {
+        checkScheduleState(viewHolder, routeInfo);
     }
 
+    @Override
+    public void onBeforeTimeChangeListener(int beforeTime) {
 
+    }
 }

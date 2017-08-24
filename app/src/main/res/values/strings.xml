@@ -45,4 +45,9 @@
     <string name="reminder_type_1day">1일전  </string>
     <string name="reminder_type_noItem">알림 없음</string>
 
+    <string name="bottom_sheet_remove">지난일정 삭제</string>
+    <string name="bottom_sheet_time">일정 순</string>
+    <string name="bottom_sheet_distance">거리 순</string>
+    <string name="bottom_sheet_departure">출발시간 순</string>
+
 </resources>

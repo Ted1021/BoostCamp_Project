@@ -1,6 +1,7 @@
 package com.tedkim.smartschedule.schedule;
 
 
+import android.content.DialogInterface;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -16,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.cocosw.bottomsheet.BottomSheet;
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.model.RouteData;
 import com.tedkim.smartschedule.model.RouteInfo;
@@ -44,11 +46,11 @@ import static com.tedkim.smartschedule.util.DateConvertUtil.TYPE_KOR;
  * @date 2017.07.31
  */
 
-public class ScheduleFragment extends Fragment implements View.OnClickListener {
+public class ScheduleFragment extends Fragment implements View.OnClickListener, OnTrafficInfoListener {
 
     // fragment view components
     SwipeRefreshLayout mRefreshLayout;
-    ImageButton mRefresh;
+    ImageButton mScheduleSetting;
     LinearLayout mNoSchedule;
     TextView mToday;
     Date mDate;
@@ -102,8 +104,8 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
         mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refreshLayout);
         mNoSchedule = (LinearLayout) view.findViewById(R.id.layout_no_schedule);
         mScheduleList = (RecyclerView) view.findViewById(R.id.recyclerView_scheduleList);
-        mRefresh = (ImageButton) view.findViewById(R.id.imageButton_refresh);
-        mRefresh.setOnClickListener(this);
+        mScheduleSetting = (ImageButton) view.findViewById(R.id.imageButton_scheduleSetting);
+        mScheduleSetting.setOnClickListener(this);
     }
 
     private void initRealm() {
@@ -143,8 +145,9 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
     private void setRecyclerView() {
 
         mDataset = mRealm.where(ScheduleData.class).equalTo("date", DateConvertUtil.date2string(mDate)).findAll().sort("startTime");
-
         mAdapter = new ScheduleRouteListAdapter(mDataset, true, getContext());
+//        mAdapter.onTrafficInfoClickListener();
+//        mAdapter.onBeforeTimeChangeListener(this);
         mScheduleList.setAdapter(mAdapter);
 
         mLayoutManager = new LinearLayoutManager(getContext());
@@ -177,7 +180,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
 
                     // 스케줄에 저장 된 최근 위치와 업데이트 된 현재 위치를 비교해 선별적으로 서버에 접근
                     for (ScheduleData data : mDataset) {
-                        Log.e("CHECK_LOCATION", "schedule fragment >>>> Longitude : " +mCurrentLocation.getLongitude()+"/"+data.getCurrentLongitude()+ " / latitude : " + (data.getCurrentLatitude()+"/"+mCurrentLocation.getLatitude()));
+                        Log.e("CHECK_LOCATION", "schedule fragment >>>> Longitude : " + mCurrentLocation.getLongitude() + "/" + data.getCurrentLongitude() + " / latitude : " + (data.getCurrentLatitude() + "/" + mCurrentLocation.getLatitude()));
                         if (data.getCurrentLongitude() != mCurrentLocation.getLongitude() || data.getCurrentLatitude() != mCurrentLocation.getLatitude()
                                 || data.routeInfoList.size() == 0) {
 
@@ -206,7 +209,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
                     }
 
                     // 모든 정보가 최신상태라면 refresh 비활성화
-                    if(isUpdated){
+                    if (isUpdated) {
                         Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), R.string.message_is_updated, Snackbar.LENGTH_LONG).show();
                         mRefreshLayout.setRefreshing(false);
                     }
@@ -245,10 +248,10 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
 //                    obj.setSubwayCount(result.getResult().getSubwayCount());
 //                    obj.setSubwayBusCount(result.getResult().getSubwayBusCount());
 
-                    if(result.getResult().getPath().length < maxPath){
+                    if (result.getResult().getPath().length < maxPath) {
                         maxPath = result.getResult().getPath().length;
                     }
-                    for(int i=0; i<maxPath; i++){
+                    for (int i = 0; i < maxPath; i++) {
 
                         RouteData.Result.Path path = result.getResult().getPath()[i];
 
@@ -261,7 +264,11 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
                         routeInfo.setBusTransitCount(path.getInfo().getBusTransitCount());
                         routeInfo.setSubwayTransitCount(path.getInfo().getSubwayTransitCount());
                         routeInfo.setTotalDistance(path.getInfo().getTotalDistance());
-                        routeInfo.setTotalTransitCount(path.getInfo().getBusTransitCount()+path.getInfo().getSubwayTransitCount());
+                        routeInfo.setTotalTransitCount(path.getInfo().getBusTransitCount() + path.getInfo().getSubwayTransitCount());
+                        if(i==0) {
+                            routeInfo.setSelected(true);
+                        }
+                        routeInfo.setSelected(false);
 
                         for (RouteData.Result.Path.SubPath subPath : path.getSubPath()) {
 
@@ -310,10 +317,49 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
 
         switch (v.getId()) {
 
-            case R.id.imageButton_refresh:
-
+            case R.id.imageButton_scheduleSetting:
+                showBottomSheet();
                 break;
-
         }
+    }
+
+    private void showBottomSheet() {
+
+        new BottomSheet.Builder(getActivity()).sheet(R.menu.bottom_sheet).listener(new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                switch (which) {
+
+                    case R.id.remove_schedule:
+
+                        break;
+
+                    case R.id.sort_time:
+                        mDataset = mDataset.sort("startTime");
+                        break;
+
+                    case R.id.sort_distance:
+                        mDataset = mDataset.sort("distance");
+                        break;
+
+                    case R.id.sort_departure:
+                        mDataset = mDataset.sort("expectedDepartTime");
+                        break;
+                }
+                mAdapter.updateData(mDataset);
+
+            }
+        }).show();
+    }
+
+    @Override
+    public void onTrafficInfoClickListener(ScheduleRouteListAdapter.ViewHolder viewHolder, RouteInfo routeInfo) {
+
+    }
+
+    @Override
+    public void onBeforeTimeChangeListener(int beforeTime) {
+
     }
 }

@@ -18,6 +18,7 @@ public class RouteInfo extends RealmObject {
     private int totalTime;
     private int payment;
     private int busTransitCount, subwayTransitCount, totalTransitCount;
+    private boolean selected;
 
     public String get_id() {
         return _id;
@@ -97,5 +98,13 @@ public class RouteInfo extends RealmObject {
 
     public void setTotalTransitCount(int totalTransitCount) {
         this.totalTransitCount = totalTransitCount;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }

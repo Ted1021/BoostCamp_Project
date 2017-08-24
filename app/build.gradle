@@ -54,6 +54,8 @@ dependencies {
     compile 'com.github.XunMengWinter:CircularAnim:0.3.4'
     compile 'com.ms-square:etsyblur:0.2.1'
     compile 'com.github.sundeepk:compact-calendar-view:2.0.2.2'
+    compile 'com.cocosw:bottomsheet:1.+@aar'
+
 
     testCompile 'junit:junit:4.12'
 }
