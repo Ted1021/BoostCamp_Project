@@ -15,17 +15,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.cocosw.bottomsheet.BottomSheet;
 import com.tedkim.smartschedule.R;
+import com.tedkim.smartschedule.model.BeforeTimeMessage;
 import com.tedkim.smartschedule.model.RouteData;
 import com.tedkim.smartschedule.model.RouteInfo;
+import com.tedkim.smartschedule.model.RouteInfoMessage;
 import com.tedkim.smartschedule.model.RouteSeqData;
 import com.tedkim.smartschedule.model.ScheduleData;
 import com.tedkim.smartschedule.util.AppController;
 import com.tedkim.smartschedule.util.CurrentLocation;
 import com.tedkim.smartschedule.util.DateConvertUtil;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Date;
 
@@ -37,8 +42,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.tedkim.smartschedule.util.DateConvertUtil.TYPE_KOR;
-
 /**
  * @author 김태원
  * @file ScheduleFragment.java
@@ -46,13 +49,12 @@ import static com.tedkim.smartschedule.util.DateConvertUtil.TYPE_KOR;
  * @date 2017.07.31
  */
 
-public class ScheduleFragment extends Fragment implements View.OnClickListener, OnTrafficInfoListener {
+public class ScheduleFragment extends Fragment implements View.OnClickListener {
 
     // fragment view components
     SwipeRefreshLayout mRefreshLayout;
     ImageButton mScheduleSetting;
     LinearLayout mNoSchedule;
-    TextView mToday;
     Date mDate;
 
     // realm components
@@ -73,6 +75,24 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
     private static int TYPE_SUBWAY = 1;
     private static int TYPE_BUS = 2;
     private static int TYPE_WALK = 3;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    @Override
+    public void onDetach() {
+        mRealm.close();
+        super.onDetach();
+    }
 
     public ScheduleFragment() {
 
@@ -99,8 +119,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         long now = System.currentTimeMillis();
         mDate = new Date(now);
 
-        mToday = (TextView) view.findViewById(R.id.textView_today);
-        mToday.setText(DateConvertUtil.date2string(mDate, TYPE_KOR));
         mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refreshLayout);
         mNoSchedule = (LinearLayout) view.findViewById(R.id.layout_no_schedule);
         mScheduleList = (RecyclerView) view.findViewById(R.id.recyclerView_scheduleList);
@@ -146,10 +164,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
 
         mDataset = mRealm.where(ScheduleData.class).equalTo("date", DateConvertUtil.date2string(mDate)).findAll().sort("startTime");
         mAdapter = new ScheduleRouteListAdapter(mDataset, true, getContext());
-//        mAdapter.onTrafficInfoClickListener();
-//        mAdapter.onBeforeTimeChangeListener(this);
         mScheduleList.setAdapter(mAdapter);
-
         mLayoutManager = new LinearLayoutManager(getContext());
         mScheduleList.setLayoutManager(mLayoutManager);
 
@@ -158,7 +173,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         } else {
             mNoSchedule.setVisibility(View.GONE);
         }
-
         mDataset.addChangeListener(mRealmCollectionListener);
     }
 
@@ -222,7 +236,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                 }
             }
         });
-
     }
 
     private void callRouteData(final ScheduleData data) {
@@ -244,13 +257,15 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                     mRealm.beginTransaction();
                     ScheduleData obj = mRealm.where(ScheduleData.class).equalTo("_id", data.get_id()).findFirst();
 
-//                    obj.setBusCount(result.getResult().getBusCount());
-//                    obj.setSubwayCount(result.getResult().getSubwayCount());
-//                    obj.setSubwayBusCount(result.getResult().getSubwayBusCount());
+                    // 유저의 선택 전이므로 최초로 불러오는 경로의 정보를 초기값으로 설정
+                    obj.setBeforeTime(0);
+                    obj.setTotalTime(result.getResult().getPath()[0].getInfo().getTotalTime());
+                    obj.setDistance(result.getResult().getPath()[0].getInfo().getTotalDistance());
 
                     if (result.getResult().getPath().length < maxPath) {
                         maxPath = result.getResult().getPath().length;
                     }
+
                     for (int i = 0; i < maxPath; i++) {
 
                         RouteData.Result.Path path = result.getResult().getPath()[i];
@@ -265,14 +280,15 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                         routeInfo.setSubwayTransitCount(path.getInfo().getSubwayTransitCount());
                         routeInfo.setTotalDistance(path.getInfo().getTotalDistance());
                         routeInfo.setTotalTransitCount(path.getInfo().getBusTransitCount() + path.getInfo().getSubwayTransitCount());
+                        routeInfo.setSelected(false);
                         if(i==0) {
                             routeInfo.setSelected(true);
                         }
-                        routeInfo.setSelected(false);
 
                         for (RouteData.Result.Path.SubPath subPath : path.getSubPath()) {
 
                             RouteSeqData seqData = mRealm.createObject(RouteSeqData.class);
+
                             seqData.set_id(data.get_id());
                             seqData.setTrafficType(subPath.getTrafficType());
 
@@ -343,9 +359,6 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
                         mDataset = mDataset.sort("distance");
                         break;
 
-                    case R.id.sort_departure:
-                        mDataset = mDataset.sort("expectedDepartTime");
-                        break;
                 }
                 mAdapter.updateData(mDataset);
 
@@ -353,13 +366,34 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener, 
         }).show();
     }
 
-    @Override
-    public void onTrafficInfoClickListener(ScheduleRouteListAdapter.ViewHolder viewHolder, RouteInfo routeInfo) {
+    // From ScheduleRouteAdapter
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onBeforeTimeMessageEvent(final BeforeTimeMessage event) {
 
+        Log.d("CHECK_EVENTBUS", event.getId()+" / "+event.getBeforeTime());
+        mRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                ScheduleData data = realm.where(ScheduleData.class).equalTo("_id", event.getId()).findFirst();
+                data.setBeforeTime(event.getBeforeTime());
+            }
+        });
+        mAdapter.notifyDataSetChanged();
     }
 
-    @Override
-    public void onBeforeTimeChangeListener(int beforeTime) {
+    // From TrafficInfoListAdapter
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRouteInfoMessageEvent(final RouteInfoMessage event) {
 
+        Log.d("CHECK_EVENTBUS", event.getId()+" / "+event.getTotalTime()+ " / "+event.getDistance());
+        mRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                ScheduleData data = realm.where(ScheduleData.class).equalTo("_id", event.getId()).findFirst();
+                data.setTotalTime(event.getTotalTime());
+                data.setDistance(event.getDistance());
+            }
+        });
+        mAdapter.notifyDataSetChanged();
     }
 }

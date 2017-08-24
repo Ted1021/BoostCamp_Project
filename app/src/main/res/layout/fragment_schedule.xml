@@ -22,7 +22,7 @@
             android:layout_toEndOf="@+id/imageButton_back"
             android:gravity="center_horizontal"
             android:padding="8dp"
-            android:text="스케줄"
+            android:text="오늘의 스케줄"
             android:textColor="@color/colorAppTheme"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -41,28 +41,7 @@
             android:background="@android:color/transparent"
             app:srcCompat="@drawable/ic_action_more_info" />
 
-        <ImageButton
-            android:id="@+id/imageButton_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="false"
-            android:layout_alignParentTop="false"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/toolBarItem_margin"
-            android:background="@android:color/transparent"
-            app:srcCompat="@drawable/ic_action_calendar_option" />
     </RelativeLayout>
-
-    <TextView
-        android:id="@+id/textView_today"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:text="Today"
-        android:textColor="@color/colorAppTheme"
-        android:textStyle="bold" />
 
 
     <LinearLayout

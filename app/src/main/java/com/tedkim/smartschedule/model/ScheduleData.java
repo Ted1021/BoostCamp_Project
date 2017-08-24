@@ -34,7 +34,7 @@ public class ScheduleData extends RealmObject {
 
     private int expectedDepartTime;
     private int totalTime;
-    private int distance;
+    private Double distance;
     private int beforeTime;
 
     public RealmList<RouteInfo> routeInfoList;
@@ -200,11 +200,11 @@ public class ScheduleData extends RealmObject {
         this.totalTime = totalTime;
     }
 
-    public int getDistance() {
+    public Double getDistance() {
         return distance;
     }
 
-    public void setDistance(int distance) {
+    public void setDistance(Double distance) {
         this.distance = distance;
     }
 }

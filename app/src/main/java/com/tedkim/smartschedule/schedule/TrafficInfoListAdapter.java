@@ -17,6 +17,9 @@ import android.widget.TextView;
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.model.RouteInfo;
 import com.tedkim.smartschedule.model.RouteSeqData;
+import com.tedkim.smartschedule.model.RouteInfoMessage;
+
+import org.greenrobot.eventbus.EventBus;
 
 import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
@@ -30,7 +33,6 @@ public class TrafficInfoListAdapter extends RealmRecyclerViewAdapter<RouteInfo, 
 
     Context mContext;
     LayoutInflater mInflater;
-    OnTrafficInfoListener mCallback;
     ScheduleRouteListAdapter.ViewHolder mScheduleRouteViewHolder;
 
     Realm mRealm;
@@ -41,10 +43,6 @@ public class TrafficInfoListAdapter extends RealmRecyclerViewAdapter<RouteInfo, 
         mScheduleRouteViewHolder = viewHolder;
         mContext = context;
         mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    }
-
-    public void setOnTrafficInfoListener(OnTrafficInfoListener callback){
-        this.mCallback = callback;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -92,7 +90,8 @@ public class TrafficInfoListAdapter extends RealmRecyclerViewAdapter<RouteInfo, 
         holder.mSubPathItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCallback.onTrafficInfoClickListener(mScheduleRouteViewHolder,data);
+
+                EventBus.getDefault().post(new RouteInfoMessage(data.get_id(), data.getTotalTime(), data.getTotalDistance()));
             }
         });
 

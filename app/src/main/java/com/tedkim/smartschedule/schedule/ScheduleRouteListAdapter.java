@@ -1,7 +1,6 @@
 package com.tedkim.smartschedule.schedule;
 
 import android.content.Context;
-import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,10 +22,14 @@ import android.widget.TextView;
 
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.detail.DetailFragment;
+import com.tedkim.smartschedule.model.BeforeTimeMessage;
 import com.tedkim.smartschedule.model.RouteInfo;
 import com.tedkim.smartschedule.model.ScheduleData;
 import com.tedkim.smartschedule.util.DateConvertUtil;
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import io.realm.OrderedRealmCollection;
@@ -41,13 +44,12 @@ import io.realm.RealmResults;
  * @date 2017.08.08
  */
 
-public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleData, ScheduleRouteListAdapter.ViewHolder> implements View.OnClickListener, OnTrafficInfoListener {
+public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleData, ScheduleRouteListAdapter.ViewHolder> implements View.OnClickListener {
 
     Context mContext;
     LayoutInflater mInflater;
-    boolean isExpanded = false;
-
     Realm mRealm;
+    boolean isExpanded = false;
 
     private static final int SORT_DIST = 0;
     private static final int SORT_TIME = 1;
@@ -117,11 +119,11 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
 
         mRealm = Realm.getDefaultInstance();
         ScheduleData data = getItem(position);
+        String sortType = "totalDistance";
 
         // set SubPath Info RecyclerView
-        RealmResults<RouteInfo> routeInfos = mRealm.where(RouteInfo.class).equalTo("_id", data.get_id()).findAll().sort("totalDistance");
+        RealmResults<RouteInfo> routeInfos = mRealm.where(RouteInfo.class).equalTo("_id", data.get_id()).findAll();
         TrafficInfoListAdapter mAdapter = new TrafficInfoListAdapter(routeInfos, true, mContext, holder);
-        mAdapter.setOnTrafficInfoListener(this);
         holder.trafficInfoList.setAdapter(mAdapter);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext);
@@ -139,13 +141,11 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
         // 한번이라도 경로를 호출 한 데이터 인 경우,
         if (data.routeInfoList.size() != 0) {
             holder.routeInfoLayout.setVisibility(View.VISIBLE);
-            checkScheduleState(holder, data.routeInfoList.first());
+            checkScheduleState(holder, data);
         } else {
             holder.routeInfoLayout.setVisibility(View.GONE);
         }
 
-        // TODO - 선택 된 Route Info Item 으로 정보를 변경 해 줄 것
-        // 최단 시간 기준으로 첫번째 (가장 짦은 거리) 아이템을 보여준다
         holder.title.setText(data.getTitle());
         holder.start.setText(DateConvertUtil.time2string(data.getStartTime()));
         holder.end.setText(DateConvertUtil.time2string(data.getEndTime()));
@@ -248,7 +248,7 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
                         beforeTime = 60;
                         break;
                 }
-                
+                EventBus.getDefault().post(new BeforeTimeMessage(data.get_id(), position, beforeTime));
             }
 
             @Override
@@ -256,40 +256,6 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
 
             }
         });
-    }
-
-    private void controlBeforeTime(final String id, final int beforeTime) {
-
-
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-
-                Looper.prepare();
-                Realm backgroundRealm = Realm.getDefaultInstance();
-                backgroundRealm.executeTransactionAsync(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        ScheduleData obj = realm.where(ScheduleData.class).equalTo("_id", id).findFirst();
-                        obj.setBeforeTime(beforeTime);
-                    }
-                }, new Realm.Transaction.OnSuccess() {
-                    @Override
-                    public void onSuccess() {
-                        Log.d("REALM", "All done updating.");
-                    }
-                }, new Realm.Transaction.OnError() {
-                    @Override
-                    public void onError(Throwable error) {
-                        error.printStackTrace();
-                        // 트랜잭션이 자동으로 롤백되고 여기에서 정리 작업을 합니다
-                    }
-                });
-                Looper.loop();
-                backgroundRealm.close();
-            }
-        }.start();
     }
 
     private void setFragmentDialog(String id) {
@@ -306,24 +272,27 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
         dialog.show(fragmentManager, "dialog");
     }
 
-    private void checkScheduleState(ViewHolder holder, RouteInfo routeInfo) {
+    private void checkScheduleState(ViewHolder holder, ScheduleData data) {
 
-        long interval = routeInfo.getDepartTime().getTime() - System.currentTimeMillis();
+        // interval = (출발 예상시간) - (현재시간)
+        // (출발 예상시간) = (스케줄 시작시간) - (미리 도착시간) - (총 이동소요시간)
+        Date expectedDepartTime = DateConvertUtil.calDateMin(data.getStartTime(), data.getBeforeTime()+data.getTotalTime());
+        long interval = expectedDepartTime.getTime() - System.currentTimeMillis();
         long result = TimeUnit.MILLISECONDS.toMinutes(interval);
         Log.d("CHECK_INTERVAL", "schedule adapter ----------- " + result);
 
         if (result < 0) {
             holder.routeInfoLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorShadow));
-            holder.departInfo.setText(DateConvertUtil.time2string(routeInfo.getDepartTime()));
-            holder.totalTime.setText(String.format("%d 분", routeInfo.getTotalTime()));
+            holder.departInfo.setText(DateConvertUtil.time2string(expectedDepartTime));
+            holder.totalTime.setText(String.format("%d 분", data.getTotalTime()));
         } else if (result >= 0 && result <= 10) {
             holder.routeInfoLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorAlert));
             holder.departInfo.setText(String.format("%d 분 안", result));
-            holder.totalTime.setText(String.format("%d 분", routeInfo.getTotalTime()));
+            holder.totalTime.setText(String.format("%d 분", data.getTotalTime()));
         } else {
             holder.routeInfoLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorDarkNavy));
-            holder.departInfo.setText(DateConvertUtil.time2string(routeInfo.getDepartTime()));
-            holder.totalTime.setText(String.format("%d 분", routeInfo.getTotalTime()));
+            holder.departInfo.setText(DateConvertUtil.time2string(expectedDepartTime));
+            holder.totalTime.setText(String.format("%d 분", data.getTotalTime()));
         }
     }
 
@@ -342,13 +311,5 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
         return super.getItemCount();
     }
 
-    @Override
-    public void onTrafficInfoClickListener(ViewHolder viewHolder, RouteInfo routeInfo) {
-        checkScheduleState(viewHolder, routeInfo);
-    }
 
-    @Override
-    public void onBeforeTimeChangeListener(int beforeTime) {
-
-    }
 }
