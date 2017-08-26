@@ -2,6 +2,7 @@ package com.tedkim.smartschedule.schedule;
 
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -24,6 +25,9 @@ import com.tedkim.smartschedule.model.RouteInfo;
 import com.tedkim.smartschedule.model.RouteInfoMessage;
 import com.tedkim.smartschedule.model.RouteSeqData;
 import com.tedkim.smartschedule.model.ScheduleData;
+import com.tedkim.smartschedule.service.NotificationService;
+import com.tedkim.smartschedule.service.RefreshMessage;
+import com.tedkim.smartschedule.service.RefreshService;
 import com.tedkim.smartschedule.util.AppController;
 import com.tedkim.smartschedule.util.CurrentLocation;
 import com.tedkim.smartschedule.util.DateConvertUtil;
@@ -182,60 +186,75 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-
-                // 모든 정보가 업데이트 상태인지를 판단하는 flag
-                Boolean isUpdated = true;
-
-                // 오늘자 스케줄이 하나라도 있다면,
-                if (mDataset.size() != 0) {
-
-                    // 현재 좌표 호출
-                    mCurrentLocation = CurrentLocation.getLocation(getContext());
-
-                    // 스케줄에 저장 된 최근 위치와 업데이트 된 현재 위치를 비교해 선별적으로 서버에 접근
-                    for (ScheduleData data : mDataset) {
-                        Log.e("CHECK_LOCATION", "schedule fragment >>>> Longitude : " + mCurrentLocation.getLongitude() + "/" + data.getCurrentLongitude() + " / latitude : " + (data.getCurrentLatitude() + "/" + mCurrentLocation.getLatitude()));
-                        if (data.getCurrentLongitude() != mCurrentLocation.getLongitude() || data.getCurrentLatitude() != mCurrentLocation.getLatitude()
-                                || data.routeInfoList.size() == 0) {
-
-                            isUpdated = false;
-
-                            // 디바이스의 위치를 스케줄의 위치로 변환
-                            mRealm.beginTransaction();
-
-                            data.setCurrentLongitude(mCurrentLocation.getLongitude());
-                            data.setCurrentLatitude(mCurrentLocation.getLatitude());
-
-                            if (data.routeInfoList.size() != 0) {
-
-                                // 가장 최하위에 있는 객체부터 순차적으로 삭제
-                                RealmResults<RouteSeqData> routeSeqDatas = mRealm.where(RouteSeqData.class).equalTo("_id", data.get_id()).findAll();
-                                routeSeqDatas.deleteAllFromRealm();
-
-                                RealmResults<RouteInfo> routeInfos = mRealm.where(RouteInfo.class).equalTo("_id", data.get_id()).findAll();
-                                routeInfos.deleteAllFromRealm();
-                            }
-                            mRealm.commitTransaction();
-
-                            // 변환 후 이동 정보 호출
-                            callRouteData(data);
-                        }
-                    }
-
-                    // 모든 정보가 최신상태라면 refresh 비활성화
-                    if (isUpdated) {
-                        Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), R.string.message_is_updated, Snackbar.LENGTH_LONG).show();
-                        mRefreshLayout.setRefreshing(false);
-                    }
-                }
-
-                // 스케줄 데이터가 없는 경우
-                else {
-                    Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), R.string.error_message_no_data, Snackbar.LENGTH_LONG).show();
-                    mRefreshLayout.setRefreshing(false);
-                }
+                refreshAllSchedules();
             }
         });
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+
+            case R.id.imageButton_scheduleSetting:
+                showBottomSheet();
+                break;
+        }
+    }
+
+    private void refreshAllSchedules() {
+
+        // 모든 정보가 업데이트 상태인지를 판단하는 flag
+        Boolean isUpdated = true;
+
+        // 오늘자 스케줄이 하나라도 있다면,
+        if (mDataset.size() != 0) {
+
+            // 현재 좌표 호출
+            mCurrentLocation = CurrentLocation.getLocation(getContext());
+
+            // 스케줄에 저장 된 최근 위치와 업데이트 된 현재 위치를 비교해 선별적으로 서버에 접근
+            for (ScheduleData data : mDataset) {
+                Log.e("CHECK_LOCATION", "schedule fragment >>>> Longitude : " + mCurrentLocation.getLongitude() + "/" + data.getCurrentLongitude() + " / latitude : " + (data.getCurrentLatitude() + "/" + mCurrentLocation.getLatitude()));
+                if (data.getCurrentLongitude() != mCurrentLocation.getLongitude() || data.getCurrentLatitude() != mCurrentLocation.getLatitude()
+                        || data.routeInfoList.size() == 0) {
+
+                    isUpdated = false;
+
+                    // 디바이스의 위치를 스케줄의 위치로 변환
+                    mRealm.beginTransaction();
+
+                    data.setCurrentLongitude(mCurrentLocation.getLongitude());
+                    data.setCurrentLatitude(mCurrentLocation.getLatitude());
+
+                    if (data.routeInfoList.size() != 0) {
+
+                        // 가장 최하위에 있는 객체부터 순차적으로 삭제
+                        RealmResults<RouteSeqData> routeSeqDatas = mRealm.where(RouteSeqData.class).equalTo("_id", data.get_id()).findAll();
+                        routeSeqDatas.deleteAllFromRealm();
+
+                        RealmResults<RouteInfo> routeInfos = mRealm.where(RouteInfo.class).equalTo("_id", data.get_id()).findAll();
+                        routeInfos.deleteAllFromRealm();
+                    }
+                    mRealm.commitTransaction();
+
+                    // 변환 후 이동 정보 호출
+                    callRouteData(data);
+                }
+            }
+
+            // 모든 정보가 최신상태라면 refresh 비활성화
+            if (isUpdated) {
+                Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), R.string.message_is_updated, Snackbar.LENGTH_LONG).show();
+                mRefreshLayout.setRefreshing(false);
+            }
+        }
+
+        // 스케줄 데이터가 없는 경우
+        else {
+            Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), R.string.error_message_no_data, Snackbar.LENGTH_LONG).show();
+            mRefreshLayout.setRefreshing(false);
+        }
     }
 
     private void callRouteData(final ScheduleData data) {
@@ -281,7 +300,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
                         routeInfo.setTotalDistance(path.getInfo().getTotalDistance());
                         routeInfo.setTotalTransitCount(path.getInfo().getBusTransitCount() + path.getInfo().getSubwayTransitCount());
                         routeInfo.setSelected(false);
-                        if(i==0) {
+                        if (i == 0) {
                             routeInfo.setSelected(true);
                         }
 
@@ -328,23 +347,13 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    @Override
-    public void onClick(View v) {
-
-        switch (v.getId()) {
-
-            case R.id.imageButton_scheduleSetting:
-                showBottomSheet();
-                break;
-        }
-    }
-
     private void showBottomSheet() {
 
-        new BottomSheet.Builder(getActivity()).sheet(R.menu.bottom_sheet).listener(new DialogInterface.OnClickListener() {
+        new BottomSheet.Builder(getActivity()).sheet(R.menu.schedule_bottom_sheet).listener(new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
+                Intent intent;
                 switch (which) {
 
                     case R.id.remove_schedule:
@@ -359,6 +368,15 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
                         mDataset = mDataset.sort("distance");
                         break;
 
+                    case R.id.remove_notification:
+                        intent = new Intent(getActivity(), NotificationService.class);
+                        getActivity().stopService(intent);
+                        break;
+
+                    case R.id.remove_refresh:
+                        intent = new Intent(getActivity(), RefreshService.class);
+                        getActivity().stopService(intent);
+                        break;
                 }
                 mAdapter.updateData(mDataset);
 
@@ -370,7 +388,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onBeforeTimeMessageEvent(final BeforeTimeMessage event) {
 
-        Log.d("CHECK_EVENTBUS", event.getId()+" / "+event.getBeforeTime());
+        Log.d("CHECK_EVENTBUS", event.getId() + " / " + event.getBeforeTime());
         mRealm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -385,7 +403,7 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRouteInfoMessageEvent(final RouteInfoMessage event) {
 
-        Log.d("CHECK_EVENTBUS", event.getId()+" / "+event.getTotalTime()+ " / "+event.getDistance());
+        Log.d("CHECK_EVENTBUS", event.getId() + " / " + event.getTotalTime() + " / " + event.getDistance());
         mRealm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -395,5 +413,21 @@ public class ScheduleFragment extends Fragment implements View.OnClickListener {
             }
         });
         mAdapter.notifyDataSetChanged();
+    }
+
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onRefreshMessageEvent(RefreshMessage event) {
+
+        new Thread(){
+            @Override
+            public void run() {
+                super.run();
+
+                mRefreshLayout.setRefreshing(true);
+                refreshAllSchedules();
+            }
+        }.start();
+
+
     }
 }

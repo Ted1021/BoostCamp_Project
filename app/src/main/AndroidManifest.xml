@@ -10,12 +10,12 @@
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <application
         android:name=".util.AppController"
@@ -25,9 +25,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:replace="android:icon"
-        android:windowSoftInputMode="adjustNothing">
-
+        android:windowSoftInputMode="adjustNothing"
+        tools:replace="android:icon">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:screenOrientation="portrait"
@@ -42,24 +41,27 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".home.HomeActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".regist.RegistActivity"
             android:screenOrientation="portrait" />
-
         <activity android:name=".regist.ReminderActivity" />
-
         <activity
             android:name=".regist.MapsActivity"
-            android:screenOrientation="portrait"
             android:label="@string/title_activity_maps"
-            android:windowSoftInputMode="stateAlwaysHidden">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden" />
 
-        </activity>
+        <service
+            android:name=".service.NotificationService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".service.RefreshService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

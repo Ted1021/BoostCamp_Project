@@ -14,6 +14,8 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.home.HomeActivity;
+import com.tedkim.smartschedule.service.NotificationService;
+import com.tedkim.smartschedule.service.RefreshService;
 
 /**
  * @author 김태원
@@ -36,6 +38,9 @@ public class SplashActivity extends AppCompatActivity {
         ImageView ivLogo = (ImageView) findViewById(R.id.imageView_logo);
         Glide.with(SplashActivity.this).load(R.drawable.smart_schedule).into(ivLogo);
 
+        // App 구동에 필요한 서비스 시작 (Notification, 이동정보 Refresh)
+        startService();
+
         // Home Activity 로 분기
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -43,6 +48,19 @@ public class SplashActivity extends AppCompatActivity {
                 checkPermission();
             }
         }, SPALSH_DISPLAY_LENGTH);
+    }
+
+    private void startService(){
+
+        // Notification service
+        Log.d("CHECK_SERVICE", "Splash Activity >>> Notification service start !! ");
+        Intent notificationIntent = new Intent(SplashActivity.this, NotificationService.class);
+        startService(notificationIntent);
+
+        // Refresh service
+        Log.d("CHECK_SERVICE", "Splash Activity >>> refresh service start !! ");
+        Intent refreshIntent = new Intent(SplashActivity.this, RefreshService.class);
+        startService(refreshIntent);
     }
 
     private void checkPermission() {

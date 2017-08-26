@@ -28,7 +28,7 @@
             android:textStyle="bold" />
 
         <ImageButton
-            android:id="@+id/imageButton_moreInfo"
+            android:id="@+id/imageButton_calendarSetting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -38,6 +38,17 @@
             android:background="@android:color/transparent"
             app:srcCompat="@drawable/ic_action_more_info" />
 
+        <ImageButton
+            android:id="@+id/imageButton_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="false"
+            android:layout_alignParentTop="false"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/toolBarItem_margin"
+            android:background="@android:color/transparent"
+            android:baselineAlignBottom="false"
+            app:srcCompat="@drawable/ic_action_calendar_option" />
     </RelativeLayout>
 
     <com.github.sundeepk.compactcalendarview.CompactCalendarView xmlns:app="http://schemas.android.com/apk/res-auto"

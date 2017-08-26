@@ -49,5 +49,6 @@
     <string name="bottom_sheet_time">일정 순</string>
     <string name="bottom_sheet_distance">거리 순</string>
     <string name="bottom_sheet_departure">출발시간 순</string>
+    <string name="bottom_sheet_today">오늘 날짜로</string>
 
 </resources>

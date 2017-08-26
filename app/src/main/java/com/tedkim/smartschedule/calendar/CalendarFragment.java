@@ -2,6 +2,7 @@ package com.tedkim.smartschedule.calendar;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -17,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.cocosw.bottomsheet.BottomSheet;
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
 import com.tedkim.smartschedule.R;
@@ -40,13 +42,13 @@ import io.realm.RealmResults;
  * @date 2017.07.31
  */
 
-public class CalendarFragment extends Fragment {
+public class CalendarFragment extends Fragment implements View.OnClickListener{
 
     // calendar components
     OnCalendarSelectedListener mCallback;
     TextView mCalendarTitle;
     CompactCalendarView mCalendarView;
-    ImageButton mCalendarStyle;
+    ImageButton mCalendarStyle, mCalendarSetting;
     Animation mAnimation;
     boolean isExpanded = false;
     int mCurrentYear = Calendar.getInstance().get(Calendar.YEAR);
@@ -116,11 +118,11 @@ public class CalendarFragment extends Fragment {
 
         mCalendarTitle = (TextView) view.findViewById(R.id.textView_monthTitle);
         mCalendarTitle.setText(String.format("%d년 %d월", mCurrentYear, mCurrentMonth));
-
         mCalendarView = (CompactCalendarView) view.findViewById(R.id.calendarView_expCalendar);
         mCalendarView.displayOtherMonthDays(true);
         mCalendarStyle = (ImageButton) view.findViewById(R.id.button_calendarStyle);
-
+        mCalendarSetting = (ImageButton) view.findViewById(R.id.imageButton_calendarSetting);
+        mCalendarSetting.setOnClickListener(this);
         mNoSchedule = (LinearLayout) view.findViewById(R.id.layout_no_schedule);
         mScheduleList = (RecyclerView) view.findViewById(R.id.recyclerView_scheduleList);
     }
@@ -253,5 +255,39 @@ public class CalendarFragment extends Fragment {
         } else {
             mNoSchedule.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        switch(v.getId()){
+
+            case R.id.imageButton_calendarSetting:
+                showBottomSheet();
+                break;
+        }
+    }
+
+    private void showBottomSheet(){
+
+        new BottomSheet.Builder(getActivity()).sheet(R.menu.calendar_bottom_sheet).listener(new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                switch (which) {
+
+                    case R.id.remove_schedule:
+
+                        break;
+
+                    case R.id.move_today:
+
+                        break;
+
+                }
+                mAdapter.updateData(mDataset);
+
+            }
+        }).show();
     }
 }

@@ -3,4 +3,6 @@
     <item android:id="@+id/remove_schedule" android:title="@string/bottom_sheet_remove" android:icon="@drawable/ic_action_remove"/>
     <item android:id="@+id/sort_time" android:title="@string/bottom_sheet_time" android:icon="@drawable/ic_bottom_sheet_time"/>
     <item android:id="@+id/sort_distance" android:title="@string/bottom_sheet_distance" android:icon="@drawable/ic_bottom_sheet_distance"/>
+    <item android:id="@+id/remove_notification" android:title="Notification 서비스 종료" android:icon="@drawable/ic_action_remove"/>
+    <item android:id="@+id/remove_refresh" android:title="Auto Refresh 서비스 종료" android:icon="@drawable/ic_action_remove"/>
 </menu>
