@@ -10,7 +10,7 @@ public class RefreshThread extends Thread{
 
     Handler mHandler;
     boolean isRun = true;
-    private static final int REFRESH_INTERVAL =  30000;   //1000 * 60 * 10;
+    private static final int REFRESH_INTERVAL =  10000;   //1000 * 60 * 10;
     private static final int REQ_REFRESH_SCHEDULE = 0;
 
     public RefreshThread(Handler handler){

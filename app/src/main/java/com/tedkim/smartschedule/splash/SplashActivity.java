@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.home.HomeActivity;
-import com.tedkim.smartschedule.service.NotificationService;
 import com.tedkim.smartschedule.service.RefreshService;
 
 /**
@@ -53,9 +52,9 @@ public class SplashActivity extends AppCompatActivity {
     private void startService(){
 
         // Notification service
-        Log.d("CHECK_SERVICE", "Splash Activity >>> Notification service start !! ");
-        Intent notificationIntent = new Intent(SplashActivity.this, NotificationService.class);
-        startService(notificationIntent);
+//        Log.d("CHECK_SERVICE", "Splash Activity >>> Notification service start !! ");
+//        Intent notificationIntent = new Intent(SplashActivity.this, NotificationService.class);
+//        startService(notificationIntent);
 
         // Refresh service
         Log.d("CHECK_SERVICE", "Splash Activity >>> refresh service start !! ");
