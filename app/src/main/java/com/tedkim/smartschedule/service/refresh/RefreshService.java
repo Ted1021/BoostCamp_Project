@@ -81,7 +81,8 @@ public class RefreshService extends Service {
 
             if (msg.what == RefreshThread.REQ_REFRESH_SCHEDULE) {
 
-                mDataset = mRealm.where(ScheduleData.class).equalTo("date", DateConvertUtil.date2string(new Date(System.currentTimeMillis()))).findAll().sort("startTime");
+                Realm realm = Realm.getDefaultInstance();
+                mDataset = realm.where(ScheduleData.class).equalTo("date", DateConvertUtil.date2string(new Date(System.currentTimeMillis()))).findAll().sort("startTime");
                 mDataset.addChangeListener(new OrderedRealmCollectionChangeListener<RealmResults<ScheduleData>>() {
                     @Override
                     public void onChange(RealmResults<ScheduleData> scheduleDatas, OrderedCollectionChangeSet changeSet) {
@@ -93,13 +94,13 @@ public class RefreshService extends Service {
                             long interval = data.getExpectedDepartTime().getTime() - System.currentTimeMillis();
                             long result = TimeUnit.MILLISECONDS.toMinutes(interval);
 
-                            if (result >= 0 && result <= 10) {
+                            if (result >= 1 && result <= 10) {
                                 EventBus.getDefault().post(new NotificationMessage(scheduleDatas.get(position).get_id()));
                             }
                         }
                     }
                 });
-
+                realm.close();
 
                 refreshAllSchedules();
                 Log.d("CHECK_REFRESH_SERVICE", "refresh service >>> 새로고침 수행");
@@ -114,7 +115,7 @@ public class RefreshService extends Service {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                EventBus.getDefault().post(new RefreshMessage(0));
+//                EventBus.getDefault().post(new RefreshMessage(0));
             }
 
             @Override
@@ -184,7 +185,7 @@ public class RefreshService extends Service {
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
-                EventBus.getDefault().post(new RefreshMessage(1));
+//                EventBus.getDefault().post(new RefreshMessage(1));
             }
         }.execute();
     }

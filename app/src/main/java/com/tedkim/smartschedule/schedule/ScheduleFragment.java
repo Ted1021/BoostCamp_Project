@@ -289,9 +289,6 @@ public class ScheduleFragment extends Fragment {
                             // 이동경로 정보가 없거나, 위치에 변동이 생긴 스케줄에 대해 업데이트 진행
                             for (ScheduleData data : dataset) {
 
-                                Date expectedDepartTime = DateConvertUtil.calDateMin(data.getStartTime(), data.getBeforeTime() + data.getTotalTime());
-                                data.setExpectedDepartTime(expectedDepartTime);
-
                                 Log.e("CHECK_LOCATION", "schedule fragment >>>> Longitude : " + mCurrentLocation.getLongitude() + "/" + data.getCurrentLongitude() + " / latitude : " + (data.getCurrentLatitude() + "/" + mCurrentLocation.getLatitude()));
                                 if (data.routeInfoList.size() == 0 || data.getCurrentLongitude() != mCurrentLocation.getLongitude() || data.getCurrentLatitude() != mCurrentLocation.getLatitude()) {
 
@@ -313,6 +310,9 @@ public class ScheduleFragment extends Fragment {
 
                                     // 삭제이후 이동 정보 호출
                                     callRouteData(data.get_id());
+
+                                    Date expectedDepartTime = DateConvertUtil.calDateMin(data.getStartTime(), data.getBeforeTime() + data.getTotalTime());
+                                    data.setExpectedDepartTime(expectedDepartTime);
                                 }
                             }
 
@@ -480,21 +480,6 @@ public class ScheduleFragment extends Fragment {
         });
         mAdapter.notifyDataSetChanged();
     }
-
-    // From ScheduleRouteAdapter (line 299)
-//    @Subscribe(threadMode = ThreadMode.MAIN)
-//    public void onDepartTimeMessageEvent(final DepartureTimeMessage event) {
-//
-//        mRealm.executeTransaction(new Realm.Transaction() {
-//            @Override
-//            public void execute(Realm realm) {
-//                ScheduleData data = realm.where(ScheduleData.class).equalTo("_id", event.getId()).findFirst();
-//                Date expectedDepartTime = DateConvertUtil.calDateMin(data.getStartTime(), data.getBeforeTime() + data.getTotalTime());
-//                data.setExpectedDepartTime(expectedDepartTime);
-//            }
-//        });
-//        mAdapter.notifyDataSetChanged();
-//    }
 
     // From TrafficInfoListAdapter (line 94)
     @Subscribe(threadMode = ThreadMode.MAIN)

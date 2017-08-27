@@ -16,6 +16,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.UUID;
+
 import io.realm.Realm;
 
 public class NotificationService extends Service {
@@ -64,11 +66,14 @@ public class NotificationService extends Service {
             public void run() {
                 super.run();
 
-                Intent intent = new Intent(NotificationService.this, HomeActivity.class);
-                PendingIntent pendingIntent = PendingIntent.getActivity(NotificationService.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
                 Realm realm = Realm.getDefaultInstance();
                 ScheduleData data = realm.where(ScheduleData.class).equalTo("_id", id).findFirst();
+
+                UUID uuid = UUID.fromString(id);
+                int alarmCode = uuid.hashCode();
+
+                Intent intent = new Intent(NotificationService.this, HomeActivity.class);
+                PendingIntent pendingIntent = PendingIntent.getActivity(NotificationService.this, alarmCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                 mNotification = new Notification.Builder(getApplicationContext())
                         .setContentTitle("지금 당장 출발하셔야 합니다!")

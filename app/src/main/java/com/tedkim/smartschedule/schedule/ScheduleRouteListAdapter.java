@@ -294,7 +294,6 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
             holder.departInfo.setText(DateConvertUtil.time2string(expectedDepartTime));
             holder.totalTime.setText(String.format("%d 분", data.getTotalTime()));
         }
-//        EventBus.getDefault().post(new DepartureTimeMessage(data.get_id()));
     }
 
     @Override

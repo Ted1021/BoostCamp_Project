@@ -62,10 +62,6 @@
             android:name=".service.refresh.RefreshService"
             android:enabled="true"
             android:exported="true" />
-        <service
-            android:name=".service.alarm.AlarmService"
-            android:enabled="true"
-            android:exported="true"></service>
     </application>
 
 </manifest>
