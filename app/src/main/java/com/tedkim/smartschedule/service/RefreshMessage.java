@@ -8,6 +8,10 @@ public class RefreshMessage {
 
     private int req;
 
+    public RefreshMessage(int req){
+        this.req = req;
+    }
+
     public int getReq() {
         return req;
     }

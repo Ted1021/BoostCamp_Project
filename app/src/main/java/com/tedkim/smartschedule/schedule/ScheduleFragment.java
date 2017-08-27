@@ -206,7 +206,7 @@ public class ScheduleFragment extends Fragment {
 
     private void refreshAllSchedules() {
 
-        new AsyncTask<Void, Void, Void>(){
+        new AsyncTask<Void, Void, Void>() {
 
             @Override
             protected void onPreExecute() {
@@ -277,15 +277,15 @@ public class ScheduleFragment extends Fragment {
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
                 mAdapter.notifyDataSetChanged();
+                mRefreshLayout.setRefreshing(false);
             }
-
         }.execute();
 
     }
 
     private void callRouteData(final String id) {
 
-        new AsyncTask<Void, Void, Void>(){
+        new AsyncTask<Void, Void, Void>() {
 
             @Override
             protected void onPreExecute() {
@@ -456,15 +456,14 @@ public class ScheduleFragment extends Fragment {
         mAdapter.notifyDataSetChanged();
     }
 
-    @Subscribe(threadMode = ThreadMode.BACKGROUND)
-    public void onRefreshMessageEvent(RefreshMessage event) {
-
-        new Thread(){
-            @Override
-            public void run() {
-                super.run();
-                refreshAllSchedules();
-            }
-        }.start();
+    // From Refresh Service
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onStartRefreshEvent(RefreshMessage event) {
+        if (event.getReq() == 0) {
+            mRefreshLayout.setRefreshing(true);
+        } else {
+            mAdapter.notifyDataSetChanged();
+            mRefreshLayout.setRefreshing(false);
+        }
     }
 }

@@ -25,6 +25,7 @@ import com.tedkim.smartschedule.detail.DetailFragment;
 import com.tedkim.smartschedule.model.BeforeTimeMessage;
 import com.tedkim.smartschedule.model.RouteInfo;
 import com.tedkim.smartschedule.model.ScheduleData;
+import com.tedkim.smartschedule.service.NotificationMessage;
 import com.tedkim.smartschedule.util.DateConvertUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -276,7 +277,7 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
 
         // interval = (출발 예상시간) - (현재시간)
         // (출발 예상시간) = (스케줄 시작시간) - (미리 도착시간) - (총 이동소요시간)
-        Date expectedDepartTime = DateConvertUtil.calDateMin(data.getStartTime(), data.getBeforeTime()+data.getTotalTime());
+        Date expectedDepartTime = DateConvertUtil.calDateMin(data.getStartTime(), data.getBeforeTime() + data.getTotalTime());
         long interval = expectedDepartTime.getTime() - System.currentTimeMillis();
         long result = TimeUnit.MILLISECONDS.toMinutes(interval);
         Log.d("CHECK_INTERVAL", "schedule adapter ----------- " + result);
@@ -286,9 +287,13 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
             holder.departInfo.setText(DateConvertUtil.time2string(expectedDepartTime));
             holder.totalTime.setText(String.format("%d 분", data.getTotalTime()));
         } else if (result >= 0 && result <= 10) {
+
+            EventBus.getDefault().post(new NotificationMessage(data.get_id()));
+
             holder.routeInfoLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorAlert));
             holder.departInfo.setText(String.format("%d 분 안", result));
             holder.totalTime.setText(String.format("%d 분", data.getTotalTime()));
+
         } else {
             holder.routeInfoLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorDarkNavy));
             holder.departInfo.setText(DateConvertUtil.time2string(expectedDepartTime));
