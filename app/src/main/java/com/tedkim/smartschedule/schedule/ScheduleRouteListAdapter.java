@@ -25,7 +25,6 @@ import com.tedkim.smartschedule.detail.DetailFragment;
 import com.tedkim.smartschedule.model.BeforeTimeMessage;
 import com.tedkim.smartschedule.model.RouteInfo;
 import com.tedkim.smartschedule.model.ScheduleData;
-import com.tedkim.smartschedule.service.NotificationMessage;
 import com.tedkim.smartschedule.util.DateConvertUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -50,6 +49,7 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
     Context mContext;
     LayoutInflater mInflater;
     Realm mRealm;
+
     boolean isExpanded = false;
 
     private static final int SORT_DIST = 0;
@@ -80,7 +80,6 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
 
         // schedule info
         TextView title, start, end, address, memo;
-
         LinearLayout itemLayout, routeInfoLayout, trafficInfoLayout;
 
         public ViewHolder(View itemView) {
@@ -287,18 +286,15 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
             holder.departInfo.setText(DateConvertUtil.time2string(expectedDepartTime));
             holder.totalTime.setText(String.format("%d 분", data.getTotalTime()));
         } else if (result >= 0 && result <= 10) {
-
-            EventBus.getDefault().post(new NotificationMessage(data.get_id()));
-
             holder.routeInfoLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorAlert));
             holder.departInfo.setText(String.format("%d 분 안", result));
             holder.totalTime.setText(String.format("%d 분", data.getTotalTime()));
-
         } else {
             holder.routeInfoLayout.setBackgroundColor(ContextCompat.getColor(mContext, R.color.colorDarkNavy));
             holder.departInfo.setText(DateConvertUtil.time2string(expectedDepartTime));
             holder.totalTime.setText(String.format("%d 분", data.getTotalTime()));
         }
+//        EventBus.getDefault().post(new DepartureTimeMessage(data.get_id()));
     }
 
     @Override
@@ -315,6 +311,4 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
     public int getItemCount() {
         return super.getItemCount();
     }
-
-
 }

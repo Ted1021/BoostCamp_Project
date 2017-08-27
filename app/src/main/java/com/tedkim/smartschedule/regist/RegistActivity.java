@@ -333,6 +333,7 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                 if (mReqCommand == AppController.REQ_CREATE) {
                     mScheduleData = mRealm.createObject(ScheduleData.class, UUID.randomUUID().toString());
                     mScheduleData.setBeforeTime(0);
+                    mScheduleData.setExpectedDepartTime(new Date(System.currentTimeMillis()));
                 }
 
                 // 기존 데이터의 수정인 경우

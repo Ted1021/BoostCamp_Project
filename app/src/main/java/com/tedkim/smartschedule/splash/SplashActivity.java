@@ -14,8 +14,8 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.tedkim.smartschedule.R;
 import com.tedkim.smartschedule.home.HomeActivity;
-import com.tedkim.smartschedule.service.NotificationService;
-import com.tedkim.smartschedule.service.RefreshService;
+import com.tedkim.smartschedule.service.notification.NotificationService;
+import com.tedkim.smartschedule.service.refresh.RefreshService;
 
 /**
  * @author 김태원

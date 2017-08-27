@@ -1,4 +1,4 @@
-package com.tedkim.smartschedule.service;
+package com.tedkim.smartschedule.service.notification;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -28,7 +28,6 @@ public class NotificationService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
@@ -54,6 +53,7 @@ public class NotificationService extends Service {
         return START_STICKY;
     }
 
+    // From ScheduleFragment (line 173)
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void onAlertNotification(final NotificationMessage event) {
 

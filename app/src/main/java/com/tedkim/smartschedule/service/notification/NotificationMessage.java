@@ -1,4 +1,4 @@
-package com.tedkim.smartschedule.service;
+package com.tedkim.smartschedule.service.notification;
 
 /**
  * Created by tedkim on 2017. 8. 27..

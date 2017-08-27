@@ -27,9 +27,9 @@ import com.tedkim.smartschedule.model.RouteInfo;
 import com.tedkim.smartschedule.model.RouteInfoMessage;
 import com.tedkim.smartschedule.model.RouteSeqData;
 import com.tedkim.smartschedule.model.ScheduleData;
-import com.tedkim.smartschedule.service.NotificationService;
-import com.tedkim.smartschedule.service.RefreshMessage;
-import com.tedkim.smartschedule.service.RefreshService;
+import com.tedkim.smartschedule.service.notification.NotificationService;
+import com.tedkim.smartschedule.service.refresh.RefreshMessage;
+import com.tedkim.smartschedule.service.refresh.RefreshService;
 import com.tedkim.smartschedule.util.AppController;
 import com.tedkim.smartschedule.util.CurrentLocation;
 import com.tedkim.smartschedule.util.DateConvertUtil;
@@ -90,7 +90,6 @@ public class ScheduleFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-
         EventBus.getDefault().register(this);
     }
 
@@ -126,6 +125,7 @@ public class ScheduleFragment extends Fragment {
         return view;
     }
 
+    // Schedule Fragment View 컴포넌트 초기화
     private void initView(View view) {
 
         long now = System.currentTimeMillis();
@@ -137,12 +137,13 @@ public class ScheduleFragment extends Fragment {
         mScheduleSetting = (ImageButton) view.findViewById(R.id.imageButton_scheduleSetting);
     }
 
+    // RecyclerView 제어를 위한 Realm Instance 초기화
     private void initRealm() {
 
         // init Realm database
         mRealm = Realm.getDefaultInstance();
 
-        // init Realm data collection (=RealmResults) listener
+        // Realm data collection 변경 리스너 부착
         mRealmCollectionListener = new OrderedRealmCollectionChangeListener<RealmResults<ScheduleData>>() {
             @Override
             public void onChange(RealmResults<ScheduleData> scheduleDatas, OrderedCollectionChangeSet changeSet) {
@@ -153,7 +154,7 @@ public class ScheduleFragment extends Fragment {
                     mNoSchedule.setVisibility(View.GONE);
                 }
 
-                // 데이터셋의 삽입이 발생한 schedule data에 대해 경로 업데이트를 진행
+                // 데이터셋의 '삽입'이 발생한 schedule data에 대해 자동으로 경로 업데이트를 진행
                 for (int position : changeSet.getInsertions()) {
 
                     mCurrentLocation = CurrentLocation.getLocation(getContext());
@@ -170,23 +171,39 @@ public class ScheduleFragment extends Fragment {
         };
     }
 
+    // Schedule RecyclerView 초기화
     private void setRecyclerView() {
 
+        // 오늘자 스케줄의 '일정 순'으로 정렬된 데이터를 세팅한다
         mDataset = mRealm.where(ScheduleData.class).equalTo("date", DateConvertUtil.date2string(mDate)).findAll().sort("startTime");
         mAdapter = new ScheduleRouteListAdapter(mDataset, true, getContext());
         mScheduleList.setAdapter(mAdapter);
+
+        // Layout Manager 설정
         mLayoutManager = new LinearLayoutManager(getContext());
         mScheduleList.setLayoutManager(mLayoutManager);
 
+        // 오늘자 일정이 없으면 NoSchedule View 를 보여준다
         if (mDataset.isEmpty()) {
             mNoSchedule.setVisibility(View.VISIBLE);
         } else {
             mNoSchedule.setVisibility(View.GONE);
         }
+
+        // initRealm() 에서 정의했던 Realm Collection Listener 를 부착한다
         mDataset.addChangeListener(mRealmCollectionListener);
     }
 
+    // Schedule Fragment View Item 들의 동작을 정의
     private void setAction() {
+
+        // 스케줄 정렬 및 삭제 메뉴 실행
+        mScheduleSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showBottomSheet();
+            }
+        });
 
         // 오늘자 '모든' 스케줄에 대한 업데이트 진행
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -195,15 +212,53 @@ public class ScheduleFragment extends Fragment {
                 refreshAllSchedules();
             }
         });
-
-        mScheduleSetting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showBottomSheet();
-            }
-        });
     }
 
+    // 스케줄 설정 메뉴
+    private void showBottomSheet() {
+
+        new BottomSheet.Builder(getActivity()).sheet(R.menu.schedule_bottom_sheet).listener(new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                Intent intent;
+                switch (which) {
+
+                    // 지난 스케줄 삭제
+                    case R.id.remove_schedule:
+
+                        break;
+
+                    // 일정 순 정렬
+                    case R.id.sort_time:
+                        mDataset = mDataset.sort("startTime");
+                        break;
+
+                    // 거리 순 정렬
+                    case R.id.sort_distance:
+                        mDataset = mDataset.sort("distance");
+                        break;
+
+                    // 알림 비활성화
+                    case R.id.remove_notification:
+                        intent = new Intent(getActivity(), NotificationService.class);
+                        getActivity().stopService(intent);
+                        break;
+
+                    // 자동 새로고침 비활성화
+                    case R.id.remove_refresh:
+                        intent = new Intent(getActivity(), RefreshService.class);
+                        getActivity().stopService(intent);
+                        break;
+                }
+
+                // 변경 된 정렬 로직에 따라 RecyclerView 업데이트
+                mAdapter.updateData(mDataset);
+            }
+        }).show();
+    }
+
+    // 오늘자 '모든' 스케줄에 대한 업데이트 진행로직
     private void refreshAllSchedules() {
 
         new AsyncTask<Void, Void, Void>() {
@@ -231,27 +286,32 @@ public class ScheduleFragment extends Fragment {
                             // 현재 좌표 호출
                             mCurrentLocation = CurrentLocation.getLocation(getContext());
 
-                            // 스케줄에 저장 된 최근 위치와 업데이트 된 현재 위치를 비교해 선별적으로 서버에 접근
+                            // 이동경로 정보가 없거나, 위치에 변동이 생긴 스케줄에 대해 업데이트 진행
                             for (ScheduleData data : dataset) {
+
+                                Date expectedDepartTime = DateConvertUtil.calDateMin(data.getStartTime(), data.getBeforeTime() + data.getTotalTime());
+                                data.setExpectedDepartTime(expectedDepartTime);
+
                                 Log.e("CHECK_LOCATION", "schedule fragment >>>> Longitude : " + mCurrentLocation.getLongitude() + "/" + data.getCurrentLongitude() + " / latitude : " + (data.getCurrentLatitude() + "/" + mCurrentLocation.getLatitude()));
-                                if (data.getCurrentLongitude() != mCurrentLocation.getLongitude() || data.getCurrentLatitude() != mCurrentLocation.getLatitude()
-                                        || data.routeInfoList.size() == 0) {
+                                if (data.routeInfoList.size() == 0 || data.getCurrentLongitude() != mCurrentLocation.getLongitude() || data.getCurrentLatitude() != mCurrentLocation.getLatitude()) {
 
                                     isUpdated = false;
 
                                     data.setCurrentLongitude(mCurrentLocation.getLongitude());
                                     data.setCurrentLatitude(mCurrentLocation.getLatitude());
 
+                                    // 세부 이동 경로 갱신 작업 (모든 정보 삭제이후 재설정)
                                     if (data.routeInfoList.size() != 0) {
 
-                                        // 가장 최하위에 있는 객체부터 순차적으로 삭제
+                                        // 가장 하위 정보인 '환승 정보'부터 상위 정보인 '이동 경로'까지 순차적으로 삭제
                                         RealmResults<RouteSeqData> routeSeqDatas = realm.where(RouteSeqData.class).equalTo("_id", data.get_id()).findAll();
                                         routeSeqDatas.deleteAllFromRealm();
 
                                         RealmResults<RouteInfo> routeInfos = realm.where(RouteInfo.class).equalTo("_id", data.get_id()).findAll();
                                         routeInfos.deleteAllFromRealm();
                                     }
-                                    // 변환 후 이동 정보 호출
+
+                                    // 삭제이후 이동 정보 호출
                                     callRouteData(data.get_id());
                                 }
                             }
@@ -270,12 +330,15 @@ public class ScheduleFragment extends Fragment {
             @Override
             protected void onProgressUpdate(Void... values) {
                 super.onProgressUpdate(values);
+                // 모든 정보가 최신 정보임을 사용자에게 알림
                 Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), R.string.message_is_updated, Snackbar.LENGTH_LONG).show();
             }
 
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
+
+                // 변경 된 이동정보를 적용
                 mAdapter.notifyDataSetChanged();
                 mRefreshLayout.setRefreshing(false);
             }
@@ -283,6 +346,7 @@ public class ScheduleFragment extends Fragment {
 
     }
 
+    // 단일 스케줄에 대한 업데이트 진행로직
     private void callRouteData(final String id) {
 
         new AsyncTask<Void, Void, Void>() {
@@ -298,9 +362,11 @@ public class ScheduleFragment extends Fragment {
                 });
             }
 
+            // Retrofit Call 과 Realm Transaction 을 모두 동기방식으로 호출해 doInBackground() 에서 묶어서 작업함
             @Override
             protected Void doInBackground(Void... params) {
 
+                // 갱신할 스케줄 데이터를 받아 옴
                 Realm realm = Realm.getDefaultInstance();
                 ScheduleData data = realm.where(ScheduleData.class).equalTo("_id", id).findFirst();
 
@@ -308,19 +374,26 @@ public class ScheduleFragment extends Fragment {
                 Call<RouteData> routeDataCall = AppController.getRouteInfo()
                         .getTransportInfo(data.getCurrentLongitude(), data.getCurrentLatitude(), data.getLongitude(), data.getLatitude());
 
+                // 서버로부터 전달받은 데이터를 기반으로 업데이트 시작
+                // 최대 5개까지의 서로 다른 경로를 가져오며,
+                // 스케줄 정보 > 이동경로 정보 > 세부환승 정보 순으로 데이터를 삽입 또는 갱신
                 realm.beginTransaction();
                 try {
+
                     int maxPath = MAX_ROUTE_PATH;
                     RouteData result = routeDataCall.execute().body();
 
+                    // "스케줄 정보" 삽입
                     data.setBeforeTime(0);
                     data.setTotalTime(result.getResult().getPath()[0].getInfo().getTotalTime());
                     data.setDistance(result.getResult().getPath()[0].getInfo().getTotalDistance());
 
+                    // 이동경로수가 5개 미만일 경우, 최대 이동경로 수를 조정
                     if (result.getResult().getPath().length < maxPath) {
                         maxPath = result.getResult().getPath().length;
                     }
 
+                    // "이동경로 정보" 삽입
                     for (int i = 0; i < maxPath; i++) {
 
                         RouteData.Result.Path path = result.getResult().getPath()[i];
@@ -335,11 +408,13 @@ public class ScheduleFragment extends Fragment {
                         routeInfo.setSubwayTransitCount(path.getInfo().getSubwayTransitCount());
                         routeInfo.setTotalDistance(path.getInfo().getTotalDistance());
                         routeInfo.setTotalTransitCount(path.getInfo().getBusTransitCount() + path.getInfo().getSubwayTransitCount());
+
                         routeInfo.setSelected(false);
                         if (i == 0) {
                             routeInfo.setSelected(true);
                         }
 
+                        // "세부환승 정보" 삽입
                         for (RouteData.Result.Path.SubPath subPath : path.getSubPath()) {
 
                             RouteSeqData seqData = realm.createObject(RouteSeqData.class);
@@ -347,6 +422,7 @@ public class ScheduleFragment extends Fragment {
                             seqData.set_id(data.get_id());
                             seqData.setTrafficType(subPath.getTrafficType());
 
+                            // 도보, 버스, 지하철과 같은 이동수단 유형에따라 다르게 저장
                             if (subPath != null) {
                                 // subway
                                 if (seqData.getTrafficType() == TYPE_SUBWAY) {
@@ -358,6 +434,7 @@ public class ScheduleFragment extends Fragment {
                                     seqData.setBusName(subPath.getLane().getBusNo());
                                     seqData.setBusType(subPath.getLane().getType());
                                 }
+                                // or walk
                             }
                             routeInfo.routeSequence.add(seqData);
                         }
@@ -365,9 +442,11 @@ public class ScheduleFragment extends Fragment {
                     }
 
                 } catch (IOException e) {
+                    // 네트워크 상황이 좋지 못하면 특정 메세지를 통해 사용자에게 안내
                     e.printStackTrace();
                     publishProgress();
                 }
+
                 realm.commitTransaction();
                 realm.close();
                 return null;
@@ -376,7 +455,6 @@ public class ScheduleFragment extends Fragment {
             @Override
             protected void onProgressUpdate(Void... values) {
                 super.onProgressUpdate(values);
-
                 Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), R.string.error_message_fail_server, Snackbar.LENGTH_LONG).show();
             }
 
@@ -388,48 +466,11 @@ public class ScheduleFragment extends Fragment {
         }.execute();
     }
 
-    private void showBottomSheet() {
-
-        new BottomSheet.Builder(getActivity()).sheet(R.menu.schedule_bottom_sheet).listener(new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                Intent intent;
-                switch (which) {
-
-                    case R.id.remove_schedule:
-
-                        break;
-
-                    case R.id.sort_time:
-                        mDataset = mDataset.sort("startTime");
-                        break;
-
-                    case R.id.sort_distance:
-                        mDataset = mDataset.sort("distance");
-                        break;
-
-                    case R.id.remove_notification:
-                        intent = new Intent(getActivity(), NotificationService.class);
-                        getActivity().stopService(intent);
-                        break;
-
-                    case R.id.remove_refresh:
-                        intent = new Intent(getActivity(), RefreshService.class);
-                        getActivity().stopService(intent);
-                        break;
-                }
-                mAdapter.updateData(mDataset);
-
-            }
-        }).show();
-    }
-
-    // From ScheduleRouteAdapter
+    // Event Bus 설정
+    // From ScheduleRouteAdapter (line 251)
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onBeforeTimeMessageEvent(final BeforeTimeMessage event) {
 
-        Log.d("CHECK_EVENTBUS", event.getId() + " / " + event.getBeforeTime());
         mRealm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -440,11 +481,25 @@ public class ScheduleFragment extends Fragment {
         mAdapter.notifyDataSetChanged();
     }
 
-    // From TrafficInfoListAdapter
+    // From ScheduleRouteAdapter (line 299)
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onDepartTimeMessageEvent(final DepartureTimeMessage event) {
+//
+//        mRealm.executeTransaction(new Realm.Transaction() {
+//            @Override
+//            public void execute(Realm realm) {
+//                ScheduleData data = realm.where(ScheduleData.class).equalTo("_id", event.getId()).findFirst();
+//                Date expectedDepartTime = DateConvertUtil.calDateMin(data.getStartTime(), data.getBeforeTime() + data.getTotalTime());
+//                data.setExpectedDepartTime(expectedDepartTime);
+//            }
+//        });
+//        mAdapter.notifyDataSetChanged();
+//    }
+
+    // From TrafficInfoListAdapter (line 94)
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRouteInfoMessageEvent(final RouteInfoMessage event) {
 
-        Log.d("CHECK_EVENTBUS", event.getId() + " / " + event.getTotalTime() + " / " + event.getDistance());
         mRealm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -456,7 +511,7 @@ public class ScheduleFragment extends Fragment {
         mAdapter.notifyDataSetChanged();
     }
 
-    // From Refresh Service
+    // From Refresh Service (line 147)
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onStartRefreshEvent(RefreshMessage event) {
         if (event.getReq() == 0) {
