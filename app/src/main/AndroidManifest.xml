@@ -62,6 +62,9 @@
             android:name=".service.refresh.RefreshService"
             android:enabled="true"
             android:exported="true" />
+
+        <receiver android:name=".service.alarm.AlarmBroadcastReceiver"></receiver>
+
     </application>
 
 </manifest>

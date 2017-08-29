@@ -12,6 +12,7 @@ import com.tedkim.smartschedule.model.RouteData;
 import com.tedkim.smartschedule.model.RouteInfo;
 import com.tedkim.smartschedule.model.RouteSeqData;
 import com.tedkim.smartschedule.model.ScheduleData;
+import com.tedkim.smartschedule.service.alarm.AlarmService;
 import com.tedkim.smartschedule.service.notification.NotificationMessage;
 import com.tedkim.smartschedule.util.AppController;
 import com.tedkim.smartschedule.util.CurrentLocation;
@@ -23,11 +24,11 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import io.realm.OrderedCollectionChangeSet;
-import io.realm.OrderedRealmCollectionChangeListener;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import retrofit2.Call;
+
+import static android.os.AsyncTask.THREAD_POOL_EXECUTOR;
 
 public class RefreshService extends Service {
 
@@ -68,7 +69,6 @@ public class RefreshService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         mRealm = Realm.getDefaultInstance();
-
         mRefreshServiceHandler = new RefreshServiceHandler();
         mRefreshThread = new RefreshThread(mRefreshServiceHandler);
         mRefreshThread.start();
@@ -81,26 +81,27 @@ public class RefreshService extends Service {
 
             if (msg.what == RefreshThread.REQ_REFRESH_SCHEDULE) {
 
-                Realm realm = Realm.getDefaultInstance();
-                mDataset = realm.where(ScheduleData.class).equalTo("date", DateConvertUtil.date2string(new Date(System.currentTimeMillis()))).findAll().sort("startTime");
-                mDataset.addChangeListener(new OrderedRealmCollectionChangeListener<RealmResults<ScheduleData>>() {
-                    @Override
-                    public void onChange(RealmResults<ScheduleData> scheduleDatas, OrderedCollectionChangeSet changeSet) {
-                        // 데이터셋의 '변경'이 발생한 schedule data에 대해 새로운 Notification set 을 설정
-                        for (int position : changeSet.getChanges()) {
-
-                            ScheduleData data = scheduleDatas.get(position);
-
-                            long interval = data.getExpectedDepartTime().getTime() - System.currentTimeMillis();
-                            long result = TimeUnit.MILLISECONDS.toMinutes(interval);
-
-                            if (result >= 1 && result <= 10) {
-                                EventBus.getDefault().post(new NotificationMessage(scheduleDatas.get(position).get_id()));
-                            }
-                        }
-                    }
-                });
-                realm.close();
+//                Realm realm = Realm.getDefaultInstance();
+//                mDataset = realm.where(ScheduleData.class).equalTo("date", DateConvertUtil.date2string(new Date(System.currentTimeMillis()))).findAll().sort("startTime");
+//                mDataset.addChangeListener(new OrderedRealmCollectionChangeListener<RealmResults<ScheduleData>>() {
+//                    @Override
+//                    public void onChange(RealmResults<ScheduleData> scheduleDatas, OrderedCollectionChangeSet changeSet) {
+//                        // 데이터셋의 '변경'이 발생한 schedule data에 대해 새로운 Notification set 을 설정
+//                        for (int position : changeSet.getChanges()) {
+//
+//                            ScheduleData data = scheduleDatas.get(position);
+//
+//                            long interval = data.getExpectedDepartTime().getTime() - System.currentTimeMillis();
+//                            long result = TimeUnit.MILLISECONDS.toMinutes(interval);
+//                            Log.e("CHECK_NOTI", ">>>>>>>>> "+data.get_id());
+//
+//                            if (result >= 1 && result <= 10) {
+//                                EventBus.getDefault().post(new NotificationMessage(scheduleDatas.get(position).get_id()));
+//                            }
+//                        }
+//                    }
+//                });
+//                realm.close();
 
                 refreshAllSchedules();
                 Log.d("CHECK_REFRESH_SERVICE", "refresh service >>> 새로고침 수행");
@@ -115,14 +116,14 @@ public class RefreshService extends Service {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-//                EventBus.getDefault().post(new RefreshMessage(0));
+                EventBus.getDefault().post(new RefreshMessage(0));
             }
 
             @Override
             protected Void doInBackground(Void... params) {
 
                 Realm realm = Realm.getDefaultInstance();
-                realm.executeTransaction(new Realm.Transaction() {
+                realm.executeTransactionAsync(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
 
@@ -139,8 +140,10 @@ public class RefreshService extends Service {
                             // 스케줄에 저장 된 최근 위치와 업데이트 된 현재 위치를 비교해 선별적으로 서버에 접근
                             for (ScheduleData data : mDataset) {
 
+                                AlarmService.removeAlarm(getApplicationContext(), data.get_id());
                                 Date expectedDepartTime = DateConvertUtil.calDateMin(data.getStartTime(), data.getBeforeTime() + data.getTotalTime());
                                 data.setExpectedDepartTime(expectedDepartTime);
+                                AlarmService.setAlarm(getApplicationContext(), data.get_id());
 
                                 long interval = expectedDepartTime.getTime() - System.currentTimeMillis();
                                 long result = TimeUnit.MILLISECONDS.toMinutes(interval);
@@ -150,8 +153,7 @@ public class RefreshService extends Service {
                                 }
 
                                 Log.e("CHECK_LOCATION", "schedule fragment >>>> Longitude : " + mCurrentLocation.getLongitude() + "/" + data.getCurrentLongitude() + " / latitude : " + (data.getCurrentLatitude() + "/" + mCurrentLocation.getLatitude()));
-                                if (data.getCurrentLongitude() != mCurrentLocation.getLongitude() || data.getCurrentLatitude() != mCurrentLocation.getLatitude()
-                                        || data.routeInfoList.size() == 0) {
+                                if (data.routeInfoList.size() == 0 || data.getCurrentLongitude() != mCurrentLocation.getLongitude() || data.getCurrentLatitude() != mCurrentLocation.getLatitude()) {
 
                                     isUpdated = false;
 
@@ -170,10 +172,11 @@ public class RefreshService extends Service {
                                     // 변환 후 이동 정보 호출
                                     callRouteData(data.get_id());
                                 }
-                            }
 
-                            // 모든 정보가 최신상태라면 refresh 비활성화
-                            if (isUpdated) {
+                                // 모든 정보가 최신상태라면 refresh 비활성화
+                                if (isUpdated) {
+
+                                }
                             }
                         }
                     }
@@ -185,9 +188,9 @@ public class RefreshService extends Service {
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
-//                EventBus.getDefault().post(new RefreshMessage(1));
+                EventBus.getDefault().post(new RefreshMessage(1));
             }
-        }.execute();
+        }.executeOnExecutor(THREAD_POOL_EXECUTOR);
     }
 
     private void callRouteData(final String id) {
@@ -210,7 +213,7 @@ public class RefreshService extends Service {
                 final Call<RouteData> routeDataCall = AppController.getRouteInfo()
                         .getTransportInfo(data.getCurrentLongitude(), data.getCurrentLatitude(), data.getLongitude(), data.getLatitude());
 
-                realm.executeTransaction(new Realm.Transaction() {
+                realm.executeTransactionAsync(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
                         try {
@@ -284,6 +287,6 @@ public class RefreshService extends Service {
                 super.onPostExecute(aVoid);
                 EventBus.getDefault().post(new RefreshMessage(1));
             }
-        }.execute();
+        }.executeOnExecutor(THREAD_POOL_EXECUTOR);
     }
 }

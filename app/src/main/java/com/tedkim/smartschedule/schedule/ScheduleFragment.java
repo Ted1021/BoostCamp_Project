@@ -27,6 +27,7 @@ import com.tedkim.smartschedule.model.RouteInfo;
 import com.tedkim.smartschedule.model.RouteInfoMessage;
 import com.tedkim.smartschedule.model.RouteSeqData;
 import com.tedkim.smartschedule.model.ScheduleData;
+import com.tedkim.smartschedule.service.alarm.AlarmService;
 import com.tedkim.smartschedule.service.notification.NotificationService;
 import com.tedkim.smartschedule.service.refresh.RefreshMessage;
 import com.tedkim.smartschedule.service.refresh.RefreshService;
@@ -46,6 +47,8 @@ import io.realm.OrderedRealmCollectionChangeListener;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import retrofit2.Call;
+
+import static android.os.AsyncTask.THREAD_POOL_EXECUTOR;
 
 /**
  * @author 김태원
@@ -289,6 +292,11 @@ public class ScheduleFragment extends Fragment {
                             // 이동경로 정보가 없거나, 위치에 변동이 생긴 스케줄에 대해 업데이트 진행
                             for (ScheduleData data : dataset) {
 
+                                AlarmService.removeAlarm(getContext(), data.get_id());
+                                Date expectedDepartTime = DateConvertUtil.calDateMin(data.getStartTime(), data.getBeforeTime() + data.getTotalTime());
+                                data.setExpectedDepartTime(expectedDepartTime);
+                                AlarmService.setAlarm(getContext(), data.get_id());
+
                                 Log.e("CHECK_LOCATION", "schedule fragment >>>> Longitude : " + mCurrentLocation.getLongitude() + "/" + data.getCurrentLongitude() + " / latitude : " + (data.getCurrentLatitude() + "/" + mCurrentLocation.getLatitude()));
                                 if (data.routeInfoList.size() == 0 || data.getCurrentLongitude() != mCurrentLocation.getLongitude() || data.getCurrentLatitude() != mCurrentLocation.getLatitude()) {
 
@@ -310,9 +318,6 @@ public class ScheduleFragment extends Fragment {
 
                                     // 삭제이후 이동 정보 호출
                                     callRouteData(data.get_id());
-
-                                    Date expectedDepartTime = DateConvertUtil.calDateMin(data.getStartTime(), data.getBeforeTime() + data.getTotalTime());
-                                    data.setExpectedDepartTime(expectedDepartTime);
                                 }
                             }
 
@@ -342,7 +347,7 @@ public class ScheduleFragment extends Fragment {
                 mAdapter.notifyDataSetChanged();
                 mRefreshLayout.setRefreshing(false);
             }
-        }.execute();
+        }.executeOnExecutor(THREAD_POOL_EXECUTOR);
 
     }
 
@@ -409,11 +414,6 @@ public class ScheduleFragment extends Fragment {
                         routeInfo.setTotalDistance(path.getInfo().getTotalDistance());
                         routeInfo.setTotalTransitCount(path.getInfo().getBusTransitCount() + path.getInfo().getSubwayTransitCount());
 
-                        routeInfo.setSelected(false);
-                        if (i == 0) {
-                            routeInfo.setSelected(true);
-                        }
-
                         // "세부환승 정보" 삽입
                         for (RouteData.Result.Path.SubPath subPath : path.getSubPath()) {
 
@@ -463,7 +463,7 @@ public class ScheduleFragment extends Fragment {
                 super.onPostExecute(aVoid);
                 mRefreshLayout.setRefreshing(false);
             }
-        }.execute();
+        }.executeOnExecutor(THREAD_POOL_EXECUTOR);
     }
 
     // Event Bus 설정

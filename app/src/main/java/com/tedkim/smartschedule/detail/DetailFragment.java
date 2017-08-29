@@ -22,6 +22,7 @@ import com.tedkim.smartschedule.model.RouteInfo;
 import com.tedkim.smartschedule.model.RouteSeqData;
 import com.tedkim.smartschedule.model.ScheduleData;
 import com.tedkim.smartschedule.regist.RegistActivity;
+import com.tedkim.smartschedule.service.alarm.AlarmService;
 import com.tedkim.smartschedule.util.AppController;
 import com.tedkim.smartschedule.util.DateConvertUtil;
 
@@ -162,6 +163,9 @@ public class DetailFragment extends BlurDialogFragment implements View.OnClickLi
                     public void execute(Realm realm) {
 
                         Log.e("CHECK_DELETE", "<<<<<<<<<< start deleting object " + mID);
+
+                        // 설정 된 알람 삭제
+                        AlarmService.removeAlarm(getContext(), mID);
 
                         // 가장 최하위에 있는 객체부터 순차적으로 삭제
                         RealmResults<RouteSeqData> routeSeqDatas = mRealm.where(RouteSeqData.class).equalTo("_id", mID).findAll();

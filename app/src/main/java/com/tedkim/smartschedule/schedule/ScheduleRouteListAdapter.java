@@ -50,8 +50,6 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
     LayoutInflater mInflater;
     Realm mRealm;
 
-    boolean isExpanded = false;
-
     private static final int SORT_DIST = 0;
     private static final int SORT_TIME = 1;
     private static final int SORT_TRANSIT = 2;
@@ -81,6 +79,8 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
         // schedule info
         TextView title, start, end, address, memo;
         LinearLayout itemLayout, routeInfoLayout, trafficInfoLayout;
+
+        boolean isExpanded = false;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -119,7 +119,6 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
 
         mRealm = Realm.getDefaultInstance();
         ScheduleData data = getItem(position);
-        String sortType = "totalDistance";
 
         // set SubPath Info RecyclerView
         RealmResults<RouteInfo> routeInfos = mRealm.where(RouteInfo.class).equalTo("_id", data.get_id()).findAll();
@@ -160,20 +159,20 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
             @Override
             public void onClick(View v) {
 
-                if (isExpanded) {
-                    holder.moreInfo.setAnimation(AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in));
-                    holder.moreInfo.setImageResource(R.drawable.ic_action_drop_down);
-
-                    holder.trafficInfoLayout.setAnimation(AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in));
-                    holder.trafficInfoLayout.setVisibility(View.GONE);
-                } else {
+                if (!holder.isExpanded) {
                     holder.moreInfo.setAnimation(AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in));
                     holder.moreInfo.setImageResource(R.drawable.ic_action_collapse);
 
                     holder.trafficInfoLayout.setVisibility(View.VISIBLE);
                     holder.trafficInfoLayout.setAnimation(AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in));
+                } else {
+                    holder.moreInfo.setAnimation(AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in));
+                    holder.moreInfo.setImageResource(R.drawable.ic_action_drop_down);
+
+                    holder.trafficInfoLayout.setAnimation(AnimationUtils.loadAnimation(mContext, android.R.anim.fade_in));
+                    holder.trafficInfoLayout.setVisibility(View.GONE);
                 }
-                isExpanded = !isExpanded;
+                holder.isExpanded = !holder.isExpanded;
             }
         });
 

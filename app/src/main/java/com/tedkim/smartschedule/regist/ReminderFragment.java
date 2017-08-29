@@ -168,6 +168,7 @@ public class ReminderFragment extends BlurDialogFragment implements View.OnClick
                 break;
 
             case R.id.button_save:
+
                 mCallback.onReminderListChangedListener(mNotificationList);
                 dismiss();
                 break;

@@ -481,7 +481,6 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         ReminderFragment dialog = ReminderFragment.newInstance(mNotificationList);
         dialog.show(fragmentManager, "reminder");
 
-
     }
 
     @Override

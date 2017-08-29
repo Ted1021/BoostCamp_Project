@@ -20,7 +20,7 @@ import io.realm.Realm;
 
 public class AlarmService {
 
-    public static void setAlarm(Context context, String id){
+    public static void setAlarm(Context context, String id) {
 
         Realm realm = Realm.getDefaultInstance();
 
@@ -28,24 +28,30 @@ public class AlarmService {
         int alarmCode = uuid.hashCode();
 
         Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
-        PendingIntent sender = PendingIntent.getBroadcast(context, alarmCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent;
         Calendar calendar = Calendar.getInstance();
 
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
         ScheduleData data = realm.where(ScheduleData.class).equalTo("_id", id).findFirst();
-        for(ReminderData reminder : data.reminderList){
-            if(reminder.isChecked()){
+        for (ReminderData reminder : data.reminderList) {
+            if (reminder.isChecked()) {
+
+                intent.putExtra("ID", data.get_id());
+                intent.putExtra("TITLE", data.getTitle());
+                intent.putExtra("MIN", reminder.getTime());
+
                 calendar.setTimeInMillis(DateConvertUtil.calDateMin(data.getExpectedDepartTime(), reminder.getTime()).getTime());
+                pendingIntent = PendingIntent.getBroadcast(context, alarmCode + reminder.getTime(), intent, PendingIntent.FLAG_ONE_SHOT);
+                alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+
                 break;
             }
         }
-
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), sender);
-
         realm.close();
     }
 
-    public static void removeAlarm(Context context, String id){
+    public static void removeAlarm(Context context, String id) {
 
         Realm realm = Realm.getDefaultInstance();
 
@@ -53,11 +59,17 @@ public class AlarmService {
         int alarmCode = uuid.hashCode();
 
         Intent intent = new Intent();
-        PendingIntent sender = PendingIntent.getBroadcast(context, alarmCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
+        PendingIntent pendingIntent;
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(sender);
 
+        ScheduleData data = realm.where(ScheduleData.class).equalTo("_id", id).findFirst();
+        for (ReminderData reminder : data.reminderList) {
+            if (reminder.isChecked()) {
+
+                pendingIntent = PendingIntent.getBroadcast(context, alarmCode+reminder.getTime(), intent, PendingIntent.FLAG_ONE_SHOT);
+                alarmManager.cancel(pendingIntent);
+            }
+        }
         realm.close();
     }
 }

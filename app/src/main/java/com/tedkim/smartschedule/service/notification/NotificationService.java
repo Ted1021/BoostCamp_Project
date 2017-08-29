@@ -73,12 +73,13 @@ public class NotificationService extends Service {
                 int alarmCode = uuid.hashCode();
 
                 Intent intent = new Intent(NotificationService.this, HomeActivity.class);
-                PendingIntent pendingIntent = PendingIntent.getActivity(NotificationService.this, alarmCode, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent pendingIntent = PendingIntent.getActivity(NotificationService.this, alarmCode, intent, PendingIntent.FLAG_ONE_SHOT);
 
                 mNotification = new Notification.Builder(getApplicationContext())
+                        .setTicker("SmartSchedule")
+                        .setSmallIcon(R.drawable.smart_schedule)
                         .setContentTitle("지금 당장 출발하셔야 합니다!")
                         .setContentText(data.getTitle())
-                        .setSmallIcon(R.drawable.smart_schedule)
                         .setContentIntent(pendingIntent)
                         .build();
 
@@ -88,7 +89,7 @@ public class NotificationService extends Service {
                 mNotification.flags = Notification.FLAG_ONLY_ALERT_ONCE;
                 //확인하면 자동으로 알림이 제거 되도록
                 mNotification.flags = Notification.FLAG_AUTO_CANCEL;
-                mNotificationManager.notify(777, mNotification);
+                mNotificationManager.notify(alarmCode, mNotification);
 
                 realm.close();
             }
