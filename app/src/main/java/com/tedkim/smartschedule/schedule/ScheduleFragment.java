@@ -387,6 +387,7 @@ public class ScheduleFragment extends Fragment {
                 // 서버로부터 전달받은 데이터를 기반으로 업데이트 시작
                 // 최대 5개까지의 서로 다른 경로를 가져오며,
                 // 스케줄 정보 > 이동경로 정보 > 세부환승 정보 순으로 데이터를 삽입 또는 갱신
+
                 realm.beginTransaction();
                 try {
 

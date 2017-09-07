@@ -3,6 +3,7 @@ package com.tedkim.smartschedule.home;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -24,6 +25,7 @@ import com.tedkim.smartschedule.util.DateConvertUtil;
 
 import java.util.Date;
 
+import io.realm.Realm;
 import top.wefor.circularanim.CircularAnim;
 
 import static android.support.v4.view.ViewPager.SCROLL_STATE_DRAGGING;
@@ -52,7 +54,11 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
     int mSelectedColor, mUnSelectedColor;
     int mCurrentFragment = FRAG_SCHEDULE;
 
+    private Realm mRealm;
+
     String mDate;
+
+    private static final String REALM_TAG = "HOME_ACTIVITY";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,9 +67,34 @@ public class HomeActivity extends AppCompatActivity implements OnCalendarSelecte
 
         Log.d("CHECK_ENTER", "Home Activity -------------------");
 
+        mRealm = Realm.getDefaultInstance();
+
         initView();
 
         setAction();
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        mRealm.close();
+        mRealm = null;
+
+        super.onDestroy();
+    }
+
+//    public static Realm getRealmInstance(Context context){
+//
+//        return (Realm)context.getSystemService(REALM_TAG);
+//    }
+
+    @Override
+    public Object getSystemService(@NonNull String name) {
+
+        if(name.equals(REALM_TAG)){
+            return mRealm;
+        }
+        return super.getSystemService(name);
     }
 
     private void initView() {
