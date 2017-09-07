@@ -1,6 +1,8 @@
 package com.tedkim.smartschedule.schedule;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -181,6 +183,13 @@ public class ScheduleRouteListAdapter extends RealmRecyclerViewAdapter<ScheduleD
             @Override
             public void onClick(View v) {
 
+                Uri gmmIntentUri = Uri.parse(String.format("geo:0,0?q=%f,%f(label)",data.getLatitude(),data.getLongitude()));
+                Log.d("CHECK_LOCATION", "route adapter >>>>>>> " + String.format("geo:%f,%f", data.getLatitude(), data.getLongitude()));
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                if (mapIntent.resolveActivity(mContext.getPackageManager()) != null) {
+                    mContext.startActivity(mapIntent);
+                }
             }
         });
 

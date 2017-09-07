@@ -37,14 +37,20 @@ public class AlarmService {
         for (ReminderData reminder : data.reminderList) {
             if (reminder.isChecked()) {
 
+                long targetTime = DateConvertUtil.calDateMin(data.getExpectedDepartTime(), reminder.getTime()).getTime();
+
                 intent.putExtra("ID", data.get_id());
                 intent.putExtra("TITLE", data.getTitle());
                 intent.putExtra("MIN", reminder.getTime());
 
-                calendar.setTimeInMillis(DateConvertUtil.calDateMin(data.getExpectedDepartTime(), reminder.getTime()).getTime());
-                pendingIntent = PendingIntent.getBroadcast(context, alarmCode + reminder.getTime(), intent, PendingIntent.FLAG_ONE_SHOT);
-                alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+                pendingIntent = PendingIntent.getBroadcast(context, alarmCode+reminder.getTime(), intent, PendingIntent.FLAG_ONE_SHOT);
 
+                if(targetTime - System.currentTimeMillis() < 0){
+                    alarmManager.cancel(pendingIntent);
+                }else{
+                    calendar.setTimeInMillis(DateConvertUtil.calDateMin(data.getExpectedDepartTime(), reminder.getTime()).getTime());
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+                }
                 break;
             }
         }

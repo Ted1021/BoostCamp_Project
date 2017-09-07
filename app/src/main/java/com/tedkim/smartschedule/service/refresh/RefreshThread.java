@@ -29,7 +29,7 @@ public class RefreshThread extends Thread {
         while (isRun) {
             mHandler.sendEmptyMessage(REQ_REFRESH_SCHEDULE);//쓰레드에 있는 핸들러에게 메세지를 보냄
             try {
-                Thread.sleep(1000*15); //10분씩 체크한다
+                Thread.sleep(REFRESH_INTERVAL); //10분씩 체크한다
             } catch (Exception e) {
             }
         }

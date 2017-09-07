@@ -379,6 +379,11 @@ public class ScheduleFragment extends Fragment {
                 Call<RouteData> routeDataCall = AppController.getRouteInfo()
                         .getTransportInfo(data.getCurrentLongitude(), data.getCurrentLatitude(), data.getLongitude(), data.getLatitude());
 
+                if(data.getCurrentLongitude() == data.getLongitude() && data.getCurrentLatitude() == data.getLatitude()){
+                    publishProgress();
+                    return null;
+                }
+
                 // 서버로부터 전달받은 데이터를 기반으로 업데이트 시작
                 // 최대 5개까지의 서로 다른 경로를 가져오며,
                 // 스케줄 정보 > 이동경로 정보 > 세부환승 정보 순으로 데이터를 삽입 또는 갱신
@@ -500,8 +505,10 @@ public class ScheduleFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onStartRefreshEvent(RefreshMessage event) {
         if (event.getReq() == 0) {
+            Log.d("CHECK_REFRESH", ">>>>>>> start refresh");
             mRefreshLayout.setRefreshing(true);
         } else {
+            Log.d("CHECK_REFRESH", ">>>>>>> end refresh");
             mAdapter.notifyDataSetChanged();
             mRefreshLayout.setRefreshing(false);
         }
